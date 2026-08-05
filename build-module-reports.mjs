@@ -123,8 +123,6 @@ details.comunes[open]>summary{border-bottom:1px solid var(--rule)}
 .eq-prop .lead{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blueprint);display:block;margin-bottom:.3rem}
 .eq-prop p{margin:0;max-width:78ch;font-size:.93rem}
 
-.foot{border-top:2px solid var(--ink);padding:1.6rem 0 3rem;font-size:.85rem;color:var(--muted)}
-.foot p{max-width:78ch;margin:0 0 .6rem}
 .idx-grid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
 .idx-row{background:var(--surface);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem 1.5rem;padding:.9rem 1.1rem;text-decoration:none;color:inherit;align-items:center}
 .idx-row:hover{background:var(--blueprint-soft)}
@@ -319,22 +317,7 @@ for (const [slug, mod] of Object.entries(MODULOS).sort((a, b) => a[1].orden - b[
       <div class="comunes__body"><div class="finds">${COMUNES.map((f) => renderFind(f)).join('')}</div></div>
     </details>
   </section>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <p>
-      Medido el 4 de agosto de 2026 sobre el entorno productivo, autenticado y en modo de solo lectura:
-      ninguna petición de escritura salió del navegador. Tres anchos: 390, 820 y 1440 px. Accesibilidad con
-      axe-core contra WCAG 2.1 A y AA.
-    </p>
-    <p>
-      Las cifras de este informe se generan desde <code>out/visor/findings-visor.json</code>; el texto, desde
-      <code>module-reports.data.mjs</code>. Para regenerarlo: <code>node audit-visor.mjs</code> y luego
-      <code>node build-module-reports.mjs</code>.
-    </p>
-  </div>
-</footer>`;
+</main>`;
 
   const file = `${String(mod.orden).padStart(2, '0')}-${slug}.html`;
   await writeFile(path.join(DEST, file), page(`${mod.titulo} — Auditoría UX/UI`, body));
@@ -418,20 +401,7 @@ const indexBody = `
       </table>
     </div>
   </section>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <p>
-      El informe de plataforma —las seis secciones del menú principal— es un documento aparte:
-      <code>report.html</code> en la raíz del proyecto.
-    </p>
-    <p>
-      Regenerar: <code>node audit-visor.mjs</code> mide y captura; <code>node build-module-reports.mjs</code>
-      construye estos doce archivos.
-    </p>
-  </div>
-</footer>`;
+</main>`;
 
 await writeFile(path.join(DEST, 'index.html'), page('Visor de resultados — informes por módulo', indexBody));
 console.log(`\nindex.html + ${built.length} informes en ./${DEST}/`);
