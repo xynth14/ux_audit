@@ -351,6 +351,20 @@ const indexBody = `
 
 <main class="wrap">
   <section>
+    <h2>Resumen ejecutivo</h2>
+    <p class="sub">Una página con el veredicto, las contradicciones que bloquean la credibilidad de las cifras y el orden de trabajo.</p>
+    <div class="idx-grid">
+      <a class="idx-row" href="ejecutivo.html">
+        <span>
+          <span class="idx-row__t">Auditoría PAIN — resumen ejecutivo</span>
+          <span class="idx-row__d">Para leer antes del detalle, y para presentar.</span>
+        </span>
+        <span class="idx-sev"><span class="pill" style="color:var(--blueprint)">abrir →</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section>
     <h2>Los once informes</h2>
     <p class="sub">Ordenados como en el sidebar. A la derecha, los hallazgos propios de cada módulo por severidad.</p>
     <div class="idx-grid">

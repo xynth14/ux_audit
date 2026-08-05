@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoría PAIN — resumen ejecutivo</title>
+<style>
+  :root{
+    --ink:#101820;--ink-soft:#2A323C;--muted:#5A6472;--paper:#F4F6F8;--surface:#FFF;
+    --surface-2:#EDF1F5;--rule:#CFD7E0;--rule-soft:#E4E9EF;--blueprint:#1B4B7F;--blueprint-soft:#E3EAF2;
+    --mal:#B3261E;--bien:#14713D;--aviso:#8A5200;
+    --display:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --ink:#E8ECF0;--ink-soft:#C6CFD9;--muted:#9AA5B2;--paper:#0E1319;--surface:#151B22;
+    --surface-2:#1B222B;--rule:#2C353F;--rule-soft:#212932;--blueprint:#8FBDEC;--blueprint-soft:#16243A;
+    --mal:#F09189;--bien:#74CE9B;--aviso:#DFBE6E;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  *:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.85em;background:var(--surface-2);padding:.08em .3em;border-radius:2px}
+  a{color:var(--blueprint)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 clamp(1.1rem,3.5vw,2rem)}
+
+  header{padding:1.5rem 0 0}
+  .back{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;display:inline-block;margin-bottom:1.1rem}
+  .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .5rem}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(1.9rem,4.2vw,2.6rem);line-height:1.05;letter-spacing:-.015em;margin:0 0 1.1rem;text-wrap:balance}
+
+  .veredicto{border:1px solid var(--rule);border-left:4px solid var(--mal);background:var(--surface);padding:1.05rem 1.25rem;margin:0 0 1.5rem}
+  .veredicto .lead{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mal);display:block;margin-bottom:.45rem}
+  .veredicto p{margin:0 0 .6rem;max-width:74ch;font-size:1.05rem}
+  .veredicto p:last-child{margin:0}
+  .veredicto strong{font-weight:600}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule);margin-bottom:2.25rem}
+  .stat{padding:.6rem .8rem .7rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .stat dt{font-family:var(--mono);font-size:.63rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.22rem}
+  .stat dd{margin:0;font-family:var(--display);font-size:1.35rem;line-height:1;font-variant-numeric:tabular-nums}
+  .stat dd small{font-family:var(--body);font-size:.7rem;color:var(--muted)}
+  .stat.mal dd{color:var(--mal)}
+
+  main{padding:0 0 3rem}
+  section{margin-bottom:2.25rem}
+  h2{font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.15;margin:0 0 .7rem;letter-spacing:-.01em;padding-bottom:.45rem;border-bottom:1px solid var(--rule)}
+  h2 .n{font-family:var(--mono);font-size:.6em;color:var(--blueprint);margin-right:.45rem}
+  p{max-width:76ch;margin:0 0 .8rem}
+  p:last-child{margin-bottom:0}
+
+  .tbl{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+  .tbl:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:560px}
+  th,td{text-align:left;padding:.52rem .75rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--rule)}
+  tbody tr:last-child td{border-bottom:0}
+  td.dice{font-weight:600;width:30%}
+  td.contra{color:var(--mal)}
+  td.don{color:var(--muted);font-family:var(--mono);font-size:.78rem;white-space:nowrap}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  ol.crit{margin:0;padding-left:1.4rem;max-width:78ch}
+  ol.crit li{margin-bottom:.45rem}
+  ol.crit li:last-child{margin-bottom:0}
+  ol.crit b{font-weight:600}
+  ol.crit .don{font-family:var(--mono);font-size:.76rem;color:var(--muted);white-space:nowrap}
+
+  .plan{border:1px solid var(--rule);background:var(--surface)}
+  .plan__f{display:grid;grid-template-columns:2.1rem minmax(0,1fr) auto;gap:.3rem .9rem;padding:.75rem 1rem;border-bottom:1px solid var(--rule-soft);align-items:baseline}
+  .plan__f:last-child{border-bottom:0}
+  .plan__n{font-family:var(--display);font-size:1.3rem;color:var(--blueprint);line-height:1}
+  .plan__t{font-weight:600}
+  .plan__d{color:var(--muted);font-size:.88rem;grid-column:2;max-width:70ch}
+  .plan__e{font-family:var(--mono);font-size:.74rem;color:var(--muted);white-space:nowrap;text-align:right}
+  .plan__f--gate{background:var(--blueprint-soft)}
+
+  .dos{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+  .dos>*{min-width:0}
+  @media (min-width:720px){.dos{grid-template-columns:1fr 1fr}}
+  .caja{border:1px solid var(--rule);background:var(--surface);padding:.85rem 1rem}
+  .caja h3{margin:0 0 .5rem;font-size:.92rem;font-weight:600;font-family:var(--body)}
+  .caja ul{margin:0;padding-left:1.1rem;font-size:.9rem;color:var(--ink-soft)}
+  .caja li{margin-bottom:.3rem}
+  .caja li:last-child{margin-bottom:0}
+  .caja--si{border-top:2px solid var(--bien)}
+  .caja--no{border-top:2px solid var(--muted)}
+
+  .links{border-top:2px solid var(--ink);padding-top:1rem;font-size:.88rem;color:var(--muted)}
+  .links p{margin:0 0 .4rem}
+
+  @media print{
+    body{background:#fff;color:#000;font-size:10.5pt}
+    .back{display:none}
+    .veredicto,.tbl,.plan,.caja{break-inside:avoid}
+    section{break-inside:avoid;margin-bottom:1.1rem}
+    h2{break-after:avoid}
+    a{color:#000;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="index.html">← Índice de informes</a>
+    <p class="eyebrow">Resumen ejecutivo · Plataforma PAIN · agosto de 2026</p>
+    <h1>La herramienta encuentra problemas reales. Sus cifras aún no son citables.</h1>
+
+    <div class="veredicto">
+      <span class="lead">Veredicto</span>
+      <p>
+        PAIN detecta problemas de verdad en la web de Claro y su detalle técnico llega hasta el
+        archivo y la línea del error. Eso es lo difícil, y está hecho.
+      </p>
+      <p>
+        Pero <strong>cinco pantallas se contradicen entre sí</strong>: la misma corrida afirma «0
+        hallazgos SEO» y a la vez lista 121 defectos de SEO. Mientras eso siga así, cualquier cifra
+        que se lleve a una reunión puede tumbarla el primero que abra el módulo correspondiente.
+      </p>
+      <p>
+        <strong>Recomendación: cerrar esas cinco contradicciones antes de publicar resultados.</strong>
+        Es trabajo de datos, no de diseño, y está acotado.
+      </p>
+    </div>
+
+    <dl class="stats">
+      <div class="stat"><dt>Pantallas</dt><dd>17</dd></div>
+      <div class="stat"><dt>Pasadas</dt><dd>51</dd></div>
+      <div class="stat"><dt>Hallazgos</dt><dd>60</dd></div>
+      <div class="stat mal"><dt>Críticos</dt><dd>7</dd></div>
+      <div class="stat mal"><dt>Contradicciones</dt><dd>5</dd></div>
+      <div class="stat mal"><dt>Cobertura real</dt><dd>6,9<small> %</small></dd></div>
+      <div class="stat"><dt>Reglas WCAG</dt><dd>6<small> incumplidas</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2><span class="n">1</span>Las cinco contradicciones</h2>
+    <p>
+      Todas se observan <em>dentro de la misma corrida</em>, comparando una pantalla con otra. No
+      hacen falta datos externos para verlas.
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Las cinco contradicciones, tabla desplazable">
+      <table>
+        <thead><tr><th>La pantalla afirma</th><th>Y a la vez</th><th class="don">Dónde</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="dice">«Hallazgos SEO 0»</td>
+            <td class="contra">El Módulo 3 lista 12 páginas sin H1, 12 con H1 múltiple, 13 títulos cortos, 50 largos y 25 metas cortas: 121 defectos declarados.</td>
+            <td class="don">Resumen / M3</td>
+          </tr>
+          <tr>
+            <td class="dice">«Salud técnica 100 %»</td>
+            <td class="contra">La primera fila de su propia tabla tiene 4 errores de consola, 3 de JavaScript, 8 recursos fallidos y 2 de CSP; su panel declara 22 hallazgos, 14 de severidad alta.</td>
+            <td class="don">M2 Técnico</td>
+          </tr>
+          <tr>
+            <td class="dice">«SEO Score 97 %»</td>
+            <td class="contra">Las diez tarjetas contiguas suman los 121 defectos anteriores sobre 200 páginas. El score no baja cuando 50 títulos están fuera de rango.</td>
+            <td class="don">M3 SEO</td>
+          </tr>
+          <tr>
+            <td class="dice">«42 enlaces rotos» en una URL</td>
+            <td class="contra">Su tabla de hallazgos muestra 43 filas, repartidas en cinco reglas distintas. Ninguna combinación da 42, y la lista de los 42 no se puede obtener desde ninguna pantalla.</td>
+            <td class="don">M5 Links</td>
+          </tr>
+          <tr>
+            <td class="dice">«2 886 URLs leídas · 8 auditables»</td>
+            <td class="contra">Mezcla dos corridas distintas: el recuento del sitemap del 4 de agosto con lo auditable de las corridas del 17 de julio. Presentado como un único dato.</td>
+            <td class="don">Resumen</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:.8rem;font-size:.9rem;color:var(--muted)">
+      Se suma un efecto de recuento: en el Módulo 2 cada problema aparece <strong>dos veces</strong>
+      —una como captura de consola y otra como texto—, con el mismo código de regla. Los «22
+      hallazgos» de una URL son probablemente 11.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>La cobertura no da para concluir sobre el sitio</h2>
+    <div class="tbl" tabindex="0" role="region" aria-label="Cobertura por módulo, tabla desplazable">
+      <table>
+        <thead><tr><th>Módulo</th><th class="num">Universo</th><th class="num">Medido</th><th class="num">Cobertura</th></tr></thead>
+        <tbody>
+          <tr><td>Sitemap</td><td class="num">2 886 URLs</td><td class="num">2 886</td><td class="num" style="color:var(--bien)">100 %</td></tr>
+          <tr><td>Técnico, SEO, Tagging, Performance</td><td class="num">2 886 URLs</td><td class="num">200</td><td class="num" style="color:var(--mal)">6,9 %</td></tr>
+          <tr><td>Content/UI</td><td class="num">2 886 URLs</td><td class="num">100</td><td class="num" style="color:var(--mal)">3,5 %</td></tr>
+          <tr><td>Imágenes</td><td class="num">—</td><td class="num">50 imágenes</td><td class="num" style="color:var(--mal)">muestra</td></tr>
+          <tr><td>Change History</td><td class="num">—</td><td class="num">0</td><td class="num" style="color:var(--mal)">sin datos</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:.8rem">
+      Con un 6,9 % medido, los números del sitio son <strong>indicios sólidos, no un diagnóstico</strong>.
+      Sirven para decidir dónde mirar; no para afirmar cuántos problemas tiene claro.com.pe.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>Los siete hallazgos críticos</h2>
+    <ol class="crit">
+      <li><b>La navegación global desaparece al entrar a trabajar.</b> El menú de secciones sólo existe en el hub; moverse entre secciones obliga a volver y recargar. <span class="don">plataforma</span></li>
+      <li><b>Ningún módulo del visor tiene URL propia.</b> No se puede enlazar una vista, el botón Atrás sale de la herramienta y recargar pierde el módulo abierto. <span class="don">visor, los 11</span></li>
+      <li><b>El panel de estado informa resultados contradictorios</b> entre dos cargas separadas por 30 segundos, sin decir a qué hora midió ni qué falló. <span class="don">plataforma</span></li>
+      <li><b>Los contadores del Resumen dicen 0 donde los módulos reportan miles.</b> Quien entra y ve tres ceros concluye que está limpio y no baja al detalle. <span class="don">Resumen</span></li>
+      <li><b>Los scores no reflejan los defectos que la propia pantalla lista</b> (97 % de SEO, 100 % de salud técnica). <span class="don">M2, M3</span></li>
+      <li><b>6 399 enlaces rotos de 51 648 se presentan como un dato neutro</b>, con el mismo formato que un recuento inocuo. Es la cifra más grave del informe. <span class="don">M5 Links</span></li>
+      <li><b>El peor resultado de la plataforma no se comunica como tal</b>: 41 % de rendimiento medio y 2 847 hallazgos, en negro sobre blanco y sin jerarquía. <span class="don">M7 Performance</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>Orden de trabajo</h2>
+    <div class="plan">
+      <div class="plan__f plan__f--gate">
+        <span class="plan__n">0</span>
+        <span class="plan__t">Cerrar las cinco contradicciones</span>
+        <span class="plan__e">datos · 3–5 días</span>
+        <span class="plan__d">Es la condición para todo lo demás: hasta que las cifras cuadren, publicar resultados es un riesgo. Incluye decidir si <code>runtime</code> y <code>runtime_event</code> son un problema o dos.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">1</span>
+        <span class="plan__t">Encabezado común, navegación persistente y URL por módulo</span>
+        <span class="plan__e">front · 2–3 días</span>
+        <span class="plan__d">Resuelve dos de los siete críticos y arrastra la mitad de las incidencias de accesibilidad estructural.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">2</span>
+        <span class="plan__t">Tokens de color y componente de estado único</span>
+        <span class="plan__e">front · 1 día</span>
+        <span class="plan__d">Un cambio de seis valores corrige los 101 nodos de contraste del peor módulo y unifica las cuatro formas distintas de mostrar un estado.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">3</span>
+        <span class="plan__t">Reducir tablas y unificar el panel de detalle, con el Módulo 2 como piloto</span>
+        <span class="plan__e">front · 4–5 días</span>
+        <span class="plan__d">De 17 columnas a 6, de dos tablas a una, y de 471 KB a 95 KB al abrir. La propuesta está maquetada y navegable.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span>Alcance de esta auditoría</h2>
+    <div class="dos">
+      <div class="caja caja--si">
+        <h3>Cubierto con medición</h3>
+        <ul>
+          <li>Usabilidad e interfaz — 17 pantallas, 51 pasadas</li>
+          <li>Accesibilidad — axe-core, WCAG 2.1 A y AA</li>
+          <li>Rendimiento de cliente — carga, peso de respuesta, tamaño del DOM</li>
+          <li>Fiabilidad del dato — contradicciones detectadas y verificadas entre pantallas</li>
+        </ul>
+      </div>
+      <div class="caja caja--no">
+        <h3>No auditado</h3>
+        <ul>
+          <li>Seguridad de la plataforma</li>
+          <li>Corrección funcional: no se comprobó que cada regla haga lo que declara</li>
+          <li>Compatibilidad: sólo Chromium, en tres anchos</li>
+          <li>Código y mantenibilidad</li>
+          <li>Flujos que requieren escritura, por auditar sobre producción</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:.9rem;font-size:.9rem;color:var(--muted)">
+      Toda la auditoría se ejecutó autenticada y en modo de solo lectura: ninguna petición de
+      escritura salió del navegador. Los nombres y correos aparecen difuminados por tratarse de un
+      informe de acceso público; ninguna cifra se ha modificado.
+    </p>
+  </section>
+
+  <div class="links">
+    <p><strong>El detalle:</strong> <a href="index.html">informes por módulo</a> · <a href="m2-antes-despues.html">Módulo 2, antes y después</a> · <a href="../report.html">informe de plataforma</a> · <a href="m4-tagging-title-imagen.html">solicitud técnica de Tagging</a></p>
+    <p>Cada cifra de este resumen es trazable hasta la pantalla y la corrida donde se midió.</p>
+  </div>
+
+</main>
+
+</body>
+</html>
