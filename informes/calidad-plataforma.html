@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoría de calidad — plataforma PAIN</title>
+<style>
+  :root{
+    --ink:#101820;--ink-soft:#2A323C;--muted:#5A6472;--paper:#F4F6F8;--surface:#FFF;
+    --surface-2:#EDF1F5;--rule:#CFD7E0;--rule-soft:#E4E9EF;--blueprint:#1B4B7F;--blueprint-soft:#E3EAF2;
+    --mal:#B3261E;--medio:#8A5200;--bien:#14713D;--nd:#5A6472;
+    --display:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --ink:#E8ECF0;--ink-soft:#C6CFD9;--muted:#9AA5B2;--paper:#0E1319;--surface:#151B22;
+    --surface-2:#1B222B;--rule:#2C353F;--rule-soft:#212932;--blueprint:#8FBDEC;--blueprint-soft:#16243A;
+    --mal:#F09189;--medio:#DFBE6E;--bien:#74CE9B;--nd:#9AA5B2;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  *:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.85em;background:var(--surface-2);padding:.08em .32em;border-radius:2px;overflow-wrap:anywhere}
+  .wrap{max-width:930px;margin:0 auto;padding:0 clamp(1.1rem,3.5vw,2rem)}
+
+  header{padding:2rem 0 0;border-bottom:1px solid var(--rule)}
+  .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .6rem}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,4.4vw,2.8rem);line-height:1.05;letter-spacing:-.015em;margin:0 0 1rem;text-wrap:balance}
+  .veredicto{border:1px solid var(--rule);border-left:4px solid var(--medio);background:var(--surface);padding:1.05rem 1.25rem;margin:0 0 1.6rem}
+  .veredicto .lead{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--medio);display:block;margin-bottom:.45rem}
+  .veredicto p{margin:0 0 .65rem;max-width:76ch}
+  .veredicto p:last-child{margin:0}
+  .veredicto strong{font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule);margin-bottom:-1px}
+  .stat{padding:.6rem .8rem .7rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .stat dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+  .stat dd{margin:0;font-family:var(--display);font-size:1.32rem;line-height:1;font-variant-numeric:tabular-nums}
+  .stat dd small{font-family:var(--body);font-size:.68rem;color:var(--muted)}
+  .stat.mal dd{color:var(--mal)}
+  .stat.bien dd{color:var(--bien)}
+
+  main{padding:2.5rem 0 4rem}
+  section{margin-bottom:2.75rem}
+  h2{font-family:var(--display);font-weight:400;font-size:1.62rem;line-height:1.15;margin:0 0 .3rem;letter-spacing:-.01em;text-wrap:balance}
+  h2 .n{font-family:var(--mono);font-size:.58em;color:var(--blueprint);margin-right:.5rem}
+  .sub{color:var(--muted);font-size:.97rem;margin:0 0 1.4rem;padding-bottom:.75rem;border-bottom:2px solid var(--ink);max-width:74ch}
+  h3{font-size:1.02rem;font-weight:600;margin:1.5rem 0 .5rem}
+  p{max-width:76ch;margin:0 0 .85rem}
+  p:last-child{margin-bottom:0}
+  ul{max-width:76ch;margin:0 0 .9rem;padding-left:1.25rem}
+  li{margin-bottom:.5rem}
+  li:last-child{margin-bottom:0}
+
+  .tbl{overflow-x:auto;border:1px solid var(--rule);background:var(--surface);margin-bottom:1rem}
+  .tbl:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  table{border-collapse:collapse;width:100%;font-size:.87rem;min-width:600px}
+  th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--rule)}
+  tbody tr:last-child td{border-bottom:0}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.dim{font-weight:600;width:24%}
+
+  .v{font-family:var(--mono);font-size:.63rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;border:1px solid currentColor;padding:.16em .42em;white-space:nowrap;display:inline-block}
+  .v-mal{color:var(--mal)}
+  .v-medio{color:var(--medio)}
+  .v-bien{color:var(--bien)}
+  .v-nd{color:var(--nd);border-style:dashed}
+
+  .caja{border:1px solid var(--rule);background:var(--surface);padding:1rem 1.2rem;margin-bottom:1rem}
+  .caja--mal{border-left:3px solid var(--mal)}
+  .caja--bien{border-left:3px solid var(--bien)}
+  .caja--info{border-left:3px solid var(--blueprint)}
+  .caja .lead{font-family:var(--mono);font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.35rem}
+  .caja--mal .lead{color:var(--mal)}
+  .caja--bien .lead{color:var(--bien)}
+  .caja--info .lead{color:var(--blueprint)}
+  .caja p{margin:0 0 .6rem}
+  .caja p:last-child{margin:0}
+
+  .plan{border:1px solid var(--rule);background:var(--surface)}
+  .plan__f{display:grid;grid-template-columns:2rem minmax(0,1fr) auto;gap:.25rem .9rem;padding:.8rem 1rem;border-bottom:1px solid var(--rule-soft);align-items:baseline}
+  .plan__f:last-child{border-bottom:0}
+  .plan__f--gate{background:var(--blueprint-soft)}
+  .plan__n{font-family:var(--display);font-size:1.25rem;color:var(--blueprint);line-height:1}
+  .plan__t{font-weight:600}
+  .plan__e{font-family:var(--mono);font-size:.73rem;color:var(--muted);white-space:nowrap;text-align:right}
+  .plan__d{grid-column:2;color:var(--muted);font-size:.89rem;max-width:70ch}
+
+  .barra{display:flex;height:22px;border:1px solid var(--rule);overflow:hidden;margin:.5rem 0 .4rem;background:var(--surface)}
+  .barra span{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.62rem;color:#fff;white-space:nowrap;overflow:hidden}
+  .leyenda{display:flex;gap:1rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-bottom:1rem}
+  .leyenda i{display:inline-block;width:10px;height:10px;margin-right:.35rem;vertical-align:-1px}
+
+  @media print{
+    body{background:#fff;color:#000;font-size:10pt}
+    section{break-inside:avoid;margin-bottom:1.2rem}
+    h2{break-after:avoid}
+    .tbl,.caja,.plan{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Auditoría de calidad · Plataforma PAIN · 5 de agosto de 2026</p>
+    <h1>Sólida por dentro, sin terminar por fuera</h1>
+
+    <div class="veredicto">
+      <span class="lead">Veredicto</span>
+      <p>
+        La plataforma es <strong>técnicamente estable</strong>: funciona igual en los tres motores de
+        navegador, no produce un solo error de JavaScript en 51 recorridos, y su API rechaza
+        correctamente las peticiones sin autenticación. Eso significa que la base está bien construida.
+      </p>
+      <p>
+        Lo que no está terminado es la capa que el usuario toca y la que da confianza en el resultado:
+        <strong>1 016 incidencias de accesibilidad</strong>, el <strong>100 % de los controles por
+        debajo del tamaño mínimo</strong>, <strong>cinco cifras que se contradicen entre pantallas</strong>
+        y <strong>cinco cabeceras de seguridad ausentes</strong> en el propio servidor.
+      </p>
+      <p>
+        De once dimensiones, <strong>tres son sólidas, dos aceptables con reservas, cuatro deficientes
+        y dos no se pueden evaluar sin acceso al código.</strong> Ninguna de las deficientes exige
+        rehacer nada: son configuración, tokens de estilo y consultas de datos.
+      </p>
+    </div>
+
+    <dl class="stats">
+      <div class="stat bien"><dt>Motores probados</dt><dd>3<small> · flujo completo</small></dd></div>
+      <div class="stat bien"><dt>Errores JS</dt><dd>0<small> en 51 pasadas</small></dd></div>
+      <div class="stat mal"><dt>Incid. accesibilidad</dt><dd>1 016</dd></div>
+      <div class="stat mal"><dt>Controles &lt;44 px</dt><dd>100<small> %</small></dd></div>
+      <div class="stat mal"><dt>Contradicciones</dt><dd>5</dd></div>
+      <div class="stat mal"><dt>Cabeceras ausentes</dt><dd>5<small> de 5</small></dd></div>
+      <div class="stat"><dt>Peso por módulo</dt><dd>2,3<small> MB</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ CUADRO DE MANDO ============ -->
+  <section>
+    <h2><span class="n">1</span>Cuadro de mando por dimensión</h2>
+    <p class="sub">
+      Las once dimensiones evaluadas, con el dato que sostiene cada valoración. Todo se midió desde
+      el cliente, sin modificar la plataforma.
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Cuadro de mando por dimensión, tabla desplazable">
+      <table>
+        <thead><tr><th>Dimensión</th><th>Valoración</th><th>Evidencia que la sostiene</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="dim">Compatibilidad</td>
+            <td><span class="v v-bien">Sólido</span></td>
+            <td>Chromium, Firefox y WebKit completan el flujo entero —login, autenticación, visor, módulo con datos y panel de detalle— sin fallos. La única diferencia es un 4 % de variación en el alto de página, propio de las métricas de fuente de cada motor.</td>
+          </tr>
+          <tr>
+            <td class="dim">Estabilidad en ejecución</td>
+            <td><span class="v v-bien">Sólido</span></td>
+            <td>Cero errores de JavaScript y cero errores de consola en 51 recorridos de pantalla y en los tres motores. Es un resultado poco común.</td>
+          </tr>
+          <tr>
+            <td class="dim">Control de acceso</td>
+            <td><span class="v v-bien">Sólido</span></td>
+            <td>Una petición a un endpoint de la API sin credenciales devuelve <code>401</code>. La autorización se aplica en el servidor, no solo en la interfaz.</td>
+          </tr>
+          <tr>
+            <td class="dim">Rendimiento</td>
+            <td><span class="v v-medio">Con reservas</span></td>
+            <td>La mediana de carga es de 2,2 s, aceptable. Pero abrir un módulo mueve 2,3 MB en 25 peticiones, de los que 1,2 MB son tipografías, y ningún activo se cachea. La primera visita tras un despliegue tardó 30,6 s.</td>
+          </tr>
+          <tr>
+            <td class="dim">Mantenibilidad observable</td>
+            <td><span class="v v-medio">Con reservas</span></td>
+            <td>Los 6 archivos de código propio no llevan huella de versión en el nombre y ninguno declara caché, así que se redescargan siempre. La lógica está en un único <code>app.js</code> de 178 KB. A favor: cero errores en ejecución.</td>
+          </tr>
+          <tr>
+            <td class="dim">Fiabilidad del dato</td>
+            <td><span class="v v-mal">Deficiente</span></td>
+            <td>Cinco cifras se contradicen entre pantallas de la misma corrida, y en un módulo cada hallazgo se cuenta dos veces. Es lo que impide citar los resultados.</td>
+          </tr>
+          <tr>
+            <td class="dim">Accesibilidad</td>
+            <td><span class="v v-mal">Deficiente</span></td>
+            <td>1 016 incidencias sobre 6 reglas de WCAG 2.1 AA. Una es crítica y aparece en los 11 módulos: los desplegables de filtro no tienen nombre accesible.</td>
+          </tr>
+          <tr>
+            <td class="dim">Usabilidad</td>
+            <td><span class="v v-mal">Deficiente</span></td>
+            <td>60 hallazgos, 7 de ellos críticos. Los dos peores son estructurales: la navegación desaparece al entrar a trabajar y ningún módulo tiene URL propia.</td>
+          </tr>
+          <tr>
+            <td class="dim">Seguridad de configuración</td>
+            <td><span class="v v-mal">Deficiente</span></td>
+            <td>El servidor no envía ninguna de las cinco cabeceras de seguridad básicas. La sesión vive en un almacén accesible desde JavaScript y sin política de contenido que la proteja.</td>
+          </tr>
+          <tr>
+            <td class="dim">Corrección funcional</td>
+            <td><span class="v v-nd">No evaluable</span></td>
+            <td>Comprobar que cada una de las 177 reglas hace lo que declara exige una verdad de referencia —un conjunto de páginas con defectos conocidos— que hoy no existe.</td>
+          </tr>
+          <tr>
+            <td class="dim">Cobertura de pruebas</td>
+            <td><span class="v v-nd">No evaluable</span></td>
+            <td>Requiere acceso al repositorio de la plataforma. No se dispuso de él.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ SEGURIDAD ============ -->
+  <section>
+    <h2><span class="n">2</span>Seguridad de configuración</h2>
+    <p class="sub">
+      Revisión no intrusiva: se leyeron las cabeceras que devuelve el servidor, se observó dónde
+      guarda la sesión el navegador y se comprobó que la API exija credenciales. No se realizaron
+      pruebas de penetración, que requieren un alcance autorizado por escrito.
+    </p>
+
+    <h3>Las cinco cabeceras que el servidor no envía</h3>
+    <div class="tbl" tabindex="0" role="region" aria-label="Cabeceras de seguridad, tabla desplazable">
+      <table>
+        <thead><tr><th>Cabecera</th><th>Estado</th><th>Qué evita cuando está</th></tr></thead>
+        <tbody>
+          <tr><td><code>Strict-Transport-Security</code></td><td><span class="v v-mal">ausente</span></td><td>Obliga al navegador a usar siempre HTTPS. Sin ella, la primera visita puede interceptarse.</td></tr>
+          <tr><td><code>Content-Security-Policy</code></td><td><span class="v v-mal">ausente</span></td><td>Restringe de dónde puede cargarse el código. Es la principal defensa contra la inyección de scripts.</td></tr>
+          <tr><td><code>X-Content-Type-Options</code></td><td><span class="v v-mal">ausente</span></td><td>Impide que el navegador adivine el tipo de un archivo y lo ejecute como código.</td></tr>
+          <tr><td><code>X-Frame-Options</code></td><td><span class="v v-mal">ausente</span></td><td>Impide que la aplicación se incruste en un sitio ajeno para engañar al usuario.</td></tr>
+          <tr><td><code>Referrer-Policy</code></td><td><span class="v v-mal">ausente</span></td><td>Evita que se filtren las URLs internas al navegar hacia fuera.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caja caja--mal">
+      <span class="lead">La plataforma incumple la regla que ella misma audita</span>
+      <p>
+        El Módulo 9 de PAIN reporta <strong>200 URLs de la web de Claro</strong> con el hallazgo
+        <code>SECURITY_HTTPS_SECURITY_HEADERS</code> — «faltan cabeceras de seguridad HTTP/HTTPS»,
+        severidad alta. La propia plataforma que emite ese hallazgo <strong>no envía ninguna de esas
+        cabeceras</strong>.
+      </p>
+      <p>
+        No es solo una incoherencia incómoda: es el argumento más fácil de usar contra el informe.
+        Conviene corregirlo antes de presentar resultados a un tercero.
+      </p>
+    </div>
+
+    <h3>Dónde vive la sesión</h3>
+    <p>
+      No hay cookies de sesión y el <code>localStorage</code> está vacío. El testigo de autenticación
+      lo guarda el SDK de Firebase en <strong>IndexedDB</strong>, en la base
+      <code>firebaseLocalStorageDb</code>. Eso es el comportamiento estándar de Firebase en web y no es
+      un defecto en sí mismo, pero tiene una consecuencia que conviene conocer:
+    </p>
+    <ul>
+      <li>Al no ser una cookie <code>httpOnly</code>, el testigo <strong>es accesible desde JavaScript</strong>. Cualquier script que se ejecute en la página puede leerlo.</li>
+      <li>La defensa habitual contra eso es una <code>Content-Security-Policy</code>, que es precisamente una de las cabeceras ausentes. Los dos hallazgos se agravan mutuamente.</li>
+    </ul>
+
+    <div class="caja caja--bien">
+      <span class="lead">Lo que sí está bien resuelto</span>
+      <p>
+        Una petición a un endpoint de la API <strong>sin token devuelve <code>401</code></strong>: la
+        autorización se comprueba en el servidor y no depende de que la interfaz oculte botones. Es el
+        control más importante y está en su sitio. Tampoco se detectó contenido mixto: todo se sirve
+        por HTTPS.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ FIABILIDAD ============ -->
+  <section>
+    <h2><span class="n">3</span>Fiabilidad del dato</h2>
+    <p class="sub">
+      La dimensión que decide si el producto sirve. Las cinco contradicciones se observan comparando
+      dos pantallas de la misma corrida: no hacen falta datos externos para verlas.
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Contradicciones detectadas, tabla desplazable">
+      <table>
+        <thead><tr><th>La pantalla afirma</th><th>Y a la vez</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">«Hallazgos SEO 0»</td><td>El módulo de SEO lista 12 páginas sin H1, 12 con H1 múltiple, 13 títulos cortos, 50 largos y 25 metadescripciones cortas: 121 defectos declarados.</td></tr>
+          <tr><td class="dim">«Salud técnica 100 %»</td><td>La primera fila de su propia tabla tiene 4 errores de consola, 3 de JavaScript, 8 recursos fallidos y 2 de política de contenido; su panel declara 22 hallazgos, 14 de severidad alta.</td></tr>
+          <tr><td class="dim">«SEO Score 97 %»</td><td>Las diez tarjetas contiguas suman esos 121 defectos sobre 200 páginas. El indicador no baja cuando 50 títulos están fuera de rango.</td></tr>
+          <tr><td class="dim">«42 enlaces rotos» en una URL</td><td>Su tabla de hallazgos muestra 43 filas repartidas en cinco reglas distintas. Ninguna combinación suma 42, y la lista de esos 42 enlaces no es obtenible desde ninguna pantalla.</td></tr>
+          <tr><td class="dim">«2 886 URLs leídas · 8 auditables»</td><td>Mezcla dos corridas: el recuento del sitemap de una fecha con lo auditable de las corridas de otra, presentado como un único dato.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      A esto se añade un <strong>efecto de duplicación en el recuento</strong>: en el módulo técnico
+      cada problema aparece dos veces, una como captura de consola y otra como texto, con el mismo
+      código de regla. Los «22 hallazgos» de una URL son probablemente 11. Mientras no se resuelva, todo
+      total que la plataforma publique está inflado por un factor desconocido.
+    </p>
+    <div class="caja caja--info">
+      <span class="lead">Efecto sobre la cobertura declarada</span>
+      <p>
+        Los módulos de detalle midieron <strong>200 de 2 886 URLs, un 6,9 %</strong>; el módulo de
+        contenido midió 100, un 3,5 %; el de imágenes trabajó sobre una muestra de 50 piezas. Con esa
+        cobertura, los resultados son indicios sólidos para decidir dónde mirar, pero no un diagnóstico
+        del sitio auditado.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ ACCESIBILIDAD ============ -->
+  <section>
+    <h2><span class="n">4</span>Accesibilidad</h2>
+    <p class="sub">
+      Evaluado con axe-core contra WCAG 2.1 niveles A y AA, en 51 recorridos de pantalla y tres anchos
+      de ventana. 1 016 incidencias sobre seis reglas.
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Reglas WCAG incumplidas, tabla desplazable">
+      <table>
+        <thead><tr><th>Regla</th><th class="num">Incidencias</th><th class="num">Pantallas</th><th>Qué significa para quien la usa</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>select-name</code> <span class="v v-mal">crítica</span></td>
+            <td class="num">105</td><td class="num">11</td>
+            <td>Los desplegables de filtro no tienen nombre accesible. Quien usa lector de pantalla oye «cuadro combinado» sin saber qué filtra. Como son el control principal de cada tabla, el módulo queda inoperable.</td>
+          </tr>
+          <tr>
+            <td><code>color-contrast</code></td>
+            <td class="num">576</td><td class="num">11</td>
+            <td>Texto por debajo del contraste mínimo. El caso dominante es un verde de estado que da 3,31:1 cuando se exige 4,5:1. Un solo cambio de valor corrige la mayoría.</td>
+          </tr>
+          <tr>
+            <td><code>region</code></td>
+            <td class="num">295</td><td class="num">17</td>
+            <td>Contenido fuera de regiones semánticas. Impide saltar por secciones con lector de pantalla y obliga a recorrer la página entera.</td>
+          </tr>
+          <tr>
+            <td><code>landmark-one-main</code></td>
+            <td class="num">18</td><td class="num">6</td>
+            <td>Seis pantallas no declaran cuál es su contenido principal. No existe el salto directo al contenido.</td>
+          </tr>
+          <tr>
+            <td><code>scrollable-region-focusable</code></td>
+            <td class="num">16</td><td class="num">8</td>
+            <td>Tablas que se desplazan en horizontal sin poder recibir foco: con teclado no hay forma de ver las columnas ocultas.</td>
+          </tr>
+          <tr>
+            <td><code>heading-order</code></td>
+            <td class="num">6</td><td class="num">2</td>
+            <td>Saltos en la jerarquía de títulos, que rompen la navegación por encabezados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caja caja--mal">
+      <span class="lead">El dato más contundente</span>
+      <p>
+        De los <strong>1 190 elementos interactivos</strong> medidos en el visor —filtros, botones de
+        fila, paginación, acciones— <strong>los 1 190 miden menos de 44 × 44 píxeles</strong>. No es una
+        proporción alta: es el cien por cien, sin una sola excepción. Se nota especialmente en tableta,
+        que es el formato en que se revisa una auditoría en reunión.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ USABILIDAD ============ -->
+  <section>
+    <h2><span class="n">5</span>Usabilidad</h2>
+    <p class="sub">60 hallazgos medidos en 17 pantallas. Siete son críticos; los dos primeros son estructurales.</p>
+    <ul>
+      <li><strong>La navegación global desaparece al entrar a trabajar.</strong> El menú con las secciones sólo existe en la pantalla inicial. Dentro de cualquier sección el encabezado se reduce a un enlace de vuelta, así que moverse de una a otra obliga a regresar y recargar.</li>
+      <li><strong>Ningún módulo del visor tiene dirección propia.</strong> Los once elementos del menú lateral son botones sin enlace: la dirección del navegador no cambia al navegar, no se añade nada al historial, el botón Atrás sale de la herramienta y recargar pierde el módulo abierto. No se puede enviar a un compañero un enlace a una vista concreta.</li>
+      <li><strong>El panel de estado informa resultados contradictorios</strong> entre dos cargas separadas por treinta segundos, sin indicar a qué hora midió, qué falló ni qué hacer.</li>
+      <li><strong>Los contadores de la pantalla resumen marcan cero</strong> donde los módulos reportan miles. Quien entra y ve tres ceros concluye que está limpio y no baja al detalle.</li>
+      <li><strong>Los indicadores no reflejan los defectos que la propia pantalla enumera</strong>: 97 % de SEO y 100 % de salud técnica junto a los defectos que los desmienten.</li>
+      <li><strong>La cifra más grave se presenta como un dato neutro.</strong> 6 399 enlaces rotos de 51 648 aparecen con el mismo color, tamaño y posición que un recuento inocuo.</li>
+      <li><strong>El peor resultado no se comunica como tal</strong>: 41 % de rendimiento medio y 2 847 hallazgos, en negro sobre blanco, sin umbral ni jerarquía.</li>
+    </ul>
+    <p>
+      Hay además un problema de densidad. El alto de las pantallas va de 826 a
+      <strong>16 792 píxeles</strong>, con una mediana de 4 222: la pantalla resumen mide unas
+      veintiuna pantallas de recorrido y es más larga que los detalles que resume. Las tablas llegan a
+      21 columnas, y en el módulo técnico nueve de sus diecisiete columnas repiten el mismo valor en
+      todas las filas.
+    </p>
+  </section>
+
+  <!-- ============ RENDIMIENTO ============ -->
+  <section>
+    <h2><span class="n">6</span>Rendimiento y red</h2>
+    <p class="sub">Medido al abrir un módulo con datos, en escritorio de 1440 px y con la caché vacía.</p>
+
+    <h3>Reparto de los 2,3 MB que mueve abrir un módulo</h3>
+    <div class="barra" role="img" aria-label="Reparto del peso: tipografías 1202 KB, datos de API 675 KB, código 349 KB, estilos 68 KB, resto 9 KB">
+      <span style="width:52.2%;background:#B3261E">Tipografías 1 202 KB</span>
+      <span style="width:29.3%;background:#8A5200">Datos 675 KB</span>
+      <span style="width:15.1%;background:#1B4B7F">Código 349 KB</span>
+      <span style="width:3.0%;background:#14713D"></span>
+      <span style="width:0.4%;background:#5A6472"></span>
+    </div>
+    <div class="leyenda">
+      <span><i style="background:#B3261E"></i>Tipografías · 1 202 KB</span>
+      <span><i style="background:#8A5200"></i>Datos de la API · 675 KB</span>
+      <span><i style="background:#1B4B7F"></i>Código propio · 349 KB</span>
+      <span><i style="background:#14713D"></i>Estilos · 68 KB</span>
+      <span><i style="background:#5A6472"></i>Documento e imágenes · 9 KB</span>
+    </div>
+
+    <ul>
+      <li><strong>Las tipografías son más de la mitad del peso.</strong> 1 202 KB de 2 304, servidos desde un dominio externo. Es el mayor ahorro disponible y el más sencillo: limitar los subconjuntos de caracteres y el número de iconos, o alojarlos junto a la aplicación.</li>
+      <li><strong>Se descargan datos que no son del módulo.</strong> De los 675 KB de la API, unos 372 KB corresponden al catálogo de reglas y a resúmenes globales que pertenecen a otra pantalla. El módulo abierto necesita 95 KB.</li>
+      <li><strong>El catálogo de reglas se descarga dos veces</strong> en la misma navegación: 206 KB pedidos y desechados. La hoja de estilos de las tipografías también se pide dos veces.</li>
+      <li><strong>Ningún activo propio se cachea.</strong> Los seis archivos de código y estilos —228 KB, de los que 178 KB son un solo <code>app.js</code>— se sirven sin cabecera de caché y sin huella de versión en el nombre, así que se vuelven a descargar en cada visita.</li>
+      <li><strong>La primera visita tras un despliegue tardó 30,6 segundos</strong>, con el patrón propio de un arranque en frío del contenedor. Las siguientes se sitúan entre 1,7 y 3,3 s, con una mediana de 2,2 s.</li>
+    </ul>
+    <p>
+      El módulo aparece a los 1 977 ms con 25 peticiones a 6 orígenes distintos. La cifra es
+      razonable; el problema es que se paga entera en cada visita por la ausencia de caché.
+    </p>
+  </section>
+
+  <!-- ============ COMPATIBILIDAD ============ -->
+  <section>
+    <h2><span class="n">7</span>Compatibilidad</h2>
+    <p class="sub">
+      El mismo recorrido completo en los tres motores de render que existen. Es la dimensión con el
+      mejor resultado del informe.
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Compatibilidad entre motores, tabla desplazable">
+      <table>
+        <thead><tr><th>Motor</th><th>Equivale a</th><th>Flujo completo</th><th class="num">Contenido visible</th><th class="num">Alto de página</th><th class="num">Errores</th></tr></thead>
+        <tbody>
+          <tr><td>Chromium</td><td>Chrome, Edge</td><td><span class="v v-bien">correcto</span></td><td class="num">1 366 ms</td><td class="num">4 091 px</td><td class="num">0</td></tr>
+          <tr><td>Firefox</td><td>Firefox</td><td><span class="v v-bien">correcto</span></td><td class="num">2 122 ms</td><td class="num">4 259 px</td><td class="num">0</td></tr>
+          <tr><td>WebKit</td><td>Safari, iOS</td><td><span class="v v-bien">correcto</span></td><td class="num">1 765 ms</td><td class="num">3 997 px</td><td class="num">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Los tres completan login, autenticación, apertura del visor, carga de un módulo con datos y
+      apertura del panel de detalle. La tabla se renderiza con las mismas 17 columnas y 25 filas, el
+      panel con los mismos 29 772 caracteres, y los iconos se dibujan a 20 píxeles en los tres. La
+      diferencia de alto —un 4 % entre el mayor y el menor— corresponde a las métricas de fuente de
+      cada motor y no afecta a la lectura. Ninguno registró desbordamiento horizontal.
+    </p>
+  </section>
+
+  <!-- ============ MANTENIBILIDAD ============ -->
+  <section>
+    <h2><span class="n">8</span>Mantenibilidad observable</h2>
+    <p class="sub">
+      Sin acceso al repositorio no se puede evaluar la calidad interna del código. Lo que sigue son
+      señales visibles desde el cliente, que indican prácticas de entrega más que de programación.
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Señales de mantenibilidad, tabla desplazable">
+      <table>
+        <thead><tr><th>Señal</th><th>Observado</th><th>Lectura</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">Versionado de activos</td><td><span class="v v-mal">0 de 6</span></td><td>Ningún archivo lleva huella de versión en el nombre. Publicar un cambio no garantiza que el navegador lo recoja.</td></tr>
+          <tr><td class="dim">Política de caché</td><td><span class="v v-mal">0 de 6</span></td><td>Ninguno declara <code>cache-control</code>. Se redescarga todo en cada visita.</td></tr>
+          <tr><td class="dim">Modularidad del código servido</td><td><span class="v v-medio">1 archivo</span></td><td>178 KB de los 228 KB están en un único <code>app.js</code>. No hay carga por módulo, lo que explica que abrir cualquier pantalla traiga el código de todas.</td></tr>
+          <tr><td class="dim">Peticiones redundantes</td><td><span class="v v-medio">2</span></td><td>El catálogo de reglas y la hoja de tipografías se piden dos veces en la misma navegación. Indica que falta una capa de caché en memoria.</td></tr>
+          <tr><td class="dim">Dependencias externas</td><td><span class="v v-medio">5 orígenes</span></td><td>Tipografías e iconos se cargan de un dominio de terceros. Si ese dominio falla o está bloqueado en la red corporativa, los iconos se muestran como palabras.</td></tr>
+          <tr><td class="dim">Higiene en ejecución</td><td><span class="v v-bien">0 errores</span></td><td>Cero excepciones y cero errores de consola en 51 pasadas y tres motores. Señal de código cuidado.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ NO EVALUABLE ============ -->
+  <section>
+    <h2><span class="n">9</span>Lo que esta auditoría no puede afirmar</h2>
+    <p class="sub">Explícito, para que nadie extraiga de aquí una conclusión que no está sostenida.</p>
+    <ul>
+      <li><strong>Que las 177 reglas hagan lo que declaran.</strong> Verificarlo exige un conjunto de páginas con defectos conocidos —una verdad de referencia— para contrastar lo que la plataforma detecta con lo que realmente hay. No existe hoy, y es la pieza que convertiría este informe en una validación funcional completa.</li>
+      <li><strong>La calidad interna del código.</strong> Requiere acceso al repositorio: estructura, duplicación, complejidad, dependencias y su estado de actualización.</li>
+      <li><strong>La cobertura de pruebas automatizadas.</strong> Igual: sin repositorio no hay forma de saber si existen ni qué cubren.</li>
+      <li><strong>La resistencia a un ataque.</strong> Lo revisado es configuración observable. Una prueba de penetración —inyección, escalada de privilegios, enumeración de recursos— necesita un alcance autorizado por escrito y no se realizó.</li>
+      <li><strong>El comportamiento bajo carga.</strong> Todas las mediciones son de un solo usuario. No se sabe cómo responde con varias auditorías concurrentes.</li>
+      <li><strong>Los flujos que escriben datos.</strong> Crear subdominio, lanzar auditoría, crear usuario, guardar reglas y enviar correo de prueba quedaron sin probar: la auditoría se ejecutó sobre producción y se bloqueó toda escritura.</li>
+    </ul>
+  </section>
+
+  <!-- ============ PLAN ============ -->
+  <section>
+    <h2><span class="n">10</span>Orden de trabajo</h2>
+    <p class="sub">Por relación entre impacto y coste. El bloque 0 es condición para publicar resultados.</p>
+    <div class="plan">
+      <div class="plan__f plan__f--gate">
+        <span class="plan__n">0</span>
+        <span class="plan__t">Cerrar las cinco contradicciones y el doble conteo</span>
+        <span class="plan__e">datos · 3–5 días</span>
+        <span class="plan__d">Hasta que las cifras cuadren entre pantallas, cualquier resultado que se presente es discutible. Incluye decidir si las dos capturas de un mismo problema son uno o dos hallazgos.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">1</span>
+        <span class="plan__t">Añadir las cinco cabeceras de seguridad</span>
+        <span class="plan__e">infra · medio día</span>
+        <span class="plan__d">Es configuración del servidor, no código. Elimina la incoherencia de incumplir la regla que la propia plataforma audita, y refuerza la protección de la sesión.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">2</span>
+        <span class="plan__t">Etiquetar los desplegables y subir los controles a 44 px</span>
+        <span class="plan__e">front · 1–2 días</span>
+        <span class="plan__d">Resuelve la única regla crítica de accesibilidad, presente en los once módulos, y los 1 190 controles por debajo del mínimo.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">3</span>
+        <span class="plan__t">Corregir el verde de estado y unificar el componente de estado</span>
+        <span class="plan__e">front · 1 día</span>
+        <span class="plan__d">Un cambio de seis valores de color corrige la mayor parte de las 576 incidencias de contraste y unifica las cuatro formas distintas de mostrar un estado.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">4</span>
+        <span class="plan__t">Caché y versionado de activos, y tipografías propias</span>
+        <span class="plan__e">infra · 1 día</span>
+        <span class="plan__d">Huella de versión en el nombre, cabecera de caché y subconjuntos de tipografía alojados junto a la aplicación. Recorta la mayor parte de los 2,3 MB por visita y quita una dependencia externa.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">5</span>
+        <span class="plan__t">Navegación persistente y dirección propia por módulo</span>
+        <span class="plan__e">front · 2–3 días</span>
+        <span class="plan__d">Resuelve los dos hallazgos estructurales de usabilidad y arrastra buena parte de las incidencias de regiones semánticas.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">6</span>
+        <span class="plan__t">Pedir por módulo sólo los datos del módulo</span>
+        <span class="plan__e">front · 1 día</span>
+        <span class="plan__d">De 471 KB a 95 KB de datos al abrir, diferiendo el catálogo de reglas y cacheándolo para no pedirlo dos veces.</span>
+      </div>
+      <div class="plan__f">
+        <span class="plan__n">7</span>
+        <span class="plan__t">Construir el conjunto de páginas de referencia</span>
+        <span class="plan__e">producto · a planificar</span>
+        <span class="plan__d">Un puñado de páginas con defectos conocidos e intencionados. Es lo que permitiría demostrar que las 177 reglas aciertan, y convertir la plataforma en algo certificable ante un cliente.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÉTODO ============ -->
+  <section>
+    <h2><span class="n">11</span>Método</h2>
+    <p>
+      Toda la medición se hizo con un navegador automatizado y autenticado sobre el entorno
+      productivo, en <strong>modo de solo lectura</strong>: cualquier petición de escritura ajena a la
+      autenticación se bloqueó a nivel de red antes de salir del navegador. No se creó, modificó ni
+      eliminó ningún registro.
+    </p>
+    <ul>
+      <li><strong>Alcance:</strong> las 6 secciones del menú principal y los 11 módulos del visor de resultados, en tres anchos de ventana —390, 820 y 1440 píxeles—, lo que suma 51 recorridos de pantalla.</li>
+      <li><strong>Accesibilidad:</strong> axe-core contra WCAG 2.1 niveles A y AA, ejecutado en cada recorrido.</li>
+      <li><strong>Compatibilidad:</strong> el mismo flujo completo en Chromium, Firefox y WebKit, con las medidas de maquetación comparadas entre los tres.</li>
+      <li><strong>Red y seguridad de configuración:</strong> registro de todas las peticiones con su tamaño, tipo, origen y cabeceras de caché; lectura de las cabeceras de seguridad del documento; inspección de cookies y de los almacenes del navegador; y una única petición sin credenciales a un endpoint de la API, de la que solo se anotó el código de respuesta.</li>
+      <li><strong>Por pantalla</strong> se midieron además: tiempo hasta contenido visible, alto de página, número de filas y columnas, tamaño de las áreas táctiles, jerarquía de encabezados, desbordamiento horizontal y errores de consola.</li>
+    </ul>
+    <p>
+      Cada cifra de este documento proviene de un archivo de medición y es reproducible ejecutando de
+      nuevo las pasadas. Las valoraciones por dimensión son un juicio profesional sobre esos datos; los
+      datos no lo son.
+    </p>
+  </section>
+
+</main>
+
+</body>
+</html>
