@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resumen — Auditoría UX/UI</title>
+<style>
+:root{
+  --ink:#101820;--ink-soft:#2A323C;--muted:#5A6472;--paper:#F4F6F8;--surface:#FFF;
+  --surface-2:#EDF1F5;--rule:#CFD7E0;--rule-soft:#E4E9EF;--blueprint:#1B4B7F;--blueprint-soft:#E3EAF2;
+  --critico:#B3261E;--grave:#C2410C;--moderado:#8A5200;--menor:#5A6472;--ok:#14713D;
+  --display:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+  --body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#E8ECF0;--ink-soft:#C6CFD9;--muted:#9AA5B2;--paper:#0E1319;--surface:#151B22;
+  --surface-2:#1B222B;--rule:#2C353F;--rule-soft:#212932;--blueprint:#8FBDEC;--blueprint-soft:#16243A;
+  --critico:#F09189;--grave:#F0A878;--moderado:#DFBE6E;--menor:#9AA5B2;--ok:#74CE9B;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+*:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .35em;border-radius:2px;overflow-wrap:anywhere}
+a{color:var(--blueprint)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 clamp(1.15rem,3.5vw,2.5rem)}
+
+.top{border-bottom:1px solid var(--rule);padding:1.5rem 0 0}
+.back{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;display:inline-block;margin-bottom:1.4rem}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .6rem;display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+.eyebrow .lig{color:var(--muted);text-transform:none;letter-spacing:0}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,4.4vw,2.9rem);line-height:1.05;letter-spacing:-.015em;margin:0 0 .5rem;text-wrap:balance}
+.purpose{max-width:64ch;color:var(--ink-soft);font-size:1.2rem;line-height:1.5;margin:0 0 1.75rem}
+
+/* Filetes por celda, no fondo del contenedor: si la última fila queda
+   incompleta, el hueco no se pinta de gris. */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+.stat{padding:.75rem .85rem .85rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.stat dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.stat dd{margin:0;font-family:var(--display);font-size:1.45rem;line-height:1;font-variant-numeric:tabular-nums}
+.stat dd small{font-family:var(--body);font-size:.76rem;color:var(--muted)}
+.stat.warn dd{color:var(--critico)}
+
+main{padding:2.75rem 0 4rem}
+section{margin-bottom:3.25rem}
+h2{font-family:var(--display);font-weight:400;font-size:1.9rem;line-height:1.15;margin:0 0 .2rem;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:1rem;margin:0 0 1.6rem;padding-bottom:.9rem;border-bottom:2px solid var(--ink);max-width:68ch}
+
+.good{border:1px solid var(--rule);border-left:3px solid var(--ok);background:var(--surface);padding:1rem 1.15rem;margin-bottom:2rem}
+.good .lead{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ok);display:block;margin-bottom:.35rem}
+.good p{margin:0;max-width:66ch}
+
+.finds{border-top:1px solid var(--rule)}
+.find{display:grid;grid-template-columns:104px minmax(0,1fr);gap:0 1.4rem;padding:1.4rem 0;border-bottom:1px solid var(--rule-soft)}
+@media (max-width:640px){.find{grid-template-columns:1fr;gap:.7rem}.find__gut{flex-direction:row!important;align-items:center}}
+.find__gut{display:flex;flex-direction:column;gap:.45rem;align-items:flex-start}
+.tag{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;border:1px solid currentColor;padding:.16em .42em;white-space:nowrap}
+.t-critico{color:var(--critico)}.t-grave{color:var(--grave)}.t-moderado{color:var(--moderado)}.t-menor{color:var(--menor)}
+.find__id{font-family:var(--mono);font-size:.8rem;color:var(--muted);font-weight:700}
+.find h3{font-size:1.06rem;font-weight:600;line-height:1.35;margin:0 0 .5rem;text-wrap:balance}
+.find p{margin:0 0 .55rem;max-width:70ch;color:var(--ink-soft)}
+.find p:last-child{margin-bottom:0}
+.lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:.45rem}
+.find .fix{color:var(--ink)}
+.find .nota{font-size:.9rem;color:var(--muted);border-left:2px solid var(--rule);padding-left:.7rem}
+
+.tbl-scroll{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+.tbl-scroll:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+table{border-collapse:collapse;width:100%;font-size:.83rem;min-width:520px}
+th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--rule);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.shot{border:1px solid var(--rule);background:#fff;overflow:auto;max-height:560px}
+.shot img{display:block;width:100%;height:auto}
+.shot:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+.shot-links{font-size:.85rem;color:var(--muted);margin:.6rem 0 0;display:flex;gap:1rem;flex-wrap:wrap}
+
+details.comunes{border:1px solid var(--rule);background:var(--surface);padding:0}
+details.comunes>summary{cursor:pointer;padding:.9rem 1.1rem;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+details.comunes>summary::-webkit-details-marker{display:none}
+details.comunes>summary::after{content:"desplegar";font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--blueprint)}
+details.comunes[open]>summary::after{content:"plegar"}
+details.comunes[open]>summary{border-bottom:1px solid var(--rule)}
+.comunes__body{padding:.4rem 1.1rem 1.1rem}
+.comunes__body .finds{border-top:0}
+.comunes__body .find:last-child{border-bottom:0}
+
+/* ---------- Observaciones del equipo (revisión manual) ---------- */
+.eq{border:1px solid var(--rule);background:var(--surface)}
+.eq__h{padding:.9rem 1.1rem;border-bottom:1px solid var(--rule);display:flex;gap:.75rem;align-items:baseline;flex-wrap:wrap}
+.eq__h b{font-size:1rem;font-weight:600}
+.eq__h .fuente{font-size:.85rem;color:var(--muted)}
+.eq__h .run{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+.eq__grupo{font-family:var(--mono);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:.85rem 1.1rem .2rem;display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+.eq__grupo.dato{color:var(--moderado)}
+.eq__grupo span{letter-spacing:0;text-transform:none;font-family:var(--body);font-size:.82rem}
+.eq-item{padding:.85rem 1.1rem 1rem;border-top:1px solid var(--rule-soft)}
+.eq-item:first-of-type{border-top:0}
+.eq-item__top{display:flex;gap:.55rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.4rem}
+.eq-item h4{margin:0;font-size:1rem;font-weight:600;line-height:1.35;flex:1 1 20ch;min-width:0;text-wrap:balance}
+.eq-item p{margin:0 0 .5rem;max-width:72ch;font-size:.95rem;color:var(--ink-soft)}
+.eq-item p:last-child{margin-bottom:0}
+.eq-item .accion{color:var(--ink)}
+.eq-ver{font-size:.88rem;color:var(--muted);border-left:2px solid var(--blueprint);background:var(--surface-2);padding:.55rem .75rem;margin-top:.5rem;max-width:74ch}
+.eq-ver b{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--blueprint);display:block;margin-bottom:.15rem}
+.eq-pend{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--moderado);border:1px dashed currentColor;padding:.14em .4em;white-space:nowrap}
+.eq-prop{padding:.9rem 1.1rem;border-top:1px solid var(--rule);background:var(--blueprint-soft)}
+.eq-prop .lead{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blueprint);display:block;margin-bottom:.3rem}
+.eq-prop p{margin:0;max-width:78ch;font-size:.93rem}
+
+.foot{border-top:2px solid var(--ink);padding:1.6rem 0 3rem;font-size:.85rem;color:var(--muted)}
+.foot p{max-width:78ch;margin:0 0 .6rem}
+.idx-grid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.idx-row{background:var(--surface);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem 1.5rem;padding:.9rem 1.1rem;text-decoration:none;color:inherit;align-items:center}
+.idx-row:hover{background:var(--blueprint-soft)}
+.idx-row__t{font-weight:600;font-size:1.02rem}
+.idx-row__d{color:var(--muted);font-size:.88rem;margin-top:.15rem;max-width:70ch}
+.idx-sev{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-family:var(--mono);font-size:.68rem;font-weight:700;padding:.2em .45em;border:1px solid currentColor;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="back" href="index.html">← Índice de informes</a>
+    <p class="eyebrow">
+      <span>Auditoría UX/UI del visor · módulo 0</span>
+      <span class="lig">icono: <code>dashboard</code></span>
+    </p>
+    <h1>Resumen</h1>
+    <p class="purpose">Vista de entrada del visor: debe responder en diez segundos si la última auditoría fue bien y qué mirar primero.</p>
+    <dl class="stats">
+      <div class="stat"><dt>Hallazgos</dt><dd>6</dd></div>
+      <div class="stat warn"><dt>Críticos</dt><dd>2</dd></div>
+      <div class="stat"><dt>Obs. del equipo</dt><dd>6</dd></div>
+      <div class="stat"><dt>Tablas</dt><dd>3 <small>379 filas</small></dd></div>
+      <div class="stat"><dt>Columnas máx.</dt><dd>9</dd></div>
+      <div class="stat"><dt>Alto escritorio</dt><dd>16,792<small> px</small></dd></div>
+      <div class="stat"><dt>Alto móvil</dt><dd>19,055<small> px</small></dd></div>
+      <div class="stat"><dt>Interactivos</dt><dd>4</dd></div>
+      <div class="stat warn"><dt>Bajo 44 px</dt><dd>4<small> / 4</small></dd></div>
+      <div class="stat"><dt>Hasta contenido</dt><dd>1,577<small> ms</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>Hallazgos del módulo</h2>
+    <p class="sub">Específicos de esta pantalla, ordenados por severidad. Los que afectan a los once módulos van al final.</p>
+    
+    <div class="good"><span class="lead">Lo que ya funciona</span><p>Es la única pantalla del visor que ofrece una lectura transversal, y el bloque «Estado por módulo» con la última ejecución de cada uno es exactamente la información correcta para empezar.</p></div>
+    <div class="finds">
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-critico">Crítico</span>
+          <span class="find__id">H1</span>
+        </div>
+        <div>
+          <h3>Los contadores del Resumen dicen 0 hallazgos donde los módulos reportan miles</h3>
+          <p><span class="lbl">Evidencia</span>Las tarjetas superiores muestran «HALLAZGOS TÉCNICOS 0», «HALLAZGOS SEO 0» y «HALLAZGOS TAGGING 0». Sin embargo el Módulo 3 · SEO informa 12 páginas sin H1, 12 con H1 múltiple, 13 títulos muy cortos, 50 muy largos y 25 metadescripciones cortas; el Módulo 7 · Performance informa 2 847 hallazgos; el Módulo 10 · Imágenes, 167.</p>
+          <p><span class="lbl">Impacto</span>Quien entra al visor y ve tres ceros concluye que la auditoría está limpia y no baja a los módulos. Es el peor error posible en una pantalla resumen: no informa de menos, informa lo contrario.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Verificar con el equipo si esos contadores miden otra cosa —por ejemplo sólo hallazgos de severidad alta de la última corrida— y, en cualquier caso, etiquetarlos con lo que realmente cuentan. Si el Resumen y los módulos usan criterios distintos, decirlo en la propia tarjeta.</p>
+          <p class="nota">Contradicción observada entre pantallas, no verificada contra la base de datos. Es lo primero que conviene comprobar.</p>
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-critico">Crítico</span>
+          <span class="find__id">H2</span>
+        </div>
+        <div>
+          <h3>2 886 URLs leídas y 8 auditables, sin ninguna explicación</h3>
+          <p><span class="lbl">Evidencia</span>Las dos primeras tarjetas dicen «URLS LEÍDAS 2 886» y «URLS AUDITABLES 8». El Módulo 1 · Sitemap confirma 2 886 totales y 2 759 con estado 200 OK.</p>
+          <p><span class="lbl">Impacto</span>Un 0,3 % de cobertura auditable invalida cualquier conclusión del informe, y la pantalla lo presenta como un dato neutro más, con la misma tipografía y color que el resto.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Explicar el criterio junto al número, marcar la cobertura insuficiente como estado de alerta y enlazar a la lista de las URLs descartadas con el motivo.</p>
+          <p class="nota">Puede tratarse de un límite de configuración de la corrida. Requiere confirmación del equipo.</p>
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-grave">Grave</span>
+          <span class="find__id">H3</span>
+        </div>
+        <div>
+          <h3>La pantalla resumen es más larga que los detalles que resume</h3>
+          <p><span class="lbl">Evidencia</span>Mide 16 792 px de alto en escritorio y 19 055 px en móvil —unas 21 pantallas—, con tres tablas de 96, 177 y 106 filas: 379 filas en total y 158 000 caracteres de texto visible. Es la pantalla más larga del visor: el Módulo 2 · Técnico, que sí es un detalle, mide 4 091 px.</p>
+          <p><span class="lbl">Impacto</span>No cumple su función. Para encontrar algo hay que recorrer más contenido que en el módulo correspondiente.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Dejar arriba las tarjetas, el estado por módulo y un máximo de diez hallazgos prioritarios con enlace al módulo. Las tres tablas de referencia de reglas pertenecen a una sección propia de documentación, no al resumen.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-grave">Grave</span>
+          <span class="find__id">H4</span>
+        </div>
+        <div>
+          <h3>379 filas sin filtro, orden ni búsqueda</h3>
+          <p><span class="lbl">Evidencia</span>La pantalla tiene 4 elementos interactivos en total para 379 filas repartidas en tres tablas de 7, 7 y 9 columnas.</p>
+          
+          <p class="fix"><span class="lbl">Corrección</span>Filtro por módulo y severidad, orden por columna y buscador. Los mismos controles que ya existen en los módulos de detalle.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-moderado">Moderado</span>
+          <span class="find__id">H5</span>
+        </div>
+        <div>
+          <h3>Jerarquía de encabezados inválida y títulos duplicados</h3>
+          <p><span class="lbl">Evidencia</span>Regla <code>heading-order</code> incumplida. El texto «Cobertura de auditoría» aparece dos veces seguidas, primero como <code>h3</code> y después como <code>h2</code>; el mismo patrón se repite con «Estado por módulo» / «Última ejecución por módulo».</p>
+          
+          <p class="fix"><span class="lbl">Corrección</span>Un solo título por sección, en el nivel que le corresponde por anidamiento.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-moderado">Moderado</span>
+          <span class="find__id">H6</span>
+        </div>
+        <div>
+          <h3>Dos formatos de fecha en la misma lista</h3>
+          <p><span class="lbl">Evidencia</span>El estado por módulo mezcla «hace 8h» para M1 con «17/07/26, 12:02 p. m.» para M2, en filas contiguas. El encabezado usa «4/08/26, 9:07 a. m.», con año de dos cifras y orden día/mes ambiguo.</p>
+          
+          <p class="fix"><span class="lbl">Corrección</span>Tiempo relativo para todo lo reciente y fecha absoluta en <code>title</code>; año de cuatro cifras y mes abreviado cuando se muestre completa.</p>
+          
+        </div>
+      </article></div>
+  </section>
+
+  <section>
+    <h2>Evidencia medida</h2>
+    <p class="sub">Reglas WCAG incumplidas y estructura de las tablas, tal como se midieron el 4 de agosto de 2026.</p>
+    <div class="tbl-scroll" tabindex="0" role="region" aria-label="Reglas WCAG incumplidas, tabla desplazable">
+      <table>
+        <thead><tr><th>Regla axe</th><th>Impacto</th><th class="num">Nodos</th><th>Descripción</th></tr></thead>
+        <tbody>
+          
+          <tr><td><code>region</code></td><td>moderate</td><td class="num">4</td><td>All page content should be contained by landmarks</td></tr>
+          <tr><td><code>select-name</code></td><td>critical</td><td class="num">2</td><td>Select element must have an accessible name</td></tr>
+          <tr><td><code>heading-order</code></td><td>moderate</td><td class="num">1</td><td>Heading levels should only increase by one</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="tbl-scroll" style="margin-top:1.25rem" tabindex="0" role="region" aria-label="Estructura de las tablas del módulo, tabla desplazable">
+      <table>
+        <thead><tr><th class="num">Tabla</th><th class="num">Filas</th><th class="num">Col.</th><th>Primeras cabeceras</th></tr></thead>
+        <tbody>
+          
+          <tr><td class="num">1</td><td class="num">96</td><td class="num">7</td><td>ID regla · Código · Significado regla · Qué significa · Módulo · Severidad · Cantidad</td></tr>
+          <tr><td class="num">2</td><td class="num">177</td><td class="num">7</td><td>ID regla · Significado regla · Qué valida / por qué importa · Módulo responsable · Código · Semáforo · Acción sugerida</td></tr>
+          <tr><td class="num">3</td><td class="num">106</td><td class="num">9</td><td>ID regla · Significado regla · Qué valida / impacto · Módulo responsable · Código · Semáforo · Dónde apareció · Hallazgos · Recomendación</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  
+  <section>
+    <h2>Observaciones del equipo</h2>
+    <p class="sub">Revisión manual recogida en «Auditoria_UX.docx». Se presentan aparte de los hallazgos medidos para que quede claro el origen de cada una.</p>
+    <div class="eq">
+      <div class="eq__h">
+        <b>6 observaciones</b>
+        <span class="fuente">documento del equipo, 12 capturas anotadas</span>
+        
+      </div>
+      
+      <p class="eq__grupo ">Interfaz · 6<span>dueño: front-end</span></p>
+      
+      <article class="eq-item">
+        <div class="eq-item__top">
+          <span class="tag t-moderado">Moderado</span>
+          <h4>Fijar el encabezado superior</h4>
+          
+        </div>
+        <p><span class="lbl">Observado</span>El <em>topHeader</em> se desplaza con el contenido y desaparece al bajar. En una pantalla de 16 792 px de alto, eso deja al usuario sin la referencia de en qué corrida y en qué subdominio está trabajando.</p>
+        <p class="accion"><span class="lbl">Qué hacer</span>Encabezado fijo con <code>position: sticky</code>, conservando la ruta «Portal Claro › colección › corrida».</p>
+        <p class="eq-ver"><b>Comprobación instrumentada</b>Coherente con la altura medida: 16 792 px en escritorio y 19 055 px en móvil, unas 21 pantallas de recorrido.</p>
+      </article>
+      <article class="eq-item">
+        <div class="eq-item__top">
+          <span class="tag t-moderado">Moderado</span>
+          <h4>Quitar la barra de desplazamiento horizontal del sidebar</h4>
+          
+        </div>
+        <p><span class="lbl">Observado</span>El sidebar muestra una barra de <em>scroll</em> horizontal en su base, señalada con flecha en el documento del equipo. Aparece porque el contenido del menú no cabe en los 64 px del sidebar colapsado.</p>
+        <p class="accion"><span class="lbl">Qué hacer</span>Eliminar el desbordamiento horizontal del contenedor del menú; se resuelve solo si el sidebar se muestra expandido en pantallas anchas.</p>
+        <p class="eq-ver"><b>Comprobación instrumentada</b>Defecto no detectado por la auditoría instrumentada. Complementa el hallazgo transversal V6 sobre el sidebar colapsado a 64 px.</p>
+      </article>
+      <article class="eq-item">
+        <div class="eq-item__top">
+          <span class="tag t-grave">Grave</span>
+          <h4>Añadir paginación y agrupar por semáforo</h4>
+          
+        </div>
+        <p><span class="lbl">Observado</span>Las tablas del Resumen se muestran completas y sin agrupación. El equipo propone paginarlas y agrupar las filas por su estado de semáforo.</p>
+        <p class="accion"><span class="lbl">Qué hacer</span>Paginación con tamaño de página seleccionable —como ya existe en los módulos de detalle— y agrupación por severidad, con los estados en alerta primero.</p>
+        <p class="eq-ver"><b>Comprobación instrumentada</b>Confirma el hallazgo H4: 379 filas en tres tablas con sólo 4 elementos interactivos en toda la pantalla.</p>
+      </article>
+      <article class="eq-item">
+        <div class="eq-item__top">
+          <span class="tag t-moderado">Moderado</span>
+          <h4>Vista de hallazgos por regla</h4>
+          
+        </div>
+        <p><span class="lbl">Observado</span>Falta una vista que agrupe los hallazgos por la regla que los origina, en lugar de una fila por ocurrencia.</p>
+        <p class="accion"><span class="lbl">Qué hacer</span>Conmutador entre «por URL» y «por regla» sobre los mismos datos.</p>
+        <p class="eq-ver"><b>Comprobación instrumentada</b>Es la misma solución propuesta para el Módulo 2, donde la tabla de hallazgos tiene 3 003 filas para 200 URLs.</p>
+      </article>
+      <article class="eq-item">
+        <div class="eq-item__top">
+          <span class="tag t-grave">Grave</span>
+          <h4>Catálogo de reglas como sección propia</h4>
+          
+        </div>
+        <p><span class="lbl">Observado</span>Las 177 reglas de auditoría se listan dentro del Resumen. El equipo propone extraerlas a un catálogo con su propia pantalla.</p>
+        <p class="accion"><span class="lbl">Qué hacer</span>Sección «Catálogo de reglas» independiente, cargada por demanda.</p>
+        <p class="eq-ver"><b>Comprobación instrumentada</b>Confirma el hallazgo H3 y explica el peso de la pantalla: la tabla de 177 filas es una de las tres que hacen del Resumen la vista más larga del visor. La llamada <code>api/rules/catalog</code> pesa 206 KB y hoy se descarga al abrir cualquier módulo.</p>
+      </article>
+      <article class="eq-item">
+        <div class="eq-item__top">
+          <span class="tag t-moderado">Moderado</span>
+          <h4>Detalle por regla de auditoría</h4>
+          
+        </div>
+        <p><span class="lbl">Observado</span>No existe una vista de detalle de una regla concreta: qué valida, en qué módulo aplica, cuántas URLs incumple y con qué severidad.</p>
+        <p class="accion"><span class="lbl">Qué hacer</span>Ficha por regla, alcanzable desde cualquier hallazgo que la cite. Los datos ya existen en la respuesta: <code>rule_name</code>, <code>business_description</code>, <code>assigned_module</code> y <code>recommendation_template</code>.</p>
+        <p class="eq-ver"><b>Comprobación instrumentada</b>Los cuatro campos están en la respuesta de la API y hoy no tienen ninguna pantalla que los muestre agrupados por regla.</p>
+      </article>
+      
+      
+    </div>
+  </section>
+
+  
+  <section>
+    <h2>Captura</h2>
+    <p class="sub">Pantalla completa en escritorio de 1440 px. El marco se desplaza y admite foco por teclado.</p>
+    <div class="shot" tabindex="0" role="region" aria-label="Captura desplazable de Resumen en escritorio">
+      <img src="capturas/resumen-desktop.jpg" alt="Resumen en escritorio, página completa.">
+    </div>
+    <p class="shot-links">
+      Ver a tamaño real:
+      <a href="capturas/resumen-desktop.jpg" target="_blank" rel="noopener">desktop</a> · <a href="capturas/resumen-tablet.jpg" target="_blank" rel="noopener">tablet</a> · <a href="capturas/resumen-mobile.jpg" target="_blank" rel="noopener">mobile</a>
+    </p>
+  </section>
+
+  <section>
+    <h2>Común a todo el visor</h2>
+    <p class="sub">Ocho defectos que este módulo comparte con los otros diez. Se corrigen una vez y se arreglan en los once.</p>
+    <details class="comunes">
+      <summary>8 hallazgos transversales · 2 críticos</summary>
+      <div class="comunes__body"><div class="finds">
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-critico">Crítico</span>
+          <span class="find__id">V1</span>
+        </div>
+        <div>
+          <h3>Ningún módulo tiene URL propia: no se puede enlazar, ni volver, ni recargar</h3>
+          <p><span class="lbl">Evidencia</span>Los 11 ítems del sidebar son <code>&lt;button class="nav"&gt;</code> sin <code>href</code>. Al navegar, la URL se queda en <code>/index.html</code> en los 11 casos, no se añade ninguna entrada al historial (<code>history.length</code> no cambia) y <code>location.hash</code> permanece vacío.</p>
+          <p><span class="lbl">Impacto</span>Tres consecuencias medidas: el botón Atrás no vuelve al módulo anterior sino que <strong>sale del visor</strong> a <code>subdominios.html</code>; recargar la página <strong>pierde el módulo abierto</strong> y devuelve al Resumen; y no hay forma de enviar a un compañero un enlace a «Módulo 3 · SEO», ni de abrirlo en otra pestaña, ni de guardarlo en marcadores. Al ser botones y no enlaces, tampoco funcionan Ctrl+clic ni el clic central.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Dar a cada módulo una URL real: <code>/index.html#m3-seo</code> como mínimo, o rutas <code>/visor/seo</code>. Sincronizar con <code>history.pushState</code> al navegar y leer la URL al cargar para restaurar el módulo. Convertir los botones en <code>&lt;a href&gt;</code>: se gana enlazado, historial, pestaña nueva y foco por teclado sin escribir lógica adicional.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-critico">Crítico</span>
+          <span class="find__id">V2</span>
+        </div>
+        <div>
+          <h3>Los desplegables de filtro no tienen etiqueta accesible</h3>
+          <p><span class="lbl">Evidencia</span>Regla <code>select-name</code> incumplida en los 11 módulos (entre 1 y 4 <code>&lt;select&gt;</code> por módulo). Son los filtros «Severidad», «Dispositivo» y «Estrategia», que carecen de <code>&lt;label&gt;</code> asociado y de <code>aria-label</code>.</p>
+          <p><span class="lbl">Impacto</span>Quien usa lector de pantalla oye «cuadro combinado» sin saber qué filtra. Son el control principal de cada tabla, así que el módulo queda inoperable.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Un <code>&lt;label for&gt;</code> visible por cada <code>&lt;select&gt;</code>. El texto «Severidad:» que ya está impreso al lado sirve: basta asociarlo con <code>for</code>/<code>id</code>.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-grave">Grave</span>
+          <span class="find__id">V3</span>
+        </div>
+        <div>
+          <h3>Todos los elementos interactivos están por debajo de 44 px</h3>
+          <p><span class="lbl">Evidencia</span>La proporción es del 100 % en los 11 módulos, sin una sola excepción: 137 de 137 en Sitemap, 172 de 172 en SEO, 198 de 198 en Imágenes. Se mide igual en móvil, donde el objetivo es el dedo.</p>
+          <p><span class="lbl">Impacto</span>Filtros, pestañas y acciones de fila exigen precisión de ratón. En tableta —el formato en que se revisa una auditoría en reunión— el error de pulsación es constante.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Alto mínimo de 44 px en filtros, botones de acción y controles de tabla.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-grave">Grave</span>
+          <span class="find__id">V4</span>
+        </div>
+        <div>
+          <h3>El texto de los iconos forma parte del nombre accesible</h3>
+          <p><span class="lbl">Evidencia</span>El sidebar usa ligaduras de Material Symbols sin aislar: el nombre accesible de los ítems es «dashboard Resumen», «account_tree Módulo 1 · Sitemap», «notifications_active Módulo 9 · Alertas». Lo mismo ocurre en las tarjetas de métrica, donde el texto incluye <code>link</code>, <code>fact_check</code>, <code>bug_report</code>, <code>schedule</code>.</p>
+          <p><span class="lbl">Impacto</span>Un lector de pantalla lee en voz alta el nombre técnico del icono antes de cada etiqueta. Y si la fuente de iconos no carga —red lenta, bloqueo de fuentes externas—, el usuario ve escrito «dashboard» en lugar de un icono.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Marcar el contenedor del icono con <code>aria-hidden="true"</code> y, si el control no tiene texto visible, darle <code>aria-label</code>. Es un cambio de una línea por icono.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-moderado">Moderado</span>
+          <span class="find__id">V5</span>
+        </div>
+        <div>
+          <h3>El contenido queda fuera de regiones semánticas</h3>
+          <p><span class="lbl">Evidencia</span>Regla <code>region</code> incumplida con 4 nodos en los 11 módulos. El visor sí tiene <code>&lt;main class="content"&gt;</code> —mejor que el resto de la plataforma, que no tiene ninguno—, pero parte del contenido cuelga fuera de él.</p>
+          
+          <p class="fix"><span class="lbl">Corrección</span>Mover todo el contenido dentro de <code>main</code> y envolver la cabecera y el sidebar en <code>header</code> y <code>nav</code>.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-moderado">Moderado</span>
+          <span class="find__id">V6</span>
+        </div>
+        <div>
+          <h3>El sidebar llega colapsado a 64 px incluso en pantallas anchas</h3>
+          <p><span class="lbl">Evidencia</span>En un escritorio de 1440 px el <code>aside.sidebar</code> mide 64 px y el <code>body</code> tiene la clase <code>sidebar-collapsed</code>: sólo se ven iconos, sin etiquetas, para 11 destinos.</p>
+          <p><span class="lbl">Impacto</span>Once iconos sin texto obligan a adivinar o a expandir en cada visita. Sobra espacio horizontal: el área de trabajo ocupa 1 376 px.</p>
+          <p class="fix"><span class="lbl">Corrección</span>Expandido por defecto a partir de 1200 px, y recordar la preferencia del usuario. Si se mantiene colapsado, añadir <code>title</code> y <code>aria-label</code> a cada icono.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-moderado">Moderado</span>
+          <span class="find__id">V7</span>
+        </div>
+        <div>
+          <h3>Vocabulario de código mezclado con español en las cabeceras de tabla</h3>
+          <p><span class="lbl">Evidencia</span>Conviven en la misma fila de encabezados: «URL», «normalized_url», «Ruta», «Tipo de página» (Sitemap); «LCP (MS)», <code>fcp_ms</code>, <code>speed_index_ms</code>, <code>total_blocking_time_ms</code> (Performance); «Selector», <code>css_selector</code>, <code>needs_human_review</code> (Links e Imágenes). Los filtros de dispositivo ofrecen «Todos / mobile / desktop», dos de los tres valores en inglés.</p>
+          
+          <p class="fix"><span class="lbl">Corrección</span>Un diccionario único de nombres de columna en español, resuelto desde la clave técnica en un solo punto. El nombre técnico puede quedar en un <code>title</code> para quien exporte datos.</p>
+          
+        </div>
+      </article>
+      <article class="find">
+        <div class="find__gut">
+          <span class="tag t-moderado">Moderado</span>
+          <span class="find__id">V8</span>
+        </div>
+        <div>
+          <h3>Ocho tamaños de fuente por pantalla y jerarquía sin escala</h3>
+          <p><span class="lbl">Evidencia</span>Se miden 11, 12, 13, 13,5, 14, 17, 20, 22, 28 y 32 px según el módulo, con 14 px como cuerpo dominante y hasta 2 965 nodos a ese tamaño en el Resumen.</p>
+          
+          <p class="fix"><span class="lbl">Corrección</span>Reducir a cinco pasos y subir el mínimo a 12 px.</p>
+          
+        </div>
+      </article></div></div>
+    </details>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>
+      Medido el 4 de agosto de 2026 sobre el entorno productivo, autenticado y en modo de solo lectura:
+      ninguna petición de escritura salió del navegador. Tres anchos: 390, 820 y 1440 px. Accesibilidad con
+      axe-core contra WCAG 2.1 A y AA.
+    </p>
+    <p>
+      Las cifras de este informe se generan desde <code>out/visor/findings-visor.json</code>; el texto, desde
+      <code>module-reports.data.mjs</code>. Para regenerarlo: <code>node audit-visor.mjs</code> y luego
+      <code>node build-module-reports.mjs</code>.
+    </p>
+  </div>
+</footer>
+</body>
+</html>

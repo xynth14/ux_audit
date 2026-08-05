@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Módulo 4 · Tagging — lectura del atributo title de las imágenes</title>
+<style>
+  :root{
+    --ink:#101820;--ink-soft:#2A323C;--muted:#5A6472;--paper:#F4F6F8;--surface:#FFF;
+    --surface-2:#EDF1F5;--rule:#CFD7E0;--rule-soft:#E4E9EF;--blueprint:#1B4B7F;--blueprint-soft:#E3EAF2;
+    --mal:#B3261E;--bien:#14713D;--aviso:#8A5200;
+    --display:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --ink:#E8ECF0;--ink-soft:#C6CFD9;--muted:#9AA5B2;--paper:#0E1319;--surface:#151B22;
+    --surface-2:#1B222B;--rule:#2C353F;--rule-soft:#212932;--blueprint:#8FBDEC;--blueprint-soft:#16243A;
+    --mal:#F09189;--bien:#74CE9B;--aviso:#DFBE6E;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  *:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .35em;border-radius:2px;overflow-wrap:anywhere}
+  a{color:var(--blueprint)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 clamp(1.15rem,3.5vw,2.25rem)}
+
+  header.top{border-bottom:1px solid var(--rule);padding:1.6rem 0 0}
+  .back{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;display:inline-block;margin-bottom:1.3rem}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .65rem}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,4.4vw,2.85rem);line-height:1.06;letter-spacing:-.015em;margin:0 0 .55rem;text-wrap:balance}
+  h1 code{font-family:var(--mono);font-size:.72em;background:none;padding:0}
+  .dek{max-width:62ch;color:var(--ink-soft);font-size:1.16rem;line-height:1.5;margin:0 0 1.7rem}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+  .stat{padding:.7rem .85rem .8rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .stat dt{font-family:var(--mono);font-size:.67rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.28rem}
+  .stat dd{margin:0;font-family:var(--display);font-size:1.42rem;line-height:1;font-variant-numeric:tabular-nums}
+  .stat dd small{font-family:var(--body);font-size:.74rem;color:var(--muted)}
+  .stat.mal dd{color:var(--mal)}
+
+  main{padding:2.5rem 0 3.5rem}
+  section{margin-bottom:3rem}
+  h2{font-family:var(--display);font-weight:400;font-size:1.72rem;line-height:1.18;margin:0 0 .9rem;letter-spacing:-.01em;text-wrap:balance;padding-bottom:.6rem;border-bottom:1px solid var(--rule)}
+  h2 .n{font-family:var(--mono);font-size:.62em;color:var(--blueprint);margin-right:.5rem;letter-spacing:.05em}
+  h3{font-size:1.02rem;font-weight:600;margin:1.7rem 0 .5rem}
+  p{max-width:72ch;margin:0 0 1rem}
+  p:last-child{margin-bottom:0}
+  ul,ol{max-width:72ch;margin:0 0 1rem;padding-left:1.3rem}
+  li{margin-bottom:.55rem}
+  li:last-child{margin-bottom:0}
+  li>strong:first-child{font-weight:600}
+  .lead-in{font-weight:600}
+
+  .callout{border:1px solid var(--rule);border-left:3px solid var(--blueprint);background:var(--surface);padding:1.05rem 1.25rem;margin:0 0 1.6rem}
+  .callout .lead{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blueprint);display:block;margin-bottom:.4rem}
+  .callout p{margin:0}
+  .callout--mal{border-left-color:var(--mal)}
+  .callout--mal .lead{color:var(--mal)}
+  .callout--ok{border-left-color:var(--bien)}
+  .callout--ok .lead{color:var(--bien)}
+
+  pre{font-family:var(--mono);font-size:.79rem;line-height:1.55;background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:.85rem 1rem;overflow-x:auto;margin:0 0 1rem}
+  pre:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  pre .t{color:var(--muted)}
+  pre .a{color:var(--blueprint)}
+  pre .v{color:var(--bien)}
+  pre .hl{background:var(--blueprint-soft);border-radius:2px;padding:0 .15em;font-weight:600}
+  .pre-cap{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .4rem}
+
+  .tbl{overflow-x:auto;border:1px solid var(--rule);background:var(--surface);margin:0 0 1rem}
+  .tbl:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  table{border-collapse:collapse;width:100%;font-size:.87rem;min-width:600px}
+  th,td{text-align:left;padding:.62rem .85rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:.67rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--rule)}
+  tbody tr:last-child td{border-bottom:0}
+  td.hoy{color:var(--mal)}
+  td.deb{color:var(--bien)}
+  td.caso{font-weight:600;width:26%}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  .par{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+  .par>*{min-width:0}
+  @media (min-width:760px){.par{grid-template-columns:1fr 1fr}}
+  .caja{border:1px solid var(--rule);background:var(--surface);padding:.9rem 1.05rem}
+  .caja h4{margin:0 0 .4rem;font-size:.95rem;font-weight:600;display:flex;align-items:baseline;gap:.5rem}
+  .caja h4 code{font-size:.9em}
+  .caja p{font-size:.92rem;margin:0;color:var(--ink-soft)}
+  .caja--alt{border-top:2px solid var(--muted)}
+  .caja--title{border-top:2px solid var(--bien)}
+
+  .crit{border:1px solid var(--rule);background:var(--surface)}
+  .crit h3{margin:0;padding:.8rem 1.05rem;font-size:.97rem;border-bottom:1px solid var(--rule)}
+  .crit ol{margin:0;padding:.9rem 1.05rem .95rem 2.4rem}
+  .crit li{max-width:74ch}
+
+  .foot{border-top:2px solid var(--ink);padding:1.4rem 0 3rem;font-size:.85rem;color:var(--muted)}
+  .foot p{max-width:80ch;margin:0 0 .5rem}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="back" href="index.html">← Índice de informes</a>
+    <p class="eyebrow">Solicitud técnica · Módulo 4 · Tagging · 5 de agosto de 2026</p>
+    <h1>El crawler no lee el atributo <code>title</code> de las imágenes</h1>
+    <p class="dek">
+      Sin ese atributo, la auditoría no tiene fuente contra la que validar
+      <code>clicked_banner_name</code> en los banners de una sola imagen, y el resultado son
+      falsos positivos y falsos negativos indistinguibles entre sí.
+    </p>
+    <dl class="stats">
+      <div class="stat"><dt>Columnas revisadas</dt><dd>66<small> M4 + M10</small></dd></div>
+      <div class="stat mal"><dt>Mencionan <code>title</code></dt><dd>0</dd></div>
+      <div class="stat mal"><dt>Reglas sobre <code>title</code></dt><dd>0</dd></div>
+      <div class="stat"><dt>Reglas sobre <code>alt</code></dt><dd>sí<small> «Agregar ALT»</small></dd></div>
+      <div class="stat"><dt>Coste de leerlo</dt><dd>0<small> peticiones</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="callout">
+    <span class="lead">La petición, en una línea</span>
+    <p>
+      Que el recorrido del DOM incorpore <code>img[title]</code> y <code>iframe[title]</code> a la
+      información que extrae de cada slide o banner, y que la regla que valida
+      <code>clicked_banner_name</code> aplique la misma cadena de prioridad que usa el etiquetado en
+      producción.
+    </p>
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <h2><span class="n">1</span>Qué se detectó</h2>
+    <p>
+      Al recorrer cada página, el proceso de auditoría registra de cada imagen su <code>src</code>, el
+      atributo <code>alt</code>, el texto visible del entorno —encabezados y copias de la maqueta— y,
+      en algunos casos, el texto extraído por OCR de la propia imagen. <span class="lead-in">No
+      registra el atributo <code>title</code>.</span>
+    </p>
+    <p>
+      La omisión es entendible: <code>title</code> no se renderiza como texto, solo aparece como
+      <em>tooltip</em> al posar el cursor, de modo que no lo devuelven ni <code>innerText</code>, ni la
+      captura visual, ni el OCR. Pero no es un detalle menor, porque ese atributo es una de las fuentes
+      oficiales del etiquetado —y en varios componentes la <span class="lead-in">única</span> fuente—
+      desde la que se construye el valor de <code>clicked_banner_name</code>.
+    </p>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <h2><span class="n">2</span>Qué es <code>clicked_banner_name</code> y de dónde sale su valor</h2>
+    <p>
+      Es un parámetro de GA4 que responde a una pregunta de negocio concreta: <span class="lead-in">¿qué
+      banner estaba viendo el usuario cuando interactuó con el carrusel?</span> Permite medir qué pieza
+      creativa genera navegación y cuál se salta el usuario.
+    </p>
+
+    <h3>Tres características que la regla de validación debe tener presentes</h3>
+    <ul>
+      <li>
+        <strong>Se auto-inyecta.</strong> No lo escribe el desarrollador en cada <em>handler</em>: lo
+        calcula la función <code>etiquetadoG4Re()</code> de <code>main-etiquetado.js</code>, igual que
+        ocurre con <code>element_url</code>.
+      </li>
+      <li>
+        <strong>Solo debe existir en navegación de carrusel.</strong> Se inyecta únicamente cuando el
+        parámetro <code>element</code> corresponde a un control de carrusel: <code>dot</code>,
+        <code>dots</code>, <code>arrow</code>, <code>flecha</code>, <code>btn_flecha</code>,
+        <code>pager</code>, <code>paginador</code>, <code>paginacion</code>. En cualquier otro elemento
+        —botón, <em>card</em>, <em>tab</em>, enlace— el parámetro no debe existir, y su presencia sí es
+        un hallazgo legítimo.
+      </li>
+      <li>
+        <strong>Su valor no siempre es texto visible.</strong> Aquí está el nudo del caso: en los banners
+        que son una sola imagen —el banner principal del <em>home</em>, los minibanners de postpago, las
+        promociones del CMS— no hay <code>&lt;h1&gt;</code> a <code>&lt;h4&gt;</code> ni ningún texto en
+        el DOM. El nombre del banner vive exclusivamente en el <code>title</code> de la imagen, que el
+        CMS carga junto con la pieza.
+      </li>
+    </ul>
+
+    <h3>Ejemplo real: banner principal del <em>home</em></h3>
+    <p class="pre-cap">Maqueta</p>
+    <pre tabindex="0" role="region" aria-label="Fragmento de HTML del banner, bloque desplazable"><span class="t">&lt;div</span> <span class="a">class</span>=<span class="v">"owl-item active"</span><span class="t">&gt;</span>
+  <span class="t">&lt;a</span> <span class="a">href</span>=<span class="v">"/promociones/fiesta-del-futbol"</span><span class="t">&gt;</span>
+    <span class="t">&lt;img</span> <span class="a">src</span>=<span class="v">"../recursos_contenido/banner-fiesta-futbol.jpg"</span>
+         <span class="hl"><span class="a">title</span>=<span class="v">"Fiesta del fútbol"</span></span>
+         <span class="a">alt</span>=<span class="v">"Banner promocional"</span><span class="t">&gt;</span>
+  <span class="t">&lt;/a&gt;</span>
+<span class="t">&lt;/div&gt;</span></pre>
+
+    <p class="pre-cap">Lo que envía el sitio al hacer clic en el <em>dot</em> correspondiente</p>
+    <pre tabindex="0" role="region" aria-label="Valor enviado al dataLayer"><span class="a">clicked_banner_name</span>: <span class="v">"fiesta del futbol"</span></pre>
+
+    <div class="callout callout--ok">
+      <span class="lead">Consecuencia para la regla de comparación</span>
+      <p>
+        El valor sale del <code>title</code>, no del <code>alt</code> —que aquí dice «Banner
+        promocional»— ni de ningún texto de la página. Y sale <span class="lead-in">normalizado</span>:
+        «Fiesta del fútbol» se envía como <code>fiesta del futbol</code>, en minúsculas y sin tildes.
+        La validación debe normalizar los dos lados antes de comparar; si compara literalmente, el caso
+        correcto también falla.
+      </p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <h2><span class="n">3</span>El problema y sus tres desenlaces</h2>
+    <p>
+      Cuando la regla intenta reconstruir el valor esperado de <code>clicked_banner_name</code> para un
+      banner de solo imagen, se queda sin fuente. Los tres desenlaces posibles son malos, y ninguno se
+      distingue de los otros desde la interfaz:
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Los tres desenlaces, tabla desplazable">
+      <table>
+        <thead><tr><th>Situación en la maqueta</th><th>Qué hace hoy la auditoría</th><th>Qué debería hacer</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="caso">Banner de solo imagen <em>con</em> <code>title</code></td>
+            <td class="hoy">No encuentra texto: marca el parámetro como «sin origen verificable», o lo compara contra el <code>alt</code> y falla. <strong>Falso positivo.</strong></td>
+            <td class="deb">Comparar contra el <code>title</code> normalizado → correcto, sin hallazgo.</td>
+          </tr>
+          <tr>
+            <td class="caso"><code>title</code> y <code>alt</code> distintos</td>
+            <td class="hoy">Compara contra el <code>alt</code> y reporta una discrepancia que no existe. <strong>Falso positivo.</strong></td>
+            <td class="deb">Aplicar la prioridad: <code>title</code> manda sobre <code>alt</code> → correcto.</td>
+          </tr>
+          <tr>
+            <td class="caso">Banner de solo imagen <em>sin</em> <code>title</code> ni <code>alt</code></td>
+            <td class="hoy">Sin dato. No distingue este caso del anterior, así que da por bueno lo que no puede contrastar. <strong>Falso negativo.</strong></td>
+            <td class="deb">Reportar un hallazgo <em>de contenido</em> —falta el metadato en el HTML—, no un error de etiquetado.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      El tercer caso es el que más importa para la fiabilidad del informe: hoy un banner sin metadatos y
+      un banner correctamente etiquetado producen el mismo resultado en pantalla. Mientras eso ocurra,
+      ningún porcentaje de «Tagging Score» es interpretable.
+    </p>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <h2><span class="n">4</span>Por qué <code>title</code> y no <code>alt</code></h2>
+    <p>
+      Los dos atributos existen en la maqueta, pero cumplen funciones distintas y el etiquetado los
+      prioriza en un orden fijo. Tratarlos como equivalentes es la causa directa de los dos primeros
+      desenlaces de la tabla anterior.
+    </p>
+    <div class="par">
+      <div class="caja caja--alt">
+        <h4><code>alt</code> · accesibilidad</h4>
+        <p>
+          Describe la imagen para lectores de pantalla. Es genérico y se reutiliza entre piezas:
+          «Banner», «Imagen promocional», «Claro». No identifica la campaña.
+        </p>
+      </div>
+      <div class="caja caja--title">
+        <h4><code>title</code> · nombre editorial</h4>
+        <p>
+          Es el nombre de la pieza que el equipo de contenidos carga en el CMS. Identifica la campaña y
+          es el que el negocio reconoce en los reportes de GA4.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <h2><span class="n">5</span>Por qué el OCR no resuelve este caso</h2>
+    <p>
+      El OCR lee el texto <em>impreso dentro</em> de la imagen, que casi nunca coincide con el
+      <code>title</code>. El <code>title</code> suele ser el nombre comercial de la campaña —«dia de la
+      madre», «cobertura internacional»— mientras la imagen puede mostrar un precio, un reclamo o
+      ningún texto en absoluto.
+    </p>
+    <p>
+      A eso se añade que el filtro de imágenes <code>IMG_*</code> descarta muchas piezas antes de
+      enviarlas a OCR por coste, de modo que ni siquiera se intenta en todos los casos. La lectura del
+      <code>title</code>, en cambio, es <span class="lead-in">gratuita, determinista y ocurre en el
+      DOM</span>: no depende del filtro, no depende del OCR y debe ejecutarse siempre.
+    </p>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <h2><span class="n">6</span>Qué se pide, en detalle</h2>
+    <ol>
+      <li>
+        <strong>Extracción.</strong> Añadir <code>img[title]</code> y <code>iframe[title]</code> al
+        conjunto de atributos que el crawler recoge de cada slide o banner, junto a los que ya recoge
+        (<code>src</code>, <code>alt</code>, texto del entorno).
+      </li>
+      <li>
+        <strong>Normalización.</strong> Comparar siempre valores normalizados —minúsculas, sin tildes,
+        espacios colapsados— en los dos lados: el <code>title</code> leído del DOM y el
+        <code>clicked_banner_name</code> capturado del dataLayer.
+      </li>
+      <li>
+        <strong>Cadena de prioridad.</strong> Replicar el orden que aplica <code>etiquetadoG4Re()</code>
+        en producción. Del comportamiento observado se desprende que <code>title</code> tiene prioridad
+        sobre <code>alt</code>; conviene que el equipo de etiquetado confirme el orden completo y dónde
+        entra el texto visible, para que la auditoría no invente una jerarquía propia.
+      </li>
+      <li>
+        <strong>Regla de presencia.</strong> Validar que <code>clicked_banner_name</code> exista cuando
+        <code>element</code> es un control de carrusel y que <em>no</em> exista en el resto de
+        elementos. Hoy solo se puede comprobar la mitad de esa regla.
+      </li>
+      <li>
+        <strong>Separación de hallazgos.</strong> Distinguir en el informe «falta el metadato en el
+        HTML» —hallazgo de contenido, dueño: equipo de contenidos— de «el valor enviado no coincide con
+        la fuente» —hallazgo de etiquetado, dueño: desarrollo—. Son dos trabajos distintos y hoy
+        aparecen mezclados.
+      </li>
+      <li>
+        <strong>Exposición en la interfaz.</strong> Mostrar el <code>title</code> en el detalle del
+        hallazgo, junto al <code>alt</code>, con el valor esperado y el detectado. Sin eso, quien revisa
+        no puede juzgar si el hallazgo es real.
+      </li>
+    </ol>
+  </section>
+
+  <!-- 7 -->
+  <section>
+    <h2><span class="n">7</span>Criterios de aceptación</h2>
+    <div class="crit">
+      <h3>Comprobable sobre una corrida nueva del Módulo 4</h3>
+      <ol>
+        <li>El registro de cada imagen incluye un campo con el <code>title</code>, vacío cuando el atributo no existe, y esa diferencia es visible en el detalle del hallazgo.</li>
+        <li>Un banner de solo imagen con <code>title</code> correcto y <code>clicked_banner_name</code> coincidente <strong>no</strong> genera hallazgo.</li>
+        <li>Un banner con <code>title</code> y <code>alt</code> distintos, correctamente etiquetado según el <code>title</code>, <strong>no</strong> genera hallazgo.</li>
+        <li>Un banner sin <code>title</code> ni <code>alt</code> genera un hallazgo de contenido, con código propio, distinto del de etiquetado.</li>
+        <li>La comparación pasa con «Fiesta del fútbol» frente a <code>fiesta del futbol</code>: la normalización de tildes y mayúsculas está aplicada.</li>
+        <li>Un elemento que no es control de carrusel y que sí envía <code>clicked_banner_name</code> genera hallazgo.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section>
+    <h2><span class="n">8</span>Verificación en la plataforma</h2>
+    <p>
+      Se revisaron las cabeceras de todas las tablas de los dos módulos implicados, sobre la corrida
+      visible el 5 de agosto de 2026:
+    </p>
+    <div class="tbl" tabindex="0" role="region" aria-label="Verificación en la plataforma, tabla desplazable">
+      <table>
+        <thead><tr><th>Módulo</th><th class="num">Tablas</th><th class="num">Columnas</th><th>Referencias a <code>title</code></th><th>Referencias a <code>alt</code></th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Módulo 4 · Tagging</td><td class="num">2</td><td class="num">31</td>
+            <td class="hoy">ninguna</td><td class="hoy">ninguna</td>
+          </tr>
+          <tr>
+            <td>Módulo 10 · Imágenes</td><td class="num">4</td><td class="num">35</td>
+            <td class="hoy">ninguna</td><td class="hoy">ninguna</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Ninguna de las 66 columnas expone el atributo, y el texto de ambas pantallas no lo menciona una
+      sola vez. Tampoco aparecen <code>clicked_banner_name</code> ni <code>element_url</code>.
+    </p>
+    <div class="callout callout--mal">
+      <span class="lead">La asimetría que confirma el diagnóstico</span>
+      <p>
+        En el catálogo de reglas, <code>alt</code> sí tiene tratamiento: existe una acción sugerida
+        «Agregar ALT». Para <code>title</code> no hay ninguna regla, ninguna columna y ninguna acción.
+        No es que el atributo se lea y no se muestre: no está en el modelo de datos.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>
+      Documento de solicitud técnica. El contexto de <code>clicked_banner_name</code>,
+      <code>etiquetadoG4Re()</code> y la cadena de prioridad del etiquetado proceden del análisis del
+      equipo; la verificación de las 66 columnas se realizó sobre el entorno productivo, autenticada y
+      en modo de solo lectura, el 5 de agosto de 2026.
+    </p>
+    <p>
+      El orden completo de la cadena de prioridad queda pendiente de confirmación por el equipo de
+      etiquetado: es la única pieza que no puede deducirse de la interfaz.
+    </p>
+    <p>
+      Informe del módulo: <a href="04-modulo-4-tagging.html">04-modulo-4-tagging.html</a> ·
+      Índice: <a href="index.html">index.html</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

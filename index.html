@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoría UX/UI — PAIN</title>
+<style>
+  :root{
+    --ink:#101820;--ink-soft:#2A323C;--muted:#5A6472;--paper:#F4F6F8;--surface:#FFF;
+    --surface-2:#EDF1F5;--rule:#CFD7E0;--rule-soft:#E4E9EF;--blueprint:#1B4B7F;--blueprint-soft:#E3EAF2;
+    --critico:#B3261E;
+    --display:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --ink:#E8ECF0;--ink-soft:#C6CFD9;--muted:#9AA5B2;--paper:#0E1319;--surface:#151B22;
+    --surface-2:#1B222B;--rule:#2C353F;--rule-soft:#212932;--blueprint:#8FBDEC;--blueprint-soft:#16243A;
+    --critico:#F09189;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  *:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .35em;border-radius:2px}
+  a{color:var(--blueprint)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 clamp(1.15rem,3.5vw,2.25rem)}
+
+  header{border-bottom:1px solid var(--rule);padding:clamp(2.5rem,6vw,4rem) 0 0}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .8rem}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,5vw,3.2rem);line-height:1.04;letter-spacing:-.015em;margin:0 0 .6rem;text-wrap:balance}
+  h1 em{font-style:normal;color:var(--blueprint)}
+  .dek{max-width:60ch;color:var(--ink-soft);font-size:1.22rem;line-height:1.5;margin:0 0 2rem}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(126px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+  .stat{padding:.75rem .9rem .85rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .stat dt{font-family:var(--mono);font-size:.67rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+  .stat dd{margin:0;font-family:var(--display);font-size:1.48rem;line-height:1;font-variant-numeric:tabular-nums}
+  .stat dd small{font-family:var(--body);font-size:.75rem;color:var(--muted)}
+  .stat.warn dd{color:var(--critico)}
+
+  main{padding:2.75rem 0 4rem}
+  h2{font-family:var(--display);font-weight:400;font-size:1.8rem;line-height:1.15;margin:0 0 .2rem;letter-spacing:-.01em}
+  .sub{color:var(--muted);margin:0 0 1.6rem;padding-bottom:.9rem;border-bottom:2px solid var(--ink);max-width:68ch}
+  section{margin-bottom:3.25rem}
+
+  .docs{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+  .doc{background:var(--surface);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.4rem 1.5rem;align-items:center;padding:1.1rem 1.25rem;text-decoration:none;color:inherit}
+  .doc:hover{background:var(--blueprint-soft)}
+  .doc__t{font-weight:600;font-size:1.08rem}
+  .doc__d{color:var(--muted);font-size:.92rem;margin-top:.2rem;max-width:66ch}
+  .doc__go{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--blueprint);white-space:nowrap}
+  .doc--main{border-left:3px solid var(--blueprint)}
+
+  .nota{border:1px solid var(--rule);border-left:3px solid var(--blueprint);background:var(--surface);padding:1rem 1.2rem;margin-top:1.5rem}
+  .nota .lead{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blueprint);display:block;margin-bottom:.35rem}
+  .nota p{margin:0;max-width:72ch;font-size:.95rem}
+  ul{max-width:70ch;padding-left:1.3rem}
+  li{margin-bottom:.5rem}
+
+  footer{border-top:2px solid var(--ink);padding:1.5rem 0 3rem;font-size:.86rem;color:var(--muted)}
+  footer p{max-width:78ch;margin:0 0 .5rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Auditoría UX/UI · agosto de 2026</p>
+    <h1>PAIN — Plataforma de <em>Auditoría INteligente</em></h1>
+    <p class="dek">
+      Auditoría de interfaz, accesibilidad y fiabilidad del dato, ejecutada con instrumentación real
+      sobre el entorno productivo en modo de solo lectura.
+    </p>
+    <dl class="stats">
+      <div class="stat"><dt>Pantallas</dt><dd>17</dd></div>
+      <div class="stat"><dt>Pasadas</dt><dd>51 <small>× 3 anchos</small></dd></div>
+      <div class="stat"><dt>Hallazgos medidos</dt><dd>60</dd></div>
+      <div class="stat warn"><dt>Críticos</dt><dd>7</dd></div>
+      <div class="stat"><dt>Obs. del equipo</dt><dd>13</dd></div>
+      <div class="stat"><dt>Reglas WCAG</dt><dd>6 <small>incumplidas</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>Documentos</h2>
+    <p class="sub">Empiece por el primero si quiere el panorama, o por el segundo si va a presentarlo.</p>
+    <div class="docs">
+      <a class="doc doc--main" href="informes/index.html">
+        <span>
+          <span class="doc__t">Informes del visor de resultados</span>
+          <span class="doc__d">Portada con un informe por cada uno de los 11 módulos, los 8 hallazgos transversales, las observaciones del equipo y una tabla comparativa.</span>
+        </span>
+        <span class="doc__go">abrir →</span>
+      </a>
+      <a class="doc doc--main" href="informes/m2-antes-despues.html">
+        <span>
+          <span class="doc__t">Módulo 2 · Técnico — antes y después</span>
+          <span class="doc__d">Los 10 cambios propuestos, cada uno con la pantalla de hoy junto a la propuesta, y una maqueta navegable. Preparado para presentar.</span>
+        </span>
+        <span class="doc__go">abrir →</span>
+      </a>
+      <a class="doc" href="report.html">
+        <span>
+          <span class="doc__t">Informe de plataforma</span>
+          <span class="doc__d">Las 6 secciones del menú principal: 14 hallazgos y 3 láminas de rediseño con maquetas interactivas.</span>
+        </span>
+        <span class="doc__go">abrir →</span>
+      </a>
+      <a class="doc" href="informes/propuesta-m2-tecnico.html">
+        <span>
+          <span class="doc__t">Módulo 2 — detalle técnico y especificación</span>
+          <span class="doc__d">La misma propuesta con el inventario de las 17 columnas una por una y una especificación de 11 puntos para desarrollo.</span>
+        </span>
+        <span class="doc__go">abrir →</span>
+      </a>
+      <a class="doc" href="informes/m4-tagging-title-imagen.html">
+        <span>
+          <span class="doc__t">Módulo 4 — el crawler no lee <code>img[title]</code></span>
+          <span class="doc__d">Solicitud técnica: sin ese atributo no hay fuente contra la que validar <code>clicked_banner_name</code>, y el resultado son falsos positivos y negativos indistinguibles.</span>
+        </span>
+        <span class="doc__go">abrir →</span>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cómo se hizo</h2>
+    <p class="sub">Para que cualquier cifra del informe pueda comprobarse.</p>
+    <ul>
+      <li>Navegador automatizado y autenticado, con <strong>toda escritura bloqueada a nivel de red</strong>: ninguna petición <code>POST</code>, <code>PUT</code>, <code>PATCH</code> o <code>DELETE</code> ajena al login salió del navegador.</li>
+      <li>Tres anchos por pantalla: 390 px móvil, 820 px tableta y 1440 px escritorio.</li>
+      <li>Accesibilidad con <strong>axe-core</strong> contra WCAG 2.1 niveles A y AA.</li>
+      <li>Por pantalla se midió: tiempo hasta contenido, alto de página, número de filas y columnas, tamaño de las áreas táctiles, jerarquía de encabezados, desbordamiento horizontal y errores de consola.</li>
+      <li>Las métricas de los informes se inyectan desde los archivos de evidencia, no se escriben a mano: informe y medición no pueden divergir.</li>
+    </ul>
+    <div class="nota">
+      <span class="lead">Datos personales</span>
+      <p>
+        Este sitio es de acceso público. Los nombres de usuario y las direcciones de correo aparecen
+        difuminados en las capturas —el desenfoque está aplicado sobre los píxeles, no por CSS— y
+        sustituidos por genéricos en las maquetas. Ninguna cifra ni conclusión se ha modificado.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      Los hallazgos se presentan en tres grupos con dueños distintos: <strong>medidos</strong> con
+      instrumentación, <strong>observaciones del equipo</strong> procedentes de la revisión manual, y
+      <strong>pendientes de confirmar</strong>, donde el criterio de la regla debe validarlo el equipo
+      de datos antes de tratarse como error.
+    </p>
+    <p>
+      Código, scripts de medición e instrucciones para reproducir la auditoría en el
+      <a href="https://github.com/xynth14/ux_audit">repositorio</a>.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

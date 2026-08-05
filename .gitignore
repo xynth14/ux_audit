@@ -1,0 +1,25 @@
+# Credenciales. Nunca se versiona.
+.env
+.env.*
+!.env.example
+
+# Dependencias
+node_modules/
+
+# Evidencia cruda de las pasadas de auditoría (28 MB de capturas y JSON).
+# Se regenera con: node audit.mjs && node audit-visor.mjs
+out/
+
+# Artefacto de construcción: copia de report.html con doctype, sólo para
+# pruebas locales con axe-core.
+report.preview.html
+
+# Navegadores de Playwright, si se instalan dentro del proyecto
+.cache/
+playwright-report/
+test-results/
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

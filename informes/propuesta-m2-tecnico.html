@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Módulo 2 · Técnico — propuesta de rediseño</title>
+<style>
+  :root{
+    --ink:#101820;--ink-soft:#2A323C;--muted:#5A6472;--paper:#F4F6F8;--surface:#FFF;
+    --surface-2:#EDF1F5;--rule:#CFD7E0;--rule-soft:#E4E9EF;--blueprint:#1B4B7F;--blueprint-soft:#E3EAF2;
+    --critico:#B3261E;--grave:#C2410C;--moderado:#8A5200;--menor:#5A6472;--ok:#14713D;
+    --display:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --ink:#E8ECF0;--ink-soft:#C6CFD9;--muted:#9AA5B2;--paper:#0E1319;--surface:#151B22;
+    --surface-2:#1B222B;--rule:#2C353F;--rule-soft:#212932;--blueprint:#8FBDEC;--blueprint-soft:#16243A;
+    --critico:#F09189;--grave:#F0A878;--moderado:#DFBE6E;--menor:#9AA5B2;--ok:#74CE9B;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  *:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .35em;border-radius:2px;overflow-wrap:anywhere}
+  a{color:var(--blueprint)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(1.15rem,3.5vw,2.5rem)}
+
+  .top{border-bottom:1px solid var(--rule);padding:1.5rem 0 0}
+  .back{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;display:inline-block;margin-bottom:1.4rem}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .6rem}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,4.4vw,2.95rem);line-height:1.05;letter-spacing:-.015em;margin:0 0 .5rem;text-wrap:balance}
+  .purpose{max-width:66ch;color:var(--ink-soft);font-size:1.2rem;line-height:1.5;margin:0 0 1.75rem}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(136px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+  .stat{padding:.75rem .85rem .85rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .stat dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+  .stat dd{margin:0;font-family:var(--display);font-size:1.45rem;line-height:1;font-variant-numeric:tabular-nums}
+  .stat dd small{font-family:var(--body);font-size:.76rem;color:var(--muted)}
+  .stat.warn dd{color:var(--critico)}
+
+  main{padding:2.75rem 0 4rem}
+  section{margin-bottom:3.5rem}
+  h2{font-family:var(--display);font-weight:400;font-size:1.95rem;line-height:1.15;margin:0 0 .2rem;letter-spacing:-.01em;text-wrap:balance}
+  .sub{color:var(--muted);font-size:1rem;margin:0 0 1.7rem;padding-bottom:.9rem;border-bottom:2px solid var(--ink);max-width:70ch}
+  h3.step{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blueprint);margin:2.25rem 0 .6rem}
+  p{max-width:70ch}
+
+  .finds{border-top:1px solid var(--rule)}
+  .find{display:grid;grid-template-columns:104px minmax(0,1fr);gap:0 1.4rem;padding:1.4rem 0;border-bottom:1px solid var(--rule-soft)}
+  @media (max-width:640px){.find{grid-template-columns:1fr;gap:.7rem}.find__gut{flex-direction:row!important;align-items:center}}
+  .find__gut{display:flex;flex-direction:column;gap:.45rem;align-items:flex-start}
+  .tag{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;border:1px solid currentColor;padding:.16em .42em;white-space:nowrap}
+  .t-critico{color:var(--critico)}.t-grave{color:var(--grave)}.t-moderado{color:var(--moderado)}
+  .find__id{font-family:var(--mono);font-size:.8rem;color:var(--muted);font-weight:700}
+  .find h4{font-size:1.06rem;font-weight:600;line-height:1.35;margin:0 0 .5rem;text-wrap:balance}
+  .find p{margin:0 0 .55rem;color:var(--ink-soft)}
+  .find p:last-child{margin-bottom:0}
+  .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:.45rem}
+  .find .fix{color:var(--ink)}
+
+  .tbl-scroll{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+  .tbl-scroll:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  table.data{border-collapse:collapse;width:100%;font-size:.84rem;min-width:560px}
+  table.data th,table.data td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  table.data thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--rule);white-space:nowrap}
+  table.data tbody tr:last-child td{border-bottom:0}
+  table.data .num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .const{color:var(--critico);font-weight:600}
+  .keep{color:var(--ok);font-weight:600}
+
+  .shot{border:1px solid var(--rule);background:#fff;overflow:auto;max-height:480px}
+  .shot img{display:block;width:100%;height:auto}
+  .shot:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  .pane__lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .5rem}
+  .pane__lbl b{color:var(--ink);font-weight:600}
+  .note{font-size:.88rem;color:var(--muted);margin:.6rem 0 0;max-width:76ch}
+  .two{display:grid;gap:1.5rem}
+  @media (min-width:920px){.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.two>*{min-width:0}}
+
+  .callout{border:1px solid var(--rule);border-left:3px solid var(--blueprint);background:var(--surface);padding:1rem 1.2rem;margin:1.5rem 0 0}
+  .callout .lead{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blueprint);display:block;margin-bottom:.35rem}
+  .callout p{margin:0}
+
+  /* ===================================================================
+     MAQUETA. Lenguaje visual de la aplicación, tema claro fijo.
+     Ningún token del informe entra aquí.
+     =================================================================== */
+  .mock{color-scheme:light;background:#F7F8FA;color:#1D2125;border:1px solid #CFD7E0;font-family:var(--body);font-size:14px;line-height:1.5;position:relative;overflow:hidden}
+  .mock *{box-sizing:border-box}
+  /* Las maquetas son de tema claro fijo: la regla global de <code> usaría
+     var(--surface-2), que en tema oscuro deja fondo oscuro bajo texto claro. */
+  .mock code{background:#EDF1F5;color:inherit}
+  /* Los 8 campos técnicos del panel actual. Los vacíos se marcan, no se omiten. */
+  .mk-tec{display:grid;grid-template-columns:repeat(auto-fit,minmax(134px,1fr));gap:7px;margin:7px 0 0}
+  .mk-tec>div{background:#F8FAFC;border:1px solid #E4E9EF;border-radius:6px;padding:6px 8px;min-width:0}
+  .mk-tec>div.vacia{background:#FCFDFE;border-style:dashed}
+  .mk-tec dt{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#5A6472}
+  .mk-tec dd{margin:1px 0 0;font-family:var(--mono);font-size:11px;word-break:break-all}
+  .mk-tec dd.vacio{font-family:var(--body);color:#5A6472;font-style:italic}
+  .mk-expesp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 9px;font-size:12px;margin:6px 0 0}
+  .mk-expesp dt{color:#5A6472;white-space:nowrap}
+  .mk-expesp dd{margin:0;font-family:var(--mono);font-size:11.5px;word-break:break-word}
+  .mk-expesp dd.esp{color:#14713D}
+  .mk-expesp dd.act{color:#A8190F}
+  .mk-filtro{font:inherit;font-size:12.5px;min-height:38px;padding:0 9px;border:1px solid #CFD7E0;border-radius:6px;background:#fff;width:100%;color:inherit}
+  .mk-campos{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:7px}
+  .mk-campos th,.mk-campos td{text-align:left;padding:5px 7px;border-bottom:1px solid #EDF1F5;vertical-align:top}
+  .mk-campos thead th{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#5A6472;background:#FAFBFC;position:sticky;top:0}
+  .mk-campos td:first-child{font-family:var(--mono);color:#3C4753;white-space:nowrap}
+  .mk-campos td:last-child{font-family:var(--mono);word-break:break-all;color:#1D2125}
+  .mk-campos tr.dup td:first-child{color:#A8190F}
+  .mk-camposbox{max-height:250px;overflow:auto;border:1px solid #E4E9EF;border-radius:6px;margin-top:7px}
+  .mk-camposbox:focus-visible{outline:2px solid #1B4B7F;outline-offset:1px}
+  .mk-nota{font-size:11.5px;color:#3C4753;background:#F1F6FB;border-left:2px solid #1B4B7F;padding:6px 8px;margin:8px 0 0;border-radius:0 4px 4px 0}
+  .mk-nuevo{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#14713D;background:#E6F4EA;border-radius:3px;padding:1px 4px;margin-left:5px;vertical-align:1px}
+  .mk-sec-t{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5A6472;margin:16px 0 7px}
+  .mock__bar{height:4px;background:#C41E14}
+  .mk-body{padding:16px}
+  .mk-h1{font-size:19px;font-weight:700;margin:0 0 2px;letter-spacing:-.01em}
+  .mk-lede{margin:0 0 14px;color:#5A6472;font-size:13px}
+  .mk-lede b{color:#A8190F}
+
+  /* Cabecera de estado: cuenta lo que el módulo detecta, no sólo el HTTP */
+  .mk-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px}
+  .mk-kpi{background:#fff;border:1px solid #E4E9EF;border-radius:8px;padding:10px 12px}
+  .mk-kpi--alert{border-color:#E9B5B0;background:#FFFBFB}
+  .mk-kpi dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#5A6472;margin:0 0 4px}
+  .mk-kpi dd{margin:0;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+  .mk-kpi dd small{font-size:12px;font-weight:400;color:#5A6472}
+  .mk-kpi--alert dd{color:#A8190F}
+  /* Va dentro del dd: un <div> anidado en <dl> no está permitido. */
+  .mk-kpi__foot{display:block;font-size:11.5px;font-weight:400;color:#5A6472;margin-top:3px}
+
+  .mk-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+  .mk-fld{display:flex;flex-direction:column;gap:3px}
+  .mk-fld label{font-size:11.5px;font-weight:600;color:#3C4753}
+  .mk-fld input,.mk-fld select{font:inherit;font-size:13.5px;min-height:44px;padding:0 10px;border:1px solid #CFD7E0;border-radius:6px;background:#fff;color:inherit}
+  .mk-fld input{min-width:190px}
+  .mk-seg{display:inline-flex;border:1px solid #CFD7E0;border-radius:6px;overflow:hidden;background:#fff}
+  .mk-seg button{font:inherit;font-size:13.5px;min-height:44px;padding:0 14px;border:0;background:none;cursor:pointer;color:#3C4753}
+  .mk-seg button+button{border-left:1px solid #CFD7E0}
+  .mk-seg button[aria-pressed="true"]{background:#1D2125;color:#fff;font-weight:600}
+  .mk-btn{font:inherit;font-size:13.5px;min-height:44px;padding:0 14px;border:1px solid #CFD7E0;background:#fff;color:#1D2125;border-radius:6px;cursor:pointer}
+  .mk-btn:hover{background:#F1F4F7}
+  .mk-btn--pri{background:#C41E14;border-color:#C41E14;color:#fff;font-weight:600}
+  .mk-btn--pri:hover{background:#A8190F}
+  .mk-cols{position:relative}
+  .mk-cols__pop{position:absolute;right:0;top:calc(100% + 6px);z-index:5;background:#fff;border:1px solid #CFD7E0;border-radius:8px;padding:10px 12px;box-shadow:0 8px 24px rgba(16,24,32,.14);min-width:230px}
+  .mk-cols__pop[hidden]{display:none}
+  .mk-cols__pop p{margin:0 0 8px;font-size:11.5px;color:#5A6472;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .mk-cols__pop label{display:flex;gap:8px;align-items:center;min-height:32px;font-size:13.5px}
+
+  .mk-tblwrap{border:1px solid #E4E9EF;border-radius:8px;background:#fff;overflow:auto;max-height:430px}
+  .mk-tblwrap:focus-visible{outline:2px solid #1B4B7F;outline-offset:1px}
+  table.mk{border-collapse:separate;border-spacing:0;width:100%;font-size:13px}
+  table.mk th,table.mk td{padding:9px 11px;border-bottom:1px solid #EDF1F5;text-align:left;white-space:nowrap}
+  table.mk thead th{position:sticky;top:0;z-index:2;background:#FAFBFC;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#5A6472;border-bottom:1px solid #E4E9EF}
+  /* Columna de URL fija: al desplazar en horizontal no se pierde el contexto */
+  table.mk th.sticky,table.mk td.sticky{position:sticky;left:0;z-index:3;background:#fff;border-right:1px solid #E4E9EF;white-space:normal;min-width:270px;max-width:330px}
+  table.mk thead th.sticky{z-index:4;background:#FAFBFC}
+  table.mk tbody tr:hover td{background:#FAFBFC}
+  table.mk tbody tr:hover td.sticky{background:#FAFBFC}
+  table.mk tbody tr.open td{background:#F3F7FB}
+  .mk-url{font-family:var(--mono);font-size:12px;color:#1B4B7F;word-break:break-all;display:block}
+  .mk-dev{font-size:11.5px;color:#5A6472}
+  .mk-num{font-variant-numeric:tabular-nums;text-align:right}
+
+  .mk-chips{display:flex;gap:4px;flex-wrap:wrap}
+  .mk-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;white-space:nowrap}
+  .mk-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto}
+  .mk-chip--alta{background:#FCE9E7;color:#A8190F}
+  .mk-chip--media{background:#FEF7E0;color:#8A5200}
+  .mk-chip--baja{background:#EDF1F5;color:#4E5865}
+  .mk-chip--ok{background:#E6F4EA;color:#14713D}
+  .mk-chip--sq{border-radius:4px}
+  .mk-chip--plain::before{display:none}
+
+  .mk-rowbtn{font:inherit;font-size:13px;display:flex;align-items:center;gap:7px;min-height:44px;width:100%;padding:0;border:0;background:none;cursor:pointer;color:inherit;text-align:left}
+  .mk-caret{display:inline-block;transition:transform .15s ease;color:#5A6472;flex:0 0 auto}
+  tr.open .mk-caret{transform:rotate(90deg);color:#C41E14}
+  .mk-detail td{background:#F8FAFC;white-space:normal;border-bottom:1px solid #E4E9EF}
+  .mk-detail__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-bottom:10px}
+  .mk-mini{background:#fff;border:1px solid #E4E9EF;border-radius:6px;padding:8px 10px}
+  .mk-mini dt{font-size:11px;color:#5A6472;text-transform:uppercase;letter-spacing:.05em}
+  .mk-mini dd{margin:2px 0 0;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+  .mk-mini dd.zero{color:#5A6472;font-weight:400}
+  .mk-mini dd.bad{color:#A8190F}
+  .mk-detail__act{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .mk-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:12.5px;color:#5A6472}
+  .mk-pager{display:flex;gap:6px;align-items:center}
+  .mk-pager button{font:inherit;font-size:13px;min-height:36px;min-width:36px;border:1px solid #CFD7E0;background:#fff;border-radius:6px;cursor:pointer}
+  .mk-pager button[aria-current="true"]{background:#1D2125;color:#fff;border-color:#1D2125;font-weight:600}
+
+  /* Panel de detalle */
+  .mk-scrim{position:absolute;inset:0;background:rgba(16,24,32,.42);z-index:20}
+  .mk-scrim[hidden]{display:none}
+  .mk-drawer{position:absolute;top:0;right:0;bottom:0;width:min(560px,92%);background:#fff;z-index:21;display:flex;flex-direction:column;box-shadow:-8px 0 28px rgba(16,24,32,.18)}
+  .mk-drawer[hidden]{display:none}
+  .mk-drawer__head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid #E4E9EF}
+  .mk-drawer__head h3{margin:0;font-size:16px;font-weight:700}
+  .mk-drawer__head p{margin:2px 0 0;font-size:12px;color:#5A6472;max-width:none}
+  .mk-close{margin-left:auto;font:inherit;width:44px;height:44px;min-width:44px;border:1px solid #CFD7E0;background:#fff;border-radius:6px;cursor:pointer;font-size:18px;line-height:1;flex:0 0 auto}
+  .mk-close:hover{background:#F1F4F7}
+  .mk-drawer__nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px;border-bottom:1px solid #E4E9EF;background:#FAFBFC;font-size:12.5px;color:#5A6472}
+  .mk-drawer__body{overflow-y:auto;padding:14px 16px 20px;flex:1}
+  .mk-sum{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .mk-rule{border:1px solid #E4E9EF;border-radius:8px;margin-bottom:10px;overflow:hidden;background:#fff}
+  .mk-rule>summary{cursor:pointer;padding:10px 12px;display:flex;gap:9px;align-items:center;flex-wrap:wrap;list-style:none;min-height:44px}
+  .mk-rule>summary::-webkit-details-marker{display:none}
+  .mk-rule>summary:hover{background:#FAFBFC}
+  .mk-rule__code{font-family:var(--mono);font-size:11.5px;background:#EDF1F5;padding:2px 6px;border-radius:4px;color:#3C4753}
+  .mk-rule__n{margin-left:auto;font-size:12px;color:#5A6472}
+  .mk-rule__body{padding:0 12px 12px;border-top:1px solid #EDF1F5}
+  .mk-def{font-size:12.5px;color:#3C4753;background:#F8FAFC;border-left:2px solid #CFD7E0;padding:8px 10px;margin:10px 0}
+  .mk-def b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#5A6472;margin-bottom:2px}
+  .mk-occ{border-top:1px solid #EDF1F5;padding:9px 0 0;margin-top:9px}
+  .mk-occ:first-of-type{border-top:0}
+  .mk-occ__where{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;font-size:12px;margin:6px 0 0}
+  .mk-occ__where dt{color:#5A6472}
+  .mk-occ__where dd{margin:0;font-family:var(--mono);font-size:11.5px;word-break:break-all}
+  .mk-trace{font-family:var(--mono);font-size:11px;background:#F8FAFC;border:1px solid #E4E9EF;border-radius:6px;padding:8px;margin:7px 0 0;max-height:118px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+  .mk-trace:focus-visible{outline:2px solid #1B4B7F;outline-offset:1px}
+  .mk-fix{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:9px;font-size:12.5px}
+  .mk-fix strong{font-weight:600}
+
+  @media (prefers-reduced-motion:reduce){.mock *{transition:none!important}}
+
+  .spec{border:1px solid var(--rule);background:var(--surface)}
+  .spec h3{margin:0;padding:.85rem 1.1rem;font-size:1rem;border-bottom:1px solid var(--rule);font-family:var(--body);font-weight:600}
+  .spec ol{margin:0;padding:1rem 1.1rem 1.1rem 2.4rem}
+  .spec li{margin-bottom:.7rem;max-width:74ch}
+  .spec li:last-child{margin-bottom:0}
+  .spec li b{font-weight:600}
+
+  .foot{border-top:2px solid var(--ink);padding:1.6rem 0 3rem;font-size:.85rem;color:var(--muted)}
+  .foot p{max-width:80ch;margin:0 0 .6rem}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="back" href="index.html">← Índice de informes</a>
+    <p class="eyebrow">Propuesta de rediseño · 4 de agosto de 2026</p>
+    <h1>Módulo 2 · Técnico</h1>
+    <p class="purpose">
+      La pantalla contiene el mejor detalle técnico de toda la plataforma y lo esconde detrás de
+      586 píxeles de desplazamiento horizontal. La propuesta no añade funciones: reordena lo que ya existe.
+    </p>
+    <dl class="stats">
+      <div class="stat warn"><dt>Scroll hasta «Ver detalles»</dt><dd>586<small> px</small></dd></div>
+      <div class="stat"><dt>Ancho tabla 1</dt><dd>1 910<small> px en 1 324</small></dd></div>
+      <div class="stat warn"><dt>Ancho tabla 2</dt><dd>2 923<small> px en 1 324</small></dd></div>
+      <div class="stat warn"><dt>Columnas constantes</dt><dd>9<small> de 17</small></dd></div>
+      <div class="stat"><dt>Datos descargados</dt><dd>471<small> KB · 8 llamadas</small></dd></div>
+      <div class="stat warn"><dt>Hasta ver contenido</dt><dd>4 732<small> ms</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ DIAGNÓSTICO ============ -->
+  <section>
+    <h2>Lo que medí</h2>
+    <p class="sub">Ocho problemas, cada uno con su medición. Los cuatro primeros explican por qué la pantalla se siente lenta y difícil de leer.</p>
+
+    <div class="finds">
+      <article class="find">
+        <div class="find__gut"><span class="tag t-critico">Crítico</span><span class="find__id">M2-1</span></div>
+        <div>
+          <h4>Lo mejor del módulo está en la columna 17, fuera de la pantalla</h4>
+          <p><span class="lbl">Evidencia</span> «Ver detalles» es un <code>&lt;button class="link-button" data-action="detail"&gt;</code> de 89×40 px situado en la columna 17 de 17. La tabla mide 1 910 px dentro de un contenedor de 1 324 px, así que hay 586 px de desplazamiento horizontal. Comprobado: el botón <strong>no está visible sin desplazar</strong>.</p>
+          <p><span class="lbl">Impacto</span> El panel que abre es la parte mejor resuelta de la plataforma —da la URL, el recuento de hallazgos por severidad, el componente, el selector CSS, el archivo y la línea exacta del error—, y la mayoría de usuarios no llega a descubrir que existe.</p>
+          <p class="fix"><span class="lbl">Corrección</span> La fila entera abre el detalle, con un indicador visible en la primera columna, que además queda fija al desplazar.</p>
+        </div>
+      </article>
+
+      <article class="find">
+        <div class="find__gut"><span class="tag t-critico">Crítico</span><span class="find__id">M2-2</span></div>
+        <div>
+          <h4>Nueve de las diecisiete columnas tienen el mismo valor en todas las filas</h4>
+          <p><span class="lbl">Evidencia</span> En las filas medidas, estas columnas no varían: Dispositivo («Móvil»), Código HTTP («HTTP 200»), Redirecciones («0»), Redirección temporal («No»), Rastreable («Sí»), Estado de rastreo («OK»), Estado runtime («Capturado»), Mixed content («0») y Errores CORS («0»). «Cadena redirects» está <strong>vacía en todas</strong>. Sólo cinco columnas discriminan: URL, Tiempo de respuesta, Errores consola, Errores JS, Recursos fallidos y Errores CSP.</p>
+          <p><span class="lbl">Impacto</span> Diez columnas sin poder informativo consumen el ancho que empuja «Ver detalles» fuera de la vista. El usuario paga desplazamiento para leer diez veces el mismo dato.</p>
+          <p class="fix"><span class="lbl">Corrección</span> Seis columnas por defecto; las demás, opcionales desde un selector de columnas. Lo constante sube a la cabecera como un hecho único: «200 URLs, todas HTTP 200, sin redirecciones».</p>
+        </div>
+      </article>
+
+      <article class="find">
+        <div class="find__gut"><span class="tag t-critico">Crítico</span><span class="find__id">M2-3</span></div>
+        <div>
+          <h4>La segunda tabla repite lo que ya muestra el panel de detalle</h4>
+          <p><span class="lbl">Evidencia</span> «Hallazgos técnicos» tiene 14 columnas y mide <strong>2 923 px</strong> en un contenedor de 1 324: el 55 % de la tabla es invisible. Sus 25 filas contienen sólo <strong>2 URLs distintas</strong>, porque lista un hallazgo por fila. Es exactamente el contenido que el panel «Ver detalles» ya presenta agrupado por URL.</p>
+          <p><span class="lbl">Impacto</span> Es la causa de la lentitud que se percibe al entrar: dos tablas simultáneas suman 775 celdas y 2 010 nodos de DOM, y la segunda no aporta nada que el panel no diga mejor.</p>
+          <p class="fix"><span class="lbl">Corrección</span> Una sola tabla con dos lentes —«Por URL» y «Por hallazgo»— conmutables. Se renderiza una a la vez; el detalle por URL vive en el panel.</p>
+        </div>
+      </article>
+
+      <article class="find">
+        <div class="find__gut"><span class="tag t-critico">Crítico</span><span class="find__id">M2-4</span></div>
+        <div>
+          <h4>Cada hallazgo se cuenta dos veces</h4>
+          <p><span class="lbl">Evidencia</span> Las filas 1 y 2 de «Hallazgos técnicos» son la misma regla (<code>TECH_DEPRECATED_API</code>) sobre la misma URL: una con «Componente: <code>runtime_event</code>» y el volcado de consola, otra con «Componente: <code>runtime</code>» y el texto «Se detectó uso de APIs deprecadas en runtime». El patrón se repite con <code>TECH_JQUERY_UNDEFINED</code> en las filas 3 y 4, y el panel lo muestra igual: la misma regla dos veces seguidas.</p>
+          <p><span class="lbl">Impacto</span> Infla el recuento. El panel declara «22 hallazgos» en una URL que probablemente tiene 11 problemas distintos vistos desde dos fuentes de captura.</p>
+          <p class="fix"><span class="lbl">Corrección</span> Un hallazgo por regla y URL, con las capturas como ocurrencias dentro de él. Conviene confirmar con el equipo si son dos detecciones del mismo problema o dos problemas reales.</p>
+        </div>
+      </article>
+
+      <article class="find">
+        <div class="find__gut"><span class="tag t-critico">Crítico</span><span class="find__id">M2-5</span></div>
+        <div>
+          <h4>«SALUD TÉCNICA 100 %» en una pantalla llena de errores</h4>
+          <p><span class="lbl">Evidencia</span> Las tarjetas dicen «URLS PROCESADAS 200», «STATUS OK 200», «ERRORES HTTP 0» y «SALUD TÉCNICA 100 %». La primera fila de la tabla, en la misma pantalla, tiene 4 errores de consola, 3 errores JS, 8 recursos fallidos y 2 errores CSP; y su panel de detalle declara <strong>22 hallazgos, 14 de severidad alta</strong>.</p>
+          <p><span class="lbl">Impacto</span> El indicador sólo mide códigos de respuesta HTTP, pero se llama «salud técnica» y ocupa el lugar de la conclusión. Un 100 % invita a cerrar el módulo justo cuando hay más trabajo pendiente.</p>
+          <p class="fix"><span class="lbl">Corrección</span> Que el titular cuente lo que el módulo detecta: URLs con hallazgos en runtime y su severidad. El HTTP correcto pasa a ser un dato secundario, porque efectivamente lo está.</p>
+        </div>
+      </article>
+
+      <article class="find">
+        <div class="find__gut"><span class="tag t-grave">Grave</span><span class="find__id">M2-6</span></div>
+        <div>
+          <h4>El 79 % de los datos descargados no son de este módulo</h4>
+          <p><span class="lbl">Evidencia</span> Abrir el módulo dispara 8 llamadas y 471 KB. De ellas, <code>api/rules/catalog</code> (206 KB), <code>api/rules/traceability/latest</code> (91 KB) y <code>api/findings/summary/latest</code> (75 KB) suman 372 KB que pertenecen al Resumen, no al Técnico. Los datos propios —<code>results</code> 43 KB y <code>findings</code> 52 KB— son 95 KB. El contenido aparece a los 4 732 ms; el spinner, a los 1 488 ms. En otra medición, <code>rules/catalog</code> se descargó <strong>dos veces</strong> en la misma navegación.</p>
+          <p class="fix"><span class="lbl">Corrección</span> Pedir primero los 95 KB propios y pintar la tabla; el catálogo de reglas, sólo al desplegar la definición de una regla, y cacheado en memoria para no repetirlo.</p>
+        </div>
+      </article>
+
+      <article class="find">
+        <div class="find__gut"><span class="tag t-grave">Grave</span><span class="find__id">M2-7</span></div>
+        <div>
+          <h4>El panel no es un diálogo accesible</h4>
+          <p><span class="lbl">Evidencia</span> Es un <code>&lt;div class="drawer-backdrop"&gt;</code> con <code>position:fixed</code> y <code>z-index:1000</code>, sin <code>role="dialog"</code>, sin <code>aria-modal</code> y sin nombre accesible. Al abrirlo, <strong>el foco se queda en el botón que lo lanzó</strong>, fuera del panel. El <code>overflow</code> del <code>body</code> sigue en <code>visible</code>, así que el fondo se desplaza detrás. El botón de cierre mide 36×36 px y su nombre accesible es la ligadura literal «close». Los cinco botones «Sugerir con IA» miden 117×27 px. <em>Escape sí cierra el panel</em>, eso ya funciona.</p>
+          <p class="fix"><span class="lbl">Corrección</span> <code>role="dialog"</code> con <code>aria-modal="true"</code> y <code>aria-labelledby</code> al título; mover el foco al panel al abrir y devolverlo al disparador al cerrar; atrapar el tabulador dentro; bloquear el desplazamiento del fondo; cierre de 44×44 px con <code>aria-label="Cerrar detalle"</code>.</p>
+        </div>
+      </article>
+
+      <article class="find">
+        <div class="find__gut"><span class="tag t-grave">Grave</span><span class="find__id">M2-8</span></div>
+        <div>
+          <h4>La definición de cada regla se repite una vez por hallazgo</h4>
+          <p><span class="lbl">Evidencia</span> El panel tiene 892 nodos y 29 772 caracteres. Dentro, el mismo párrafo de definición aparece <strong>5 veces</strong> (242 caracteres), otro <strong>4 veces</strong> (358) y otro <strong>2 veces</strong> (246). Además, el campo «Actual» repite íntegro el volcado de consola que ya está impreso arriba en «Hallazgo»: el mismo <em>stack trace</em> de jQuery, dos veces seguidas.</p>
+          <p class="fix"><span class="lbl">Corrección</span> Agrupar por regla: la definición una sola vez en la cabecera del grupo, y debajo las ocurrencias con lo que cambia entre ellas —archivo, línea, selector—. El volcado largo va en un bloque desplazable, no repetido.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ INVENTARIO DE COLUMNAS ============ -->
+  <section>
+    <h2>Las diecisiete columnas, una por una</h2>
+    <p class="sub">Qué hacer con cada una. La decisión sale del dato medido, no del criterio.</p>
+    <div class="tbl-scroll" tabindex="0" role="region" aria-label="Inventario de las 17 columnas, tabla desplazable">
+      <table class="data">
+        <thead><tr><th class="num">#</th><th>Columna</th><th>Valores observados</th><th>Decisión</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>URL</td><td>25 valores distintos</td><td class="keep">Se queda · fija al desplazar</td></tr>
+          <tr><td class="num">2</td><td>Dispositivo</td><td class="const">«Móvil» en todas</td><td>A filtro de cabecera</td></tr>
+          <tr><td class="num">3</td><td>Código HTTP</td><td class="const">«HTTP 200» en todas</td><td>Al resumen · columna opcional</td></tr>
+          <tr><td class="num">4</td><td>Tiempo de respuesta</td><td>351 / 233 / 218 / 211 ms</td><td class="keep">Se queda · con umbral visible</td></tr>
+          <tr><td class="num">5</td><td>Redirecciones</td><td class="const">«0» en todas</td><td>Columna opcional</td></tr>
+          <tr><td class="num">6</td><td>Cadena redirects</td><td class="const">vacía en todas</td><td>Fuera de la tabla</td></tr>
+          <tr><td class="num">7</td><td>Redirección temporal</td><td class="const">«No» en todas</td><td>Columna opcional</td></tr>
+          <tr><td class="num">8</td><td>Rastreable</td><td class="const">«Sí» en todas</td><td>Al resumen</td></tr>
+          <tr><td class="num">9</td><td>Estado de rastreo</td><td class="const">«OK» en todas</td><td>Al resumen</td></tr>
+          <tr><td class="num">10</td><td>Estado runtime</td><td class="const">«Capturado» en todas</td><td>Fuera de la tabla</td></tr>
+          <tr><td class="num">11</td><td>Errores consola</td><td>4 / 4 / 2 / 5</td><td class="keep">Agrupada en «Problemas»</td></tr>
+          <tr><td class="num">12</td><td>Errores JS</td><td>3 / 3 / 1 / 3</td><td class="keep">Agrupada en «Problemas»</td></tr>
+          <tr><td class="num">13</td><td>Recursos fallidos</td><td>8 / 8 / 8 / 9</td><td class="keep">Agrupada en «Problemas»</td></tr>
+          <tr><td class="num">14</td><td>Mixed content</td><td class="const">«0» en todas</td><td>Agrupada en «Problemas»</td></tr>
+          <tr><td class="num">15</td><td>Errores CORS</td><td class="const">«0» en todas</td><td>Agrupada en «Problemas»</td></tr>
+          <tr><td class="num">16</td><td>Errores CSP</td><td>2 / 2 / 2 / 3</td><td class="keep">Agrupada en «Problemas»</td></tr>
+          <tr><td class="num">17</td><td>Acción</td><td>«Ver detalles» en todas</td><td>La fila entera es la acción</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Seis columnas visibles en lugar de diecisiete. Las seis métricas de runtime (11 a 16) se resumen en una columna «Problemas» con chips por severidad y se desglosan al expandir la fila, sin abrir el panel.</p>
+  </section>
+
+  <!-- ============ ANTES ============ -->
+  <section>
+    <h2>Cómo está hoy</h2>
+    <p class="sub">Capturas reales del 4 de agosto de 2026 en escritorio de 1440 px.</p>
+    <div class="two">
+      <div>
+        <p class="pane__lbl"><b>Antes</b> · la pantalla completa</p>
+        <div class="shot" tabindex="0" role="region" aria-label="Captura desplazable del Módulo 2 Técnico actual">
+          <img src="capturas/modulo-2-tecnico-desktop.jpg" alt="Módulo 2 Técnico actual: cuatro tarjetas, tabla de resultados técnicos y debajo tabla de hallazgos técnicos.">
+        </div>
+        <p class="note">Las dos tablas, una debajo de otra. «Ver detalles» queda a 586 px a la derecha en la primera y a 1 599 px en la segunda.</p>
+      </div>
+      <div>
+        <p class="pane__lbl"><b>Antes</b> · el panel «Ver detalles»</p>
+        <div class="shot" tabindex="0" role="region" aria-label="Captura desplazable del panel de detalle actual">
+          <img src="capturas/m2-panel-detalle.jpg" alt="Panel de detalle actual: título, paginación 1 de 25, tarjetas de URL, hallazgos y severidades, y la lista de problemas con su stack trace.">
+        </div>
+        <p class="note">El contenido es el correcto. El problema es llegar a él, y la repetición del volcado de consola en «Hallazgo» y otra vez en «Actual».</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROPUESTA ============ -->
+  <section>
+    <h2>La propuesta</h2>
+    <p class="sub">Maqueta funcional: puede filtrar, conmutar la vista, elegir columnas, expandir filas y abrir el panel. Funciona con teclado.</p>
+
+    <h3 class="step">Pruébela — es interactiva</h3>
+
+    <div class="mock" id="mock">
+      <div class="mock__bar"></div>
+      <div class="mk-body">
+        <p class="mk-h1">Módulo 2 · Técnico</p>
+        <p class="mk-lede">
+          200 URLs medidas el 17 jul, 12:02. Todas responden HTTP 200 y sin redirecciones ·
+          <b>178 tienen errores en runtime</b>
+        </p>
+
+        <dl class="mk-kpis">
+          <div class="mk-kpi mk-kpi--alert">
+            <dt>URLs con hallazgos</dt>
+            <dd>178 <small>de 200</small><span class="mk-kpi__foot">89 % del total medido</span></dd>
+          </div>
+          <div class="mk-kpi mk-kpi--alert">
+            <dt>Severidad alta</dt>
+            <dd>14 <small>en la peor URL</small><span class="mk-kpi__foot">jQuery undefined, APIs deprecadas</span></dd>
+          </div>
+          <div class="mk-kpi">
+            <dt>Respuesta media</dt>
+            <dd>253 <small>ms</small><span class="mk-kpi__foot">umbral 1 000 ms · dentro</span></dd>
+          </div>
+          <div class="mk-kpi">
+            <dt>Disponibilidad HTTP</dt>
+            <dd>100 <small>%</small><span class="mk-kpi__foot">200 de 200 responden 200</span></dd>
+          </div>
+        </dl>
+
+        <div class="mk-toolbar">
+          <div class="mk-fld">
+            <label for="mk-q">Filtrar por URL</label>
+            <input id="mk-q" type="search" placeholder="parte de la ruta">
+          </div>
+          <div class="mk-fld">
+            <label for="mk-sev">Severidad</label>
+            <select id="mk-sev">
+              <option>Todas</option><option>Alta</option><option>Media</option><option>Baja</option>
+            </select>
+          </div>
+          <div class="mk-fld">
+            <label for="mk-dev">Dispositivo</label>
+            <select id="mk-dev">
+              <option>Todos</option><option selected>Móvil</option><option>Escritorio</option>
+            </select>
+          </div>
+          <div class="mk-fld">
+            <span id="mk-vista-lbl" style="font-size:11.5px;font-weight:600;color:#3C4753">Ver</span>
+            <div class="mk-seg" role="group" aria-labelledby="mk-vista-lbl">
+              <button type="button" id="mk-v-url" aria-pressed="true">Por URL</button>
+              <button type="button" id="mk-v-hal" aria-pressed="false">Por hallazgo</button>
+            </div>
+          </div>
+          <div class="mk-cols" style="margin-left:auto">
+            <button class="mk-btn" type="button" id="mk-cols-btn" aria-expanded="false" aria-controls="mk-cols-pop">Columnas (6 de 17)</button>
+            <div class="mk-cols__pop" id="mk-cols-pop" hidden>
+              <p>Columnas opcionales</p>
+              <label><input type="checkbox" data-col="http"> Código HTTP</label>
+              <label><input type="checkbox" data-col="redir"> Redirecciones</label>
+              <label><input type="checkbox" data-col="temp"> Redirección temporal</label>
+              <label><input type="checkbox" data-col="rastreo"> Estado de rastreo</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vista por URL -->
+        <div class="mk-tblwrap" id="mk-wrap-url" tabindex="0" role="region" aria-label="Resultados técnicos por URL, tabla desplazable">
+          <table class="mk" id="mk-tabla">
+            <thead>
+              <tr>
+                <th class="sticky" scope="col">URL</th>
+                <th scope="col" class="mk-num">Respuesta</th>
+                <th scope="col">Problemas</th>
+                <th scope="col" data-c="http" hidden>Código HTTP</th>
+                <th scope="col" data-c="redir" hidden class="mk-num">Redirecciones</th>
+                <th scope="col" data-c="temp" hidden>Redir. temporal</th>
+                <th scope="col" data-c="rastreo" hidden>Estado rastreo</th>
+              </tr>
+            </thead>
+            <tbody id="mk-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Vista por hallazgo -->
+        <div class="mk-tblwrap" id="mk-wrap-hal" tabindex="0" role="region" aria-label="Hallazgos técnicos agrupados por regla, tabla desplazable" hidden>
+          <table class="mk">
+            <thead>
+              <tr>
+                <th class="sticky" scope="col">Regla</th>
+                <th scope="col">Severidad</th>
+                <th scope="col" class="mk-num">URLs</th>
+                <th scope="col" class="mk-num">Ocurrencias</th>
+                <th scope="col">Acción sugerida</th>
+              </tr>
+            </thead>
+            <tbody id="mk-tbody-hal"></tbody>
+          </table>
+        </div>
+
+        <div class="mk-foot">
+          <span id="mk-count">Mostrando 1–4 de 200 URLs</span>
+          <div class="mk-pager">
+            <span style="margin-right:6px">Filas</span>
+            <button type="button">10</button>
+            <button type="button" aria-current="true">25</button>
+            <button type="button">50</button>
+            <button type="button">100</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de detalle -->
+      <div class="mk-scrim" id="mk-scrim" hidden></div>
+      <div class="mk-drawer" id="mk-drawer" role="dialog" aria-modal="true" aria-labelledby="mk-drawer-t" hidden>
+        <div class="mk-drawer__head">
+          <div>
+            <h3 id="mk-drawer-t">Detalle de la URL</h3>
+            <p id="mk-drawer-url" class="mk-url" style="color:#1B4B7F"></p>
+          </div>
+          <button class="mk-close" type="button" id="mk-close" aria-label="Cerrar detalle">×</button>
+        </div>
+        <div class="mk-drawer__nav">
+          <button class="mk-btn" type="button" style="min-height:36px;padding:0 10px">← Anterior</button>
+          <span id="mk-drawer-pos">URL 1 de 200</span>
+          <button class="mk-btn" type="button" style="min-height:36px;padding:0 10px">Siguiente →</button>
+        </div>
+        <div class="mk-drawer__body" id="mk-drawer-body"></div>
+      </div>
+    </div>
+
+    <p class="note">
+      Los recuentos de la maqueta son los valores reales de las columnas del módulo. El desglose por
+      severidad (14 alta · 7 media · 1 baja) y el <em>stack trace</em> proceden del panel real de la
+      primera URL. La paginación conserva las 200 filas y los tamaños 10/25/50/100 que ya existen.
+    </p>
+
+    <h3 class="step">Qué cambia, y por qué</h3>
+    <div class="two">
+      <div>
+        <p><strong>La fila entera abre el detalle.</strong> El indicador va en la primera columna, que queda fija al desplazar en horizontal, así que nunca se pierde de vista ni la URL ni el acceso al panel. Con teclado, el disparador es un botón real dentro de la celda de URL.</p>
+        <p><strong>Seis columnas en lugar de diecisiete.</strong> Las seis métricas de runtime se agrupan en «Problemas» con chips por severidad; al expandir la fila se ven las seis cifras sin abrir el panel. Las columnas constantes pasan a la cabecera o al selector de columnas.</p>
+        <p><strong>Una tabla a la vez.</strong> «Por URL» y «Por hallazgo» son dos lentes de los mismos datos. La vista por hallazgo agrupa por regla en lugar de repetir una fila por ocurrencia: cuatro reglas en lugar de veinticinco filas.</p>
+      </div>
+      <div>
+        <p><strong>El titular cuenta lo que el módulo detecta.</strong> «178 de 200 URLs con errores en runtime» ocupa el lugar que hoy tiene «SALUD TÉCNICA 100 %». La disponibilidad HTTP sigue estando, como dato secundario y correcto que es.</p>
+        <p><strong>El panel agrupa por regla.</strong> La definición se imprime una vez por regla, no una por hallazgo, y debajo van las ocurrencias con lo único que cambia entre ellas: archivo, línea y selector. El volcado de consola aparece una vez, en un bloque desplazable y enfocable.</p>
+        <p><strong>El panel es un diálogo de verdad.</strong> <code>role="dialog"</code>, <code>aria-modal</code>, foco que entra al abrir y vuelve al disparador al cerrar, tabulador atrapado, fondo bloqueado y cierre de 44×44 px. Pruébelo con Tab y Escape.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ESPEC ============ -->
+  <section>
+    <h2>Especificación para desarrollo</h2>
+    <p class="sub">En orden de aplicación. Los tres primeros puntos resuelven lo que se percibe como lentitud.</p>
+    <div class="spec">
+      <h3>Cambios concretos sobre el código actual</h3>
+      <ol>
+        <li><b>Cargar sólo los datos del módulo al entrar.</b> Pedir <code>results</code> y <code>findings</code> (95 KB) y pintar. Diferir <code>rules/catalog</code>, <code>rules/traceability/latest</code> y <code>findings/summary/latest</code>: el catálogo, sólo al desplegar la definición de una regla; y cachearlo para que no se descargue dos veces.</li>
+        <li><b>Renderizar una tabla, no dos.</b> Conmutador «Por URL / Por hallazgo». Reduce el DOM inicial de 775 celdas a unas 150 y elimina la tabla de 2 923 px.</li>
+        <li><b>Agrupar los hallazgos por regla y URL</b> antes de pintar, con las capturas como ocurrencias. Confirmar antes con el equipo si <code>runtime</code> y <code>runtime_event</code> son dos detecciones del mismo problema; si lo son, el recuento de la primera URL baja de 22 a unos 11.</li>
+        <li><b>Seis columnas por defecto</b> —URL, Respuesta, Problemas y tres opcionales—, con la de URL en <code>position:sticky; left:0</code> y la cabecera en <code>position:sticky; top:0</code>. Eliminar «Cadena redirects» y «Estado runtime» de la tabla.</li>
+        <li><b>La fila abre el detalle.</b> Mantener un botón real como disparador accesible dentro de la celda de URL, con <code>aria-expanded</code> para la expansión en línea y un botón aparte para el panel.</li>
+        <li><b>Convertir el panel en diálogo:</b> <code>role="dialog"</code>, <code>aria-modal="true"</code>, <code>aria-labelledby</code>, foco al abrir, retorno del foco al cerrar, trampa de tabulador, <code>overflow:hidden</code> en el <code>body</code>, cierre de 44×44 px con <code>aria-label</code>.</li>
+        <li><b>Deduplicar el contenido del panel sin quitar información:</b> una definición por regla; «Esperado / Detectado» sin repetir el volcado que ya aparece en «Hallazgo»; volcado largo en bloque con <code>overflow:auto</code> y <code>tabindex="0"</code>. <b>Se conservan las seis secciones de los dos paneles actuales</b> —resumen de severidades, problemas, «qué se revisó», «qué significa», «qué hacer» y métricas— más los 36 campos del registro y los 28 del hallazgo, estos dos con buscador. Los 8 campos técnicos se muestran siempre, marcando «sin dato» los vacíos en lugar de un guion.</li>
+        <li><b>Mostrar dos datos que ya están en la respuesta y no en pantalla:</b> <code>console_warning_count</code> (3 en la primera URL) como métrica, y <code>rule_name</code> («Deprecated API») como título legible de la regla en lugar del código.</li>
+        <li><b>Aislar los iconos:</b> <code>aria-hidden="true"</code> en los <code>&lt;span class="material-symbols-outlined"&gt;</code>. Hoy los nombres accesibles son «open_in_new Ver detalles» y «close».</li>
+        <li><b>Alto mínimo de 44 px</b> en filtros, botones de fila, paginación y «Sugerir con IA» (hoy 117×27 px).</li>
+        <li><b>Renombrar «Salud técnica»</b> o cambiar su cálculo para que incluya los hallazgos de runtime. Tal como está, contradice a la propia pantalla.</li>
+      </ol>
+    </div>
+    <div class="callout">
+      <span class="lead">Pendiente de confirmar con el equipo</span>
+      <p>
+        Si <code>runtime</code> y <code>runtime_event</code> representan dos problemas distintos y no dos
+        capturas del mismo, el punto 3 no aplica y el recuento de 22 es correcto. Es la única decisión de
+        esta propuesta que depende de información que no está en la interfaz.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>
+      Medido el 4 de agosto de 2026 sobre el entorno productivo, autenticado y en modo de solo lectura:
+      ninguna petición de escritura salió del navegador. Escritorio de 1440 px. Anchos de tabla, pesos de
+      respuesta, recuentos de nodos y repeticiones de texto tomados del DOM en ejecución.
+    </p>
+    <p>
+      La maqueta reproduce el lenguaje visual de la aplicación para poder comparar; no es código de
+      producción. Los scripts de medición son <code>inspect-m2.mjs</code>,
+      <code>inspect-m2-accion.mjs</code>, <code>inspect-m2-drawer2.mjs</code> e
+      <code>inspect-m2-filas.mjs</code>; los datos crudos, <code>out/m2/</code>.
+    </p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+
+  // Datos reales medidos en el módulo.
+  const URLS = [
+    { url: '/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', ms: 351, consola: 4, js: 3, recursos: 8, mixed: 0, cors: 0, csp: 2, sev: { alta: 14, media: 7, baja: 1 } },
+    { url: '/empresas/soluciones/soluciones-ti/portal-web/',        ms: 233, consola: 4, js: 3, recursos: 8, mixed: 0, cors: 0, csp: 2, sev: null },
+    { url: '/personas/olo/centro-ayuda/reset-router/',              ms: 218, consola: 2, js: 1, recursos: 8, mixed: 0, cors: 0, csp: 2, sev: null },
+    { url: '/empresas/soluciones/servicios-gestionados/clarocontact/', ms: 211, consola: 5, js: 3, recursos: 9, mixed: 0, cors: 0, csp: 3, sev: null },
+  ];
+
+  // Metadatos reales devueltos por la API: rule_name, front_label,
+  // business_description, recommendation, recommendation_template, assigned_module.
+  const REGLAS = [
+    {
+      codigo: 'TECH_JQUERY_UNDEFINED', id: 'TECH_021', nombre: 'jQuery Undefined', sev: 'alta', urls: 2, ocurrencias: 2,
+      revisado: 'Panel Runtime: contador de errores consola/JS y drawer con mensaje, archivo, línea, stack/resource y severidad.',
+      def: 'Valida jquery undefined en las URLs auditadas. Criterio de cumplimiento: jquery_loaded = TRUE. Impacto si falla: puede afectar la disponibilidad, velocidad de respuesta y experiencia técnica de la página.',
+      accion: 'Validar carga de jQuery y dependencias.',
+      plantilla: 'Validar carga de jQuery', modulo: 'M2 Technical Crawler',
+      ocs: [
+        { componente: 'runtime_event', componenteId: null, selector: 'console', xpath: null, seccion: 'browser_runtime_event',
+          archivo: 'https://www.claro.com.pe/portal/pe/recursos_tema_evo/js/jquery.min.js', linea: '1:31559', recurso: null,
+          esperado: 'Sin errores runtime',
+          actual: "jQuery.Deferred exception: Cannot read properties of null (reading 'setAttribute')",
+          trace: "jQuery.Deferred exception: Cannot read properties of null (reading 'setAttribute')\nTypeError: Cannot read properties of null (reading 'setAttribute')\n  at myFunction (…/telefonia-troncal-sip/:2695:379)\n  at HTMLDocument (…/telefonia-troncal-sip/:2695:475)\n  at e (…/js/jquery.min.js:2:30005)\n  at t (…/js/jquery.min.js:2:30307)" },
+        { componente: 'runtime', componenteId: null, selector: null, xpath: null, seccion: 'browser_runtime',
+          archivo: null, linea: null, recurso: null,
+          esperado: 'jquery loaded', actual: 'jquery undefined',
+          trace: null, resumen: 'Se detectó jQuery undefined en runtime' },
+      ],
+    },
+    {
+      codigo: 'TECH_DEPRECATED_API', id: 'TECH_DEPRECATED_API', nombre: 'Deprecated API', sev: 'media', urls: 2, ocurrencias: 2,
+      revisado: 'Panel Runtime: contador de errores consola/JS y drawer con mensaje, archivo, línea, stack/resource y severidad.',
+      def: 'Valida deprecated api en las URLs auditadas. Criterio de cumplimiento: cuando se detecta Deprecated API en consola o auditoría automática. Impacto si falla: puede afectar la disponibilidad, velocidad de respuesta y experiencia técnica de la página.',
+      accion: 'Actualizar APIs/librerías deprecadas para evitar fallas futuras.',
+      plantilla: 'Corregir uso de apis obsoletas y validar en QA técnico', modulo: 'M2 Technical Crawler',
+      ocs: [
+        { componente: 'runtime_event', componenteId: null, selector: 'console', xpath: null, seccion: 'browser_runtime_event',
+          archivo: 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', linea: '2729:0', recurso: null,
+          esperado: 'Sin errores runtime',
+          actual: '[GroupMarkerNotSet(crbug.com/242999)!:A0E01C00C4240000]Automatic fallback to software WebGL has been deprecated.',
+          trace: '[GroupMarkerNotSet(crbug.com/242999)!:A0E01C00C4240000]\nAutomatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag.' },
+        { componente: 'runtime', componenteId: null, selector: null, xpath: null, seccion: 'browser_runtime',
+          archivo: null, linea: null, recurso: null,
+          esperado: '0', actual: '1',
+          trace: null, resumen: 'Se detectó uso de APIs deprecadas en runtime' },
+      ],
+    },
+    {
+      codigo: 'TECH_CONSOLE_ERROR', id: 'TECH_009', nombre: 'Console Error', sev: 'media', urls: 4, ocurrencias: 15,
+      revisado: 'Panel Runtime: contador de errores de consola.',
+      def: 'Valida errores en consola en las URLs auditadas. Criterio de cumplimiento: console_errors = 0.',
+      accion: 'Revisar errores JS en runtime y corregir scripts.',
+      plantilla: 'Revisar errores JS en runtime', modulo: 'M2 Technical Crawler', ocs: [],
+    },
+    {
+      codigo: 'TECH_FAILED_IMAGE_RESOURCE', id: 'TECH_013', nombre: 'Failed Image Resource', sev: 'baja', urls: 4, ocurrencias: 33,
+      revisado: 'Panel Runtime: recursos que no cargan.',
+      def: 'Valida recursos que fallan al cargar. Criterio de cumplimiento: failed_resources = 0.',
+      accion: 'Corregir rutas y disponibilidad de imágenes.',
+      plantilla: 'Corregir rutas y disponibilidad de imágenes', modulo: 'M2 Technical Crawler', ocs: [],
+    },
+  ];
+
+  // Los 36 campos del registro de la primera fila, con sus valores reales.
+  const REGISTRO = [
+    ['run_id', 'tc_20260717_165800_6127e9'], ['audit_date', '2026-07-17'],
+    ['checked_ts', '2026-07-17T17:02:14.886155+00:00'],
+    ['page_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/'],
+    ['normalized_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip'],
+    ['url_hash', '0c8dd34557229c9c83b3091edd398fc1'], ['url_type', 'direct'], ['page_group', 'direct'],
+    ['is_priority', 'true'], ['device_priority', 'mobile'],
+    ['request_user_agent', 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Mobile Safari/537.36'],
+    ['final_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/'],
+    ['final_domain', 'www.claro.com.pe'], ['status_code', '200'], ['is_success', 'true'],
+    ['response_time_ms', '350.71'], ['redirect_count', '0'], ['content_type', 'text/html'],
+    ['content_length', '81766'], ['server_header', 'nginx'], ['cache_control', 'no-cache'],
+    ['crawl_status', 'ok'], ['mobile_context', 'mobile_first_priority'], ['device_profile', 'mobile'],
+    ['console_error_count', '4'], ['console_warning_count', '3'], ['page_error_count', '3'],
+    ['failed_resource_count', '8'], ['runtime_status', 'captured'], ['runtime_scan_enabled', 'true'],
+    ['mixed_content_count', '0'], ['cors_error_count', '0'], ['csp_error_count', '2'],
+    ['redirect_chain_statuses', ''], ['has_temporary_redirect', 'false'], ['is_crawlable', 'true'],
+  ];
+
+  // Los 28 campos del hallazgo. El tercer valor marca los cinco redundantes.
+  const HALLAZGO = [
+    ['run_id', 'tc_20260717_165800_6127e9', 0], ['audit_date', '2026-07-17', 0],
+    ['created_ts', '2026-07-17T17:02:24.121305+00:00', 0],
+    ['page_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', 0],
+    ['normalized_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip', 0],
+    ['finding_code', 'TECH_DEPRECATED_API', 1], ['finding_category', 'runtime', 0], ['severity', 'media', 0],
+    ['finding_detail', '[detalle] console: [GroupMarkerNotSet(crbug.com/242999)!…]', 0],
+    ['recommendation', 'Actualizar APIs/librerías deprecadas para evitar fallas futuras.', 0],
+    ['component_type', 'runtime_event', 0], ['component_selector', 'console', 0],
+    ['html_section', 'browser_runtime_event', 0],
+    ['element_value', '[GroupMarkerNotSet(crbug.com/242999)!…]Automatic fallback…', 0],
+    ['expected_value', 'Sin errores runtime', 0], ['rule_id', 'TECH_DEPRECATED_API', 1],
+    ['console_message', '[GroupMarkerNotSet(crbug.com/242999)!…]Automatic fallback…', 0],
+    ['source_file', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', 0],
+    ['line_column', '2729:0', 0],
+    ['original_finding_code', 'TECH_DEPRECATED_API', 1], ['rule_display_id', 'TECH_DEPRECATED_API', 1],
+    ['finding_display_code', 'TECH_DEPRECATED_API', 1], ['rule_name', 'Deprecated API', 0],
+    ['front_label', 'Panel Runtime: contador de errores consola/JS y drawer con mensaje, archivo, línea, stack/resource y severidad.', 0],
+    ['rule_description', 'Cuando se detecta Deprecated API en consola o auditoría automática', 0],
+    ['business_description', 'Valida deprecated api en las URLs auditadas. Criterio de cumplimiento…', 0],
+    ['assigned_module', 'M2 Technical Crawler', 0],
+    ['recommendation_template', 'Corregir uso de apis obsoletas y validar en QA técnico', 0],
+  ];
+
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // ---------- Tabla por URL ----------
+  const total = (r) => r.consola + r.js + r.recursos + r.mixed + r.cors + r.csp;
+
+  const chips = (r) => {
+    if (r.sev) {
+      return `<span class="mk-chip mk-chip--alta">${r.sev.alta} alta</span>` +
+             `<span class="mk-chip mk-chip--media">${r.sev.media} media</span>` +
+             `<span class="mk-chip mk-chip--baja">${r.sev.baja} baja</span>`;
+    }
+    return `<span class="mk-chip mk-chip--media">${total(r)} problemas</span>`;
+  };
+
+  const detalleFila = (r) => {
+    const mini = (t, v) => `<div class="mk-mini"><dt>${t}</dt><dd class="${v === 0 ? 'zero' : 'bad'}">${v}</dd></div>`;
+    return `
+      <dl class="mk-detail__grid">
+        ${mini('Errores consola', r.consola)}
+        ${mini('Errores JS', r.js)}
+        ${mini('Recursos fallidos', r.recursos)}
+        ${mini('Errores CSP', r.csp)}
+        ${mini('Mixed content', r.mixed)}
+        ${mini('Errores CORS', r.cors)}
+      </dl>
+      <div class="mk-detail__act">
+        <button class="mk-btn mk-btn--pri" type="button" data-abrir="${esc(r.url)}">Ver los ${r.sev ? 22 : total(r)} hallazgos</button>
+        <span style="font-size:12.5px;color:#5A6472">HTTP 200 · sin redirecciones · rastreable · runtime capturado</span>
+      </div>`;
+  };
+
+  function pintarURLs() {
+    const tb = $('#mk-tbody');
+    tb.innerHTML = URLS.map((r, i) => `
+      <tr data-i="${i}">
+        <td class="sticky">
+          <button class="mk-rowbtn" type="button" aria-expanded="false" data-toggle="${i}">
+            <span class="mk-caret" aria-hidden="true">▸</span>
+            <span>
+              <span class="mk-url">${esc(r.url)}</span>
+              <span class="mk-dev">Móvil</span>
+            </span>
+          </button>
+        </td>
+        <td class="mk-num">${r.ms} ms<br><span class="mk-dev">umbral 1 000</span></td>
+        <td><div class="mk-chips">${chips(r)}</div></td>
+        <td data-c="http" hidden>HTTP 200</td>
+        <td data-c="redir" hidden class="mk-num">0</td>
+        <td data-c="temp" hidden>No</td>
+        <td data-c="rastreo" hidden>OK</td>
+      </tr>
+      <tr class="mk-detail" data-detalle="${i}" hidden><td colspan="7">${detalleFila(r)}</td></tr>
+    `).join('');
+    aplicarColumnas();
+  }
+
+  function pintarReglas() {
+    $('#mk-tbody-hal').innerHTML = REGLAS.map((g) => `
+      <tr>
+        <td class="sticky">
+          <span style="font-weight:600">${esc(g.codigo.replace(/^TECH_/, '').replace(/_/g, ' ').toLowerCase())}</span><br>
+          <span class="mk-rule__code">${esc(g.codigo)}</span>
+        </td>
+        <td><span class="mk-chip mk-chip--${g.sev} mk-chip--sq">${g.sev}</span></td>
+        <td class="mk-num">${g.urls}</td>
+        <td class="mk-num">${g.ocurrencias}</td>
+        <td style="white-space:normal">${esc(g.accion)}</td>
+      </tr>`).join('');
+  }
+
+  // ---------- Columnas opcionales ----------
+  function aplicarColumnas() {
+    document.querySelectorAll('#mk-cols-pop input[data-col]').forEach((cb) => {
+      document.querySelectorAll(`#mk-tabla [data-c="${cb.dataset.col}"]`).forEach((c) => { c.hidden = !cb.checked; });
+    });
+    const n = 3 + [...document.querySelectorAll('#mk-cols-pop input')].filter((c) => c.checked).length;
+    $('#mk-cols-btn').textContent = `Columnas (${n} de 17)`;
+  }
+
+  $('#mk-cols-btn').addEventListener('click', (e) => {
+    const pop = $('#mk-cols-pop');
+    const abrir = pop.hidden;
+    pop.hidden = !abrir;
+    e.currentTarget.setAttribute('aria-expanded', String(abrir));
+  });
+  $('#mk-cols-pop').addEventListener('change', aplicarColumnas);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.mk-cols')) {
+      $('#mk-cols-pop').hidden = true;
+      $('#mk-cols-btn').setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // ---------- Expandir filas ----------
+  $('#mk-tbody').addEventListener('click', (e) => {
+    const t = e.target.closest('[data-toggle]');
+    if (t) {
+      const i = t.dataset.toggle;
+      const fila = document.querySelector(`tr[data-i="${i}"]`);
+      const det = document.querySelector(`tr[data-detalle="${i}"]`);
+      const abrir = det.hidden;
+      det.hidden = !abrir;
+      fila.classList.toggle('open', abrir);
+      t.setAttribute('aria-expanded', String(abrir));
+      return;
+    }
+    const abrir = e.target.closest('[data-abrir]');
+    if (abrir) abrirPanel(abrir.dataset.abrir, abrir);
+  });
+
+  // ---------- Conmutador de vista ----------
+  function vista(porURL) {
+    $('#mk-v-url').setAttribute('aria-pressed', String(porURL));
+    $('#mk-v-hal').setAttribute('aria-pressed', String(!porURL));
+    $('#mk-wrap-url').hidden = !porURL;
+    $('#mk-wrap-hal').hidden = porURL;
+    $('#mk-count').textContent = porURL ? 'Mostrando 1–4 de 200 URLs' : 'Mostrando 4 reglas · 52 ocurrencias';
+  }
+  $('#mk-v-url').addEventListener('click', () => vista(true));
+  $('#mk-v-hal').addEventListener('click', () => vista(false));
+
+  // ---------- Panel: diálogo accesible ----------
+  const drawer = $('#mk-drawer');
+  const scrim = $('#mk-scrim');
+  let disparador = null;
+
+  // Los 8 campos técnicos del panel actual, con los vacíos marcados: que un
+  // campo no tenga valor también es información para quien corrige.
+  const camposTecnicos = (o) => {
+    const defs = [
+      ['Tipo componente', o.componente], ['ID componente', o.componenteId], ['Selector CSS', o.selector], ['XPath', o.xpath],
+      ['Sección HTML', o.seccion], ['Archivo origen', o.archivo], ['Línea:columna', o.linea], ['Failed/resource URL', o.recurso],
+    ];
+    return `<dl class="mk-tec">${defs.map(([k, v]) => `
+      <div class="${v ? '' : 'vacia'}"><dt>${k}</dt><dd class="${v ? '' : 'vacio'}">${v ? esc(v) : 'sin dato'}</dd></div>`).join('')}</dl>`;
+  };
+
+  const tablaCampos = (id, filas, etiqueta) => `
+    <div style="margin-top:8px">
+      <label class="mk-dev" for="${id}">Buscar campo o valor</label>
+      <input class="mk-filtro" id="${id}" type="search" placeholder="p. ej. status, ts, count" data-filtra="${id}-t">
+      <div class="mk-camposbox" tabindex="0" role="region" aria-label="${etiqueta}">
+        <table class="mk-campos" id="${id}-t">
+          <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+          <tbody>${filas.map(([k, v, dup]) => `
+            <tr class="${dup ? 'dup' : ''}"><td>${esc(k)}</td><td>${v === '' ? '<span style="color:#5A6472;font-style:italic">vacío</span>' : esc(v)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  const cuerpoPanel = (r) => {
+    const grupos = REGLAS.filter((g) => g.ocs.length).map((g) => `
+      <details class="mk-rule" ${g.sev === 'alta' ? 'open' : ''}>
+        <summary>
+          <span class="mk-chip mk-chip--${g.sev} mk-chip--sq">${g.sev}</span>
+          <strong>${esc(g.nombre)}</strong>
+          <span class="mk-rule__code">${esc(g.codigo)}</span>
+          <span class="mk-rule__n">${g.ocs.length} ocurrencia${g.ocs.length > 1 ? 's' : ''}</span>
+        </summary>
+        <div class="mk-rule__body">
+          <p class="mk-def"><b>Qué se revisó</b>${esc(g.revisado)}</p>
+          <p class="mk-def"><b>Qué significa · una sola vez por regla</b>${esc(g.def)}</p>
+          <p class="mk-def"><b>Qué hacer</b>${esc(g.accion)}
+            <button class="mk-btn" type="button" style="min-height:44px;margin-top:7px">Sugerir con IA</button>
+          </p>
+          ${g.ocs.map((o, i) => `
+            <div class="mk-occ">
+              <strong style="font-size:12.5px">Ocurrencia ${i + 1} de ${g.ocs.length}</strong>
+              ${o.resumen ? `<p style="margin:4px 0 0;font-size:12.5px">${esc(o.resumen)}</p>` : ''}
+              <dl class="mk-expesp">
+                <dt>Esperado</dt><dd class="esp">${esc(o.esperado)}</dd>
+                <dt>Detectado</dt><dd class="act">${esc(o.actual)}</dd>
+              </dl>
+              ${camposTecnicos(o)}
+              ${o.trace ? `<pre class="mk-trace" tabindex="0" role="region" aria-label="Volcado de consola, bloque desplazable">${esc(o.trace)}</pre>` : ''}
+            </div>`).join('')}
+          <p class="mk-nota">Regla <code>${esc(g.id)}</code> · módulo asignado ${esc(g.modulo)} · plantilla de recomendación «${esc(g.plantilla)}»</p>
+        </div>
+      </details>`).join('');
+
+    const s = r.sev ?? { alta: 0, media: total(r), baja: 0 };
+    return `
+      <div class="mk-sum">
+        <span class="mk-chip mk-chip--alta">${s.alta} alta</span>
+        <span class="mk-chip mk-chip--media">${s.media} media</span>
+        <span class="mk-chip mk-chip--baja">${s.baja} baja</span>
+        <span class="mk-chip mk-chip--baja mk-chip--plain">${r.ms} ms · HTTP 200</span>
+      </div>
+
+      <p class="mk-sec-t">Problemas encontrados · ${r.sev ? 22 : total(r)}, en ${REGLAS.filter((g) => g.ocs.length).length} reglas</p>
+      ${grupos}
+
+      <p class="mk-sec-t">Estado de la URL</p>
+      <details class="mk-rule" open>
+        <summary><strong>Métricas de esta URL</strong><span class="mk-rule__n">8 valores</span></summary>
+        <div class="mk-rule__body">
+          ${detalleFila(r).replace(/<div class="mk-detail__act">[^]*$/, '')}
+          <dl class="mk-detail__grid" style="margin-bottom:0">
+            <div class="mk-mini"><dt>Redirecciones</dt><dd class="zero">0</dd></div>
+            <div class="mk-mini"><dt>Avisos de consola<span class="mk-nuevo">nuevo</span></dt><dd class="bad">3</dd></div>
+          </dl>
+          <p class="mk-nota">Recursos fallidos (8) por tipo: otros (XHR / media / etc.): 8</p>
+          <p class="mk-nota">«Avisos de consola» ya existe en el registro como <code>console_warning_count</code> y hoy no se muestra en ninguna pantalla.</p>
+        </div>
+      </details>
+
+      <p class="mk-sec-t">Datos completos</p>
+      <details class="mk-rule">
+        <summary><strong>Datos del registro</strong><span class="mk-rule__n">36 campos</span></summary>
+        <div class="mk-rule__body">${tablaCampos('cr', REGISTRO, 'Los 36 campos del registro, tabla desplazable')}</div>
+      </details>
+      <details class="mk-rule">
+        <summary><strong>Datos del hallazgo</strong><span class="mk-rule__n">28 campos</span></summary>
+        <div class="mk-rule__body">
+          ${tablaCampos('ch', HALLAZGO, 'Los 28 campos del hallazgo, tabla desplazable')}
+          <p class="mk-nota">En rojo, los cinco campos con el mismo valor: <code>finding_code</code>, <code>rule_id</code>, <code>original_finding_code</code>, <code>rule_display_id</code> y <code>finding_display_code</code>. Se conservan todos; arriba se muestra uno.</p>
+        </div>
+      </details>`;
+  };
+
+  function abrirPanel(url, trigger) {
+    const r = URLS.find((x) => x.url === url) ?? URLS[0];
+    disparador = trigger;
+    $('#mk-drawer-url').textContent = 'https://www.claro.com.pe' + r.url;
+    $('#mk-drawer-pos').textContent = `URL ${URLS.indexOf(r) + 1} de 200`;
+    $('#mk-drawer-body').innerHTML = cuerpoPanel(r);
+    scrim.hidden = false;
+    drawer.hidden = false;
+    // El fondo de la maqueta deja de desplazarse.
+    $('#mock').style.overflow = 'hidden';
+    $('#mk-close').focus();
+    document.addEventListener('keydown', teclas, true);
+  }
+
+  function cerrarPanel() {
+    drawer.hidden = true;
+    scrim.hidden = true;
+    $('#mock').style.removeProperty('overflow');
+    document.removeEventListener('keydown', teclas, true);
+    if (disparador) disparador.focus();
+  }
+
+  // Escape cierra; el tabulador queda atrapado dentro del panel.
+  function teclas(e) {
+    if (drawer.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); cerrarPanel(); return; }
+    if (e.key !== 'Tab') return;
+    const foco = [...drawer.querySelectorAll('a[href],button,summary,input,select,textarea,[tabindex]:not([tabindex="-1"])')]
+      .filter((el) => el.offsetParent !== null);
+    if (!foco.length) return;
+    const primero = foco[0], ultimo = foco[foco.length - 1];
+    if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+  }
+
+  $('#mk-close').addEventListener('click', cerrarPanel);
+  scrim.addEventListener('click', cerrarPanel);
+
+  // Buscador de las tablas de campos, dentro del panel.
+  $('#mk-drawer-body').addEventListener('input', (e) => {
+    const inp = e.target.closest('[data-filtra]');
+    if (!inp) return;
+    const q = inp.value.trim().toLowerCase();
+    const tabla = document.getElementById(inp.dataset.filtra);
+    if (!tabla) return;
+    for (const tr of tabla.querySelectorAll('tbody tr')) {
+      tr.hidden = !!q && !tr.textContent.toLowerCase().includes(q);
+    }
+  });
+
+  // ---------- Filtro ----------
+  $('#mk-q').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    let vistas = 0;
+    URLS.forEach((r, i) => {
+      const ok = !q || r.url.toLowerCase().includes(q);
+      document.querySelector(`tr[data-i="${i}"]`).hidden = !ok;
+      if (!ok) {
+        document.querySelector(`tr[data-detalle="${i}"]`).hidden = true;
+        document.querySelector(`[data-toggle="${i}"]`).setAttribute('aria-expanded', 'false');
+        document.querySelector(`tr[data-i="${i}"]`).classList.remove('open');
+      }
+      if (ok) vistas++;
+    });
+    $('#mk-count').textContent = q ? `${vistas} de 4 filas coinciden con «${e.target.value}»` : 'Mostrando 1–4 de 200 URLs';
+  });
+
+  pintarURLs();
+  pintarReglas();
+})();
+</script>
+</body>
+</html>

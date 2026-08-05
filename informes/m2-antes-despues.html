@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Módulo 2 · Técnico — antes y después</title>
+<style>
+  :root{
+    --ink:#101820;--ink-soft:#2A323C;--muted:#5A6472;--paper:#F4F6F8;--surface:#FFF;
+    --surface-2:#EDF1F5;--rule:#CFD7E0;--rule-soft:#E4E9EF;--blueprint:#1B4B7F;--blueprint-soft:#E3EAF2;
+    --hoy:#B3261E;--nuevo:#14713D;
+    --display:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --ink:#E8ECF0;--ink-soft:#C6CFD9;--muted:#9AA5B2;--paper:#0E1319;--surface:#151B22;
+    --surface-2:#1B222B;--rule:#2C353F;--rule-soft:#212932;--blueprint:#8FBDEC;--blueprint-soft:#16243A;
+    --hoy:#F09189;--nuevo:#74CE9B;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  *:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .35em;border-radius:2px;overflow-wrap:anywhere}
+  a{color:var(--blueprint)}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 clamp(1.15rem,3.5vw,2.5rem)}
+
+  header.top{border-bottom:1px solid var(--rule);padding:1.6rem 0 0}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .7rem}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(2.1rem,4.6vw,3.1rem);line-height:1.04;letter-spacing:-.015em;margin:0 0 .5rem;text-wrap:balance}
+  .dek{max-width:62ch;color:var(--ink-soft);font-size:1.22rem;line-height:1.5;margin:0 0 1.8rem}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+  .stat{padding:.75rem .9rem .85rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .stat dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+  .stat dd{margin:0;font-family:var(--display);font-size:1.5rem;line-height:1;font-variant-numeric:tabular-nums}
+  .stat dd small{font-family:var(--body);font-size:.76rem;color:var(--muted)}
+  .stat.mal dd{color:var(--hoy)}
+
+  main{padding:2.75rem 0 4rem}
+  section{margin-bottom:3.75rem}
+  h2{font-family:var(--display);font-weight:400;font-size:2rem;line-height:1.15;margin:0 0 .2rem;letter-spacing:-.01em;text-wrap:balance}
+  .sub{color:var(--muted);font-size:1rem;margin:0 0 1.7rem;padding-bottom:.9rem;border-bottom:2px solid var(--ink);max-width:70ch}
+
+  /* Lista de cambios */
+  .tbl-scroll{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+  .tbl-scroll:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  table.lista{border-collapse:collapse;width:100%;font-size:.9rem;min-width:720px}
+  table.lista th,table.lista td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  table.lista thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--rule);white-space:nowrap}
+  table.lista tbody tr:last-child td{border-bottom:0}
+  table.lista td.n{font-family:var(--mono);color:var(--muted);width:2.2rem}
+  table.lista td.c{font-weight:600;width:22%}
+  table.lista td.h{color:var(--hoy)}
+  table.lista td.p{color:var(--nuevo)}
+  table.lista a{text-decoration:none}
+  table.lista a:hover{text-decoration:underline}
+
+  /* Bloques antes/después */
+  .cambio{border-top:1px solid var(--rule);padding-top:1.9rem;margin-bottom:2.9rem;scroll-margin-top:1rem}
+  .cambio__n{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blueprint);margin:0 0 .35rem}
+  .cambio h3{font-family:var(--display);font-weight:400;font-size:1.62rem;line-height:1.2;margin:0 0 .5rem;letter-spacing:-.01em;text-wrap:balance}
+  .cambio__d{max-width:76ch;color:var(--ink-soft);margin:0 0 1.4rem}
+  /* minmax(0,…) y min-width:0 en la base, no sólo en el punto ancho: sin ellos
+     la franja de 17 columnas fuerza el ancho de la página en móvil. */
+  .par{display:grid;gap:1.4rem;grid-template-columns:minmax(0,1fr)}
+  .par>*,.par .demo,.par .lado{min-width:0}
+  @media (min-width:940px){.par{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+  .lado__t{font-family:var(--mono);font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;margin:0 0 .55rem;display:flex;align-items:baseline;gap:.5rem}
+  .lado__t b{font-weight:700}
+  .lado--hoy .lado__t{color:var(--hoy)}
+  .lado--nuevo .lado__t{color:var(--nuevo)}
+  .marco{border:1px solid var(--rule);background:#fff;overflow:auto;max-height:400px}
+  .marco:focus-visible{outline:2px solid var(--blueprint);outline-offset:2px}
+  .marco img{display:block;width:100%;height:auto}
+  .marco--alto{max-height:520px}
+  .pie{font-size:.86rem;color:var(--muted);margin:.55rem 0 0}
+
+  /* ==================================================================
+     MAQUETAS · lenguaje visual de la aplicación, tema claro fijo
+     ================================================================== */
+  .mk{color-scheme:light;background:#F7F8FA;color:#1D2125;border:1px solid #CFD7E0;font-family:var(--body);font-size:14px;line-height:1.5;position:relative;overflow:hidden}
+  .mk *{box-sizing:border-box}
+  /* Las maquetas son de tema claro fijo: la regla global de <code> usaría
+     var(--surface-2), que en tema oscuro deja fondo oscuro bajo texto claro. */
+  .mk code,.demo code{background:#EDF1F5;color:inherit}
+  .mk__bar{height:4px;background:#C41E14}
+  .mk__in{padding:14px}
+  .mk-h{font-size:18px;font-weight:700;margin:0 0 2px;letter-spacing:-.01em}
+  .mk-l{margin:0 0 12px;color:#5A6472;font-size:12.5px}
+  .mk-l b{color:#A8190F}
+
+  .mk-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:8px;margin-bottom:12px}
+  .mk-kpi{background:#fff;border:1px solid #E4E9EF;border-radius:8px;padding:9px 11px}
+  .mk-kpi--alert{border-color:#E9B5B0;background:#FFFBFB}
+  .mk-kpi dt{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#5A6472;margin:0 0 3px}
+  .mk-kpi dd{margin:0;font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+  .mk-kpi dd small{font-size:11.5px;font-weight:400;color:#5A6472}
+  .mk-kpi--alert dd{color:#A8190F}
+  .mk-kpi__f{display:block;font-size:11px;font-weight:400;color:#5A6472;margin-top:3px}
+
+  .mk-bar{display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+  .mk-f{display:flex;flex-direction:column;gap:3px}
+  .mk-f label,.mk-f .lb{font-size:11px;font-weight:600;color:#3C4753}
+  .mk-f input,.mk-f select{font:inherit;font-size:13px;min-height:44px;padding:0 9px;border:1px solid #CFD7E0;border-radius:6px;background:#fff;color:inherit}
+  .mk-f input{min-width:168px}
+  .mk-seg{display:inline-flex;border:1px solid #CFD7E0;border-radius:6px;overflow:hidden;background:#fff}
+  .mk-seg button{font:inherit;font-size:13px;min-height:44px;padding:0 13px;border:0;background:none;cursor:pointer;color:#3C4753}
+  .mk-seg button+button{border-left:1px solid #CFD7E0}
+  .mk-seg button[aria-pressed="true"]{background:#1D2125;color:#fff;font-weight:600}
+  .mk-b{font:inherit;font-size:13px;min-height:44px;padding:0 13px;border:1px solid #CFD7E0;background:#fff;color:#1D2125;border-radius:6px;cursor:pointer}
+  .mk-b:hover{background:#F1F4F7}
+  .mk-b--pri{background:#C41E14;border-color:#C41E14;color:#fff;font-weight:600}
+  .mk-b--pri:hover{background:#A8190F}
+  .mk-cols{position:relative;margin-left:auto}
+  .mk-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:6;background:#fff;border:1px solid #CFD7E0;border-radius:8px;padding:9px 11px;box-shadow:0 8px 24px rgba(16,24,32,.14);min-width:218px}
+  .mk-pop[hidden]{display:none}
+  .mk-pop p{margin:0 0 7px;font-size:10.5px;color:#5A6472;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .mk-pop label{display:flex;gap:8px;align-items:center;min-height:32px;font-size:13px}
+
+  .mk-tw{border:1px solid #E4E9EF;border-radius:8px;background:#fff;overflow:auto;max-height:390px}
+  .mk-tw:focus-visible{outline:2px solid #1B4B7F;outline-offset:1px}
+  .mk-tw--corto{max-height:none}
+  table.mkt{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+  table.mkt th,table.mkt td{padding:8px 10px;border-bottom:1px solid #EDF1F5;text-align:left;white-space:nowrap}
+  table.mkt thead th{position:sticky;top:0;z-index:2;background:#FAFBFC;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#5A6472;border-bottom:1px solid #E4E9EF}
+  table.mkt th.fix,table.mkt td.fix{position:sticky;left:0;z-index:3;background:#fff;border-right:1px solid #E4E9EF;white-space:normal;min-width:262px;max-width:320px}
+  table.mkt thead th.fix{z-index:4;background:#FAFBFC}
+  table.mkt tbody tr:hover td{background:#FAFBFC}
+  table.mkt tbody tr.op td{background:#F3F7FB}
+  .mk-url{font-family:var(--mono);font-size:11.5px;color:#1B4B7F;word-break:break-all;display:block}
+  .mk-sub{font-size:11px;color:#5A6472}
+  .mk-n{font-variant-numeric:tabular-nums}
+
+  .mk-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;white-space:nowrap}
+  .mk-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto}
+  .mk-chip--alta{background:#FCE9E7;color:#A8190F}
+  .mk-chip--media{background:#FEF7E0;color:#8A5200}
+  .mk-chip--baja{background:#EDF1F5;color:#4E5865}
+  .mk-chip--ok{background:#E6F4EA;color:#14713D}
+  .mk-chip--sq{border-radius:4px}
+  .mk-chips{display:flex;gap:4px;flex-wrap:wrap}
+
+  .mk-rb{font:inherit;font-size:12.5px;display:flex;align-items:center;gap:7px;min-height:44px;width:100%;padding:0;border:0;background:none;cursor:pointer;color:inherit;text-align:left}
+  .mk-car{display:inline-block;transition:transform .15s ease;color:#5A6472;flex:0 0 auto}
+  tr.op .mk-car{transform:rotate(90deg);color:#C41E14}
+  .mk-det td{background:#F8FAFC;white-space:normal;border-bottom:1px solid #E4E9EF}
+  .mk-mini-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:9px}
+  .mk-mini{background:#fff;border:1px solid #E4E9EF;border-radius:6px;padding:7px 9px}
+  .mk-mini dt{font-size:10.5px;color:#5A6472;text-transform:uppercase;letter-spacing:.05em}
+  .mk-mini dd{margin:2px 0 0;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+  .mk-mini dd.z{color:#5A6472;font-weight:400}
+  .mk-mini dd.b{color:#A8190F}
+  .mk-fila-act{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .mk-pie{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-top:9px;font-size:12px;color:#5A6472}
+  .mk-pag{display:flex;gap:5px;align-items:center}
+  .mk-pag button{font:inherit;font-size:12.5px;min-height:36px;min-width:36px;border:1px solid #CFD7E0;background:#fff;border-radius:6px;cursor:pointer}
+  .mk-pag button[aria-current="true"]{background:#1D2125;color:#fff;border-color:#1D2125;font-weight:600}
+
+  .mk-scrim{position:absolute;inset:0;background:rgba(16,24,32,.42);z-index:20}
+  .mk-scrim[hidden]{display:none}
+  .mk-dw{position:absolute;top:0;right:0;bottom:0;width:min(540px,94%);background:#fff;z-index:21;display:flex;flex-direction:column;box-shadow:-8px 0 28px rgba(16,24,32,.18)}
+  .mk-dw[hidden]{display:none}
+  .mk-dw__h{display:flex;align-items:flex-start;gap:11px;padding:13px 15px;border-bottom:1px solid #E4E9EF}
+  .mk-dw__h h4{margin:0;font-size:15px;font-weight:700}
+  .mk-x{margin-left:auto;font:inherit;width:44px;height:44px;min-width:44px;border:1px solid #CFD7E0;background:#fff;border-radius:6px;cursor:pointer;font-size:18px;line-height:1;flex:0 0 auto}
+  .mk-x:hover{background:#F1F4F7}
+  .mk-dw__n{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:7px 15px;border-bottom:1px solid #E4E9EF;background:#FAFBFC;font-size:12px;color:#5A6472}
+  .mk-dw__b{overflow-y:auto;padding:13px 15px 18px;flex:1}
+  .mk-sum{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+  .mk-rule{border:1px solid #E4E9EF;border-radius:8px;margin-bottom:9px;overflow:hidden;background:#fff}
+  .mk-rule>summary{cursor:pointer;padding:9px 11px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;list-style:none;min-height:44px}
+  .mk-rule>summary::-webkit-details-marker{display:none}
+  .mk-rule>summary:hover{background:#FAFBFC}
+  .mk-code{font-family:var(--mono);font-size:11px;background:#EDF1F5;padding:2px 5px;border-radius:4px;color:#3C4753}
+  .mk-rule__n{margin-left:auto;font-size:11.5px;color:#5A6472}
+  .mk-rule__b{padding:0 11px 11px;border-top:1px solid #EDF1F5}
+  .mk-def{font-size:12px;color:#3C4753;background:#F8FAFC;border-left:2px solid #CFD7E0;padding:7px 9px;margin:9px 0}
+  .mk-def b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#5A6472;margin-bottom:2px}
+  .mk-occ{border-top:1px solid #EDF1F5;padding:8px 0 0;margin-top:8px}
+  .mk-occ:first-of-type{border-top:0}
+  .mk-where{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 9px;font-size:11.5px;margin:5px 0 0}
+  .mk-where dt{color:#5A6472}
+  .mk-where dd{margin:0;font-family:var(--mono);font-size:11px;word-break:break-all}
+  .mk-tr{font-family:var(--mono);font-size:10.5px;background:#F8FAFC;border:1px solid #E4E9EF;border-radius:6px;padding:7px;margin:6px 0 0;max-height:104px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+  .mk-tr:focus-visible{outline:2px solid #1B4B7F;outline-offset:1px}
+  .mk-fix{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12px}
+  /* Rejilla de los 8 campos técnicos y tabla de todos los campos del registro */
+  .mk-tec{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:7px;margin:7px 0 0}
+  .mk-tec>div{background:#F8FAFC;border:1px solid #E4E9EF;border-radius:6px;padding:6px 8px;min-width:0}
+  .mk-tec dt{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#5A6472}
+  .mk-tec dd{margin:1px 0 0;font-family:var(--mono);font-size:11px;word-break:break-all}
+  /* El gris del «sin dato» era #8A94A3: 3,01:1 sobre la tarjeta vacía. Ahora 5,9:1. */
+  .mk-tec dd.vacio{font-family:var(--body);color:#5A6472;font-style:italic}
+  .mk-tec>div.vacia{background:#FCFDFE;border-style:dashed}
+  .mk-expesp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 9px;font-size:11.5px;margin:6px 0 0}
+  .mk-expesp dt{color:#5A6472;white-space:nowrap}
+  .mk-expesp dd{margin:0;font-family:var(--mono);font-size:11px;word-break:break-word}
+  .mk-expesp dd.esp{color:#14713D}
+  .mk-expesp dd.act{color:#A8190F}
+  .mk-camposwrap{margin-top:8px}
+  .mk-filtro{font:inherit;font-size:12.5px;min-height:38px;padding:0 9px;border:1px solid #CFD7E0;border-radius:6px;background:#fff;width:100%;color:inherit}
+  .mk-campos{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:7px}
+  .mk-campos th,.mk-campos td{text-align:left;padding:5px 7px;border-bottom:1px solid #EDF1F5;vertical-align:top}
+  .mk-campos thead th{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#5A6472;background:#FAFBFC;position:sticky;top:0}
+  .mk-campos td:first-child{font-family:var(--mono);color:#3C4753;white-space:nowrap}
+  .mk-campos td:last-child{font-family:var(--mono);word-break:break-all;color:#1D2125}
+  .mk-campos tr.dup td:first-child{color:#A8190F}
+  .mk-camposbox{max-height:250px;overflow:auto;border:1px solid #E4E9EF;border-radius:6px;margin-top:7px}
+  .mk-camposbox:focus-visible{outline:2px solid #1B4B7F;outline-offset:1px}
+  .mk-nota{font-size:11.5px;color:#3C4753;background:#F1F6FB;border-left:2px solid #1B4B7F;padding:6px 8px;margin:8px 0 0;border-radius:0 4px 4px 0}
+  .mk-nuevo{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#14713D;background:#E6F4EA;border-radius:3px;padding:1px 4px;margin-left:5px;vertical-align:1px}
+  .mk-sec-t{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5A6472;margin:16px 0 7px}
+  .mk-sec-t:first-of-type{margin-top:0}
+
+  /* Maquetas estáticas de comparación */
+  .demo{background:#fff;border:1px solid #E4E9EF;border-radius:8px;padding:12px;font-family:var(--body);color:#1D2125;color-scheme:light}
+  .demo h5{margin:0 0 8px;font-size:12.5px;font-weight:700}
+  .demo__lbl{font-size:11px;color:#5A6472;text-transform:uppercase;letter-spacing:.05em;margin:0 0 5px}
+  .demo--hoy{border-color:#E9B5B0}
+  .franja{display:flex;gap:0;overflow-x:auto;border:1px solid #E4E9EF;border-radius:6px;background:#fff}
+  .franja span{flex:0 0 auto;padding:7px 9px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#5A6472;border-right:1px solid #EDF1F5;white-space:nowrap;background:#FAFBFC}
+  .franja span.igual{color:#A8190F;background:#FFF6F5}
+  .franja span.vacia{color:#A8190F;background:#FFF6F5;font-style:italic}
+  .franja span.util{color:#14713D;background:#F2FAF5;font-weight:600}
+  .franja--corta span{background:#F2FAF5;color:#14713D;font-weight:600}
+  .leyenda-franja{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:#5A6472;margin-top:7px}
+  .leyenda-franja i{display:inline-block;width:10px;height:10px;border:1px solid #CFD7E0;margin-right:4px;vertical-align:-1px}
+
+  @media (prefers-reduced-motion:reduce){.mk *{transition:none!important}}
+
+  .foot{border-top:2px solid var(--ink);padding:1.5rem 0 3rem;font-size:.86rem;color:var(--muted)}
+  .foot p{max-width:82ch;margin:0 0 .5rem}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">Propuesta de rediseño · Módulo 2 · Técnico</p>
+    <h1>Antes y después</h1>
+    <p class="dek">
+      Diez cambios de diseño sobre la pantalla actual. Ninguno quita información: reordenan lo que
+      ya existe para que se encuentre, y muestran dos datos que hoy están en los datos pero no en pantalla.
+    </p>
+    <dl class="stats">
+      <div class="stat mal"><dt>Filas hoy</dt><dd>3 203<small> en 2 tablas</small></dd></div>
+      <div class="stat mal"><dt>Columnas hoy</dt><dd>31<small> entre las dos</small></dd></div>
+      <div class="stat mal"><dt>Scroll a «Ver detalles»</dt><dd>586<small> px</small></dd></div>
+      <div class="stat mal"><dt>Espera al entrar</dt><dd>4,7<small> segundos</small></dd></div>
+      <div class="stat"><dt>Cambios propuestos</dt><dd>10</dd></div>
+      <div class="stat"><dt>Contenido conservado</dt><dd>14<small> de 14</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ LISTA DE CAMBIOS ============ -->
+  <section>
+    <h2>Los diez cambios</h2>
+    <p class="sub">Resumen para revisar de un vistazo. Cada fila enlaza con su comparación visual.</p>
+    <div class="tbl-scroll" tabindex="0" role="region" aria-label="Lista de los diez cambios, tabla desplazable">
+      <table class="lista">
+        <thead>
+          <tr><th class="n">#</th><th>Cambio</th><th>Cómo está hoy</th><th>Cómo queda</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="n">1</td>
+            <td class="c"><a href="#c1">Una tabla en lugar de dos</a></td>
+            <td class="h">Dos tablas cargan juntas: 200 filas y 3 003 filas, 121 páginas en la segunda.</td>
+            <td class="p">Una sola tabla con dos vistas conmutables. La espera baja de 4,7 s.</td>
+          </tr>
+          <tr>
+            <td class="n">2</td>
+            <td class="c"><a href="#c2">Seis columnas en lugar de diecisiete</a></td>
+            <td class="h">Nueve columnas repiten el mismo valor en todas las filas y una está vacía.</td>
+            <td class="p">Seis columnas visibles; el resto, opcionales desde un selector.</td>
+          </tr>
+          <tr>
+            <td class="n">3</td>
+            <td class="c"><a href="#c3">La URL completa y siempre visible</a></td>
+            <td class="h">La URL se corta a media ruta y desaparece al desplazarse a la derecha.</td>
+            <td class="p">Columna fija, texto completo: nunca se pierde la referencia.</td>
+          </tr>
+          <tr>
+            <td class="n">4</td>
+            <td class="c"><a href="#c4">«Ver detalles» al alcance</a></td>
+            <td class="h">Está en la columna 17, a 586 px de desplazamiento. No se ve al entrar.</td>
+            <td class="p">La fila entera abre el detalle, con indicador en la primera columna.</td>
+          </tr>
+          <tr>
+            <td class="n">5</td>
+            <td class="c"><a href="#c5">Un solo panel de detalle</a></td>
+            <td class="h">Dos paneles distintos, uno por tabla, con secciones y estructura diferentes.</td>
+            <td class="p">Un único panel, igual desde cualquier fila.</td>
+          </tr>
+          <tr>
+            <td class="n">6</td>
+            <td class="c"><a href="#c6">Hallazgos agrupados por regla</a></td>
+            <td class="h">La misma definición se repite hasta 5 veces y cada hallazgo aparece dos veces.</td>
+            <td class="p">Una definición por regla y las ocurrencias debajo.</td>
+          </tr>
+          <tr>
+            <td class="n">7</td>
+            <td class="c"><a href="#c7">El encabezado dice lo que pasa</a></td>
+            <td class="h">«Salud técnica 100 %» sobre una tabla con 14 hallazgos altos en la primera URL.</td>
+            <td class="p">«178 de 200 URLs con hallazgos» como titular; el HTTP correcto, como dato secundario.</td>
+          </tr>
+          <tr>
+            <td class="n">8</td>
+            <td class="c"><a href="#c8">Estado con texto, no sólo color</a></td>
+            <td class="h">El estado se lee por color, y el verde usado no alcanza el contraste mínimo.</td>
+            <td class="p">Color y palabra juntos, con verde corregido.</td>
+          </tr>
+          <tr>
+            <td class="n">9</td>
+            <td class="c"><a href="#c9">El panel se maneja con teclado</a></td>
+            <td class="h">Al abrirlo el foco se queda fuera y el fondo sigue desplazándose.</td>
+            <td class="p">Diálogo real: el foco entra, queda dentro y vuelve al salir.</td>
+          </tr>
+          <tr>
+            <td class="n">10</td>
+            <td class="c"><a href="#c10">Los campos completos, con buscador</a></td>
+            <td class="h">Los 36 campos del registro y los 28 del hallazgo se recorren a mano, sin buscar.</td>
+            <td class="p">Los mismos 64 campos, con un buscador en cada tabla y los redundantes señalados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ COBERTURA ============ -->
+  <section>
+    <h2>Nada se pierde</h2>
+    <p class="sub">Cada sección y cada campo de los dos paneles actuales, y dónde queda en la propuesta.</p>
+    <div class="tbl-scroll" tabindex="0" role="region" aria-label="Tabla de cobertura del contenido actual, desplazable">
+      <table class="lista">
+        <thead><tr><th>Contenido de hoy</th><th>Dónde está hoy</th><th>Dónde queda en la propuesta</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="c">Resumen de severidades<br><span style="font-weight:400;color:var(--muted)">Alta 14 · Media 7 · Baja 1</span></td>
+            <td>Panel de Resultados · tres tarjetas de cabecera</td>
+            <td class="p">Cabecera del panel, en una línea de chips</td>
+          </tr>
+          <tr>
+            <td class="c">Métricas de esta URL<br><span style="font-weight:400;color:var(--muted)">7 tarjetas</span></td>
+            <td>Panel de Resultados · acordeón «Métricas de esta URL (según la tabla)»</td>
+            <td class="p">Acordeón «Métricas de esta URL», abierto por defecto, con <strong>8</strong> valores: se añade <code>console_warning_count</code>, que existe en el registro y hoy no se muestra</td>
+          </tr>
+          <tr>
+            <td class="c">Desglose de recursos fallidos</td>
+            <td>Panel de Resultados · nota bajo las métricas</td>
+            <td class="p">Misma nota, dentro del acordeón de métricas</td>
+          </tr>
+          <tr>
+            <td class="c">Problemas encontrados<br><span style="font-weight:400;color:var(--muted)">22 bloques</span></td>
+            <td>Panel de Resultados · acordeón «Problemas encontrados en esta URL (22)»</td>
+            <td class="p">Sección «Problemas encontrados», agrupados por regla: mismo contenido, sin repetir la definición</td>
+          </tr>
+          <tr>
+            <td class="c">Datos del registro<br><span style="font-weight:400;color:var(--muted)">36 campos</span></td>
+            <td>Panel de Resultados · acordeón «Datos del registro (todos los campos)»</td>
+            <td class="p">Acordeón «Datos del registro · 36 campos», con buscador de campo o valor</td>
+          </tr>
+          <tr>
+            <td class="c">Qué se revisó</td>
+            <td>Panel de Hallazgos · caja de cabecera (<code>front_label</code>)</td>
+            <td class="p">Dentro del grupo de la regla, una vez por regla</td>
+          </tr>
+          <tr>
+            <td class="c">Qué significa</td>
+            <td>Panel de Hallazgos · caja de cabecera (<code>business_description</code>)</td>
+            <td class="p">Dentro del grupo de la regla, una vez por regla</td>
+          </tr>
+          <tr>
+            <td class="c">Qué hacer (recomendación)<br><span style="font-weight:400;color:var(--muted)">+ Sugerir con IA</span></td>
+            <td>Panel de Hallazgos · acordeón</td>
+            <td class="p">Dentro del grupo de la regla, con el botón «Sugerir con IA» a 44 px</td>
+          </tr>
+          <tr>
+            <td class="c">Detalle técnico<br><span style="font-weight:400;color:var(--muted)">8 campos: tipo e ID de componente, selector CSS, XPath, sección HTML, archivo origen, línea:columna, failed/resource URL</span></td>
+            <td>Panel de Hallazgos · acordeón «Detalle técnico (para corregir)»</td>
+            <td class="p">Los <strong>8</strong> campos en cada ocurrencia. Los vacíos se marcan «sin dato» en lugar de mostrar un guion: que falte el valor también informa</td>
+          </tr>
+          <tr>
+            <td class="c">Valor esperado y detectado</td>
+            <td>Panel de Hallazgos · línea «Esperado · Actual», con el volcado repetido</td>
+            <td class="p">Par «Esperado / Detectado» por ocurrencia, y el volcado una sola vez en bloque desplazable</td>
+          </tr>
+          <tr>
+            <td class="c">Todos los campos (técnico)<br><span style="font-weight:400;color:var(--muted)">28 campos</span></td>
+            <td>Panel de Hallazgos · acordeón</td>
+            <td class="p">Acordeón «Datos del hallazgo · 28 campos», con buscador y los cinco campos redundantes señalados</td>
+          </tr>
+          <tr>
+            <td class="c">Rule ID y Código hallazgo</td>
+            <td>Panel de Hallazgos · dos tarjetas de cabecera con el mismo valor</td>
+            <td class="p">Nota al pie del grupo de la regla; los cinco campos siguen en la tabla completa</td>
+          </tr>
+          <tr>
+            <td class="c">Navegación entre registros<br><span style="font-weight:400;color:var(--muted)">Anterior · 1 de 25 · Siguiente</span></td>
+            <td>Cabecera de ambos paneles</td>
+            <td class="p">Se mantiene, y pasa a contar sobre el total real en lugar de sobre la página de 25</td>
+          </tr>
+          <tr>
+            <td class="c">Nombre legible de la regla</td>
+            <td class="h">No se usa: la interfaz muestra el código. <code>rule_name</code> ya viene en la respuesta con «Deprecated API»</td>
+            <td class="p">Título del grupo, con el código al lado en menor tamaño</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="pie">
+      Catorce elementos de contenido en los dos paneles actuales. Los catorce están en la propuesta;
+      dos de ellos —los 36 campos y los 28 campos— ganan buscador, y dos aportan información que hoy
+      existe en los datos pero no se muestra.
+    </p>
+  </section>
+
+  <!-- ============ PANTALLA PROPUESTA ============ -->
+  <section>
+    <h2>La pantalla propuesta</h2>
+    <p class="sub">Maqueta navegable con los diez cambios aplicados. Puede filtrar, cambiar de vista, elegir columnas, expandir filas, abrir el panel y buscar entre sus campos.</p>
+
+    <div class="mk" id="mk">
+      <div class="mk__bar"></div>
+      <div class="mk__in">
+        <p class="mk-h">Módulo 2 · Técnico</p>
+        <p class="mk-l">200 URLs medidas el 17 jul, 12:02. Todas responden HTTP 200 y sin redirecciones · <b>178 tienen errores en runtime</b></p>
+
+        <dl class="mk-kpis">
+          <div class="mk-kpi mk-kpi--alert"><dt>URLs con hallazgos</dt><dd>178 <small>de 200</small><span class="mk-kpi__f">89 % del total medido</span></dd></div>
+          <div class="mk-kpi mk-kpi--alert"><dt>Severidad alta</dt><dd>14 <small>en la peor URL</small><span class="mk-kpi__f">jQuery undefined, APIs deprecadas</span></dd></div>
+          <div class="mk-kpi"><dt>Respuesta media</dt><dd>253 <small>ms</small><span class="mk-kpi__f">umbral 1 000 ms · dentro</span></dd></div>
+          <div class="mk-kpi"><dt>Disponibilidad HTTP</dt><dd>100 <small>%</small><span class="mk-kpi__f">200 de 200 responden 200</span></dd></div>
+        </dl>
+
+        <div class="mk-bar">
+          <div class="mk-f"><label for="q">Filtrar por URL</label><input id="q" type="search" placeholder="parte de la ruta"></div>
+          <div class="mk-f"><label for="sv">Severidad</label><select id="sv"><option>Todas</option><option>Alta</option><option>Media</option><option>Baja</option></select></div>
+          <div class="mk-f"><label for="dv">Dispositivo</label><select id="dv"><option>Todos</option><option selected>Móvil</option><option>Escritorio</option></select></div>
+          <div class="mk-f">
+            <span class="lb" id="vl">Ver</span>
+            <div class="mk-seg" role="group" aria-labelledby="vl">
+              <button type="button" id="vu" aria-pressed="true">Por URL</button>
+              <button type="button" id="vh" aria-pressed="false">Por hallazgo</button>
+            </div>
+          </div>
+          <div class="mk-cols">
+            <button class="mk-b" type="button" id="cb" aria-expanded="false" aria-controls="cp">Columnas (3 de 17)</button>
+            <div class="mk-pop" id="cp" hidden>
+              <p>Columnas opcionales</p>
+              <label><input type="checkbox" data-col="http"> Código HTTP</label>
+              <label><input type="checkbox" data-col="redir"> Redirecciones</label>
+              <label><input type="checkbox" data-col="temp"> Redirección temporal</label>
+              <label><input type="checkbox" data-col="rast"> Estado de rastreo</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mk-tw" id="wu" tabindex="0" role="region" aria-label="Resultados técnicos por URL, tabla desplazable">
+          <table class="mkt" id="tu">
+            <thead><tr>
+              <th class="fix" scope="col">URL</th>
+              <th scope="col">Respuesta</th>
+              <th scope="col">Problemas</th>
+              <th scope="col" data-c="http" hidden>Código HTTP</th>
+              <th scope="col" data-c="redir" hidden>Redirecciones</th>
+              <th scope="col" data-c="temp" hidden>Redir. temporal</th>
+              <th scope="col" data-c="rast" hidden>Estado rastreo</th>
+            </tr></thead>
+            <tbody id="bu"></tbody>
+          </table>
+        </div>
+
+        <div class="mk-tw" id="wh" tabindex="0" role="region" aria-label="Hallazgos agrupados por regla, tabla desplazable" hidden>
+          <table class="mkt">
+            <thead><tr>
+              <th class="fix" scope="col">Regla</th><th scope="col">Severidad</th>
+              <th scope="col">URLs</th><th scope="col">Ocurrencias</th><th scope="col">Qué hacer</th>
+            </tr></thead>
+            <tbody id="bh"></tbody>
+          </table>
+        </div>
+
+        <div class="mk-pie">
+          <span id="cnt">Mostrando 1–4 de 200 URLs</span>
+          <div class="mk-pag">
+            <span style="margin-right:5px">Filas</span>
+            <button type="button">10</button><button type="button" aria-current="true">25</button>
+            <button type="button">50</button><button type="button">100</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mk-scrim" id="scrim" hidden></div>
+      <div class="mk-dw" id="dw" role="dialog" aria-modal="true" aria-labelledby="dwt" hidden>
+        <div class="mk-dw__h">
+          <div>
+            <h4 id="dwt">Detalle de la URL</h4>
+            <p id="dwu" class="mk-url" style="margin:2px 0 0"></p>
+          </div>
+          <button class="mk-x" type="button" id="dwx" aria-label="Cerrar detalle">×</button>
+        </div>
+        <div class="mk-dw__n">
+          <button class="mk-b" type="button" style="min-height:36px;padding:0 9px">← Anterior</button>
+          <span id="dwp">URL 1 de 200</span>
+          <button class="mk-b" type="button" style="min-height:36px;padding:0 9px">Siguiente →</button>
+        </div>
+        <div class="mk-dw__b" id="dwb"></div>
+      </div>
+    </div>
+    <p class="pie">
+      Los recuentos son los valores reales de las columnas del módulo. El desglose por severidad
+      (14 alta · 7 media · 1 baja) y el volcado de consola provienen del panel real de la primera URL.
+    </p>
+  </section>
+
+  <!-- ============ CAMBIO A CAMBIO ============ -->
+  <section>
+    <h2>Cambio a cambio</h2>
+    <p class="sub">A la izquierda la pantalla de hoy; a la derecha, la propuesta.</p>
+
+    <!-- 1 -->
+    <div class="cambio" id="c1">
+      <p class="cambio__n">Cambio 1</p>
+      <h3>Una tabla en lugar de dos</h3>
+      <p class="cambio__d">
+        Hoy la pantalla carga dos tablas a la vez. «Resultados técnicos» trae 200 filas y
+        «Hallazgos técnicos» trae 3 003 —unos quince hallazgos por URL, repartidos en 121 páginas—.
+        La segunda tabla es el mismo contenido que el panel de detalle ya muestra agrupado por URL.
+        La propuesta deja una sola tabla y convierte las dos en dos vistas del mismo dato,
+        conmutables con un botón.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · dos tablas, 3 203 filas</p>
+          <div class="marco" tabindex="0" role="region" aria-label="Pie de la tabla de hallazgos actual, desplazable">
+            <img src="capturas/m2-crop-tabla2-pie.jpg" alt="Pie de la segunda tabla: Mostrando 1 a 25 de 3003 resultados.">
+          </div>
+          <p class="pie">Pie de «Hallazgos técnicos»: 3 003 resultados. La primera tabla dice 200.</p>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · un conmutador</p>
+          <div class="demo">
+            <p class="demo__lbl">Dos vistas del mismo dato</p>
+            <div class="mk-seg" role="group" aria-label="Ejemplo de conmutador de vista">
+              <button type="button" aria-pressed="true">Por URL · 200</button>
+              <button type="button" aria-pressed="false">Por regla · 4</button>
+            </div>
+            <p style="font-size:12.5px;color:#5A6472;margin:10px 0 0">
+              «Por regla» agrupa las 3 003 filas en las reglas que las originan. Se renderiza una tabla
+              a la vez, no dos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="cambio" id="c2">
+      <p class="cambio__n">Cambio 2</p>
+      <h3>Seis columnas en lugar de diecisiete</h3>
+      <p class="cambio__d">
+        De las diecisiete columnas de «Resultados técnicos», nueve muestran el mismo valor en todas
+        las filas —Dispositivo, Código HTTP, Redirecciones, Redirección temporal, Rastreable, Estado
+        de rastreo, Estado runtime, Mixed content y Errores CORS— y «Cadena redirects» está vacía.
+        Esas columnas ocupan el ancho que empuja «Ver detalles» fuera de la pantalla. Lo que no varía
+        sube al encabezado como un hecho único.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · 17 columnas, 1 910 px</p>
+          <div class="marco" tabindex="0" role="region" aria-label="Tabla de resultados técnicos actual, desplazable">
+            <img src="capturas/m2-crop-tabla1.jpg" alt="Tabla actual: columnas Dispositivo, Código HTTP, Redirecciones, Cadena redirects vacía, Redirección temporal, Rastreable, Estado de rastreo y Estado runtime, todas con el mismo valor en cada fila.">
+          </div>
+          <p class="pie">Cuatro filas seguidas: «Móvil», «HTTP 200», «0», «No», «Sí», «OK», «Capturado». «Cadena redirects» aparece vacía. · <a href="capturas/m2-crop-tabla1.jpg" target="_blank" rel="noopener">ver a tamaño real</a></p>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · 6 visibles</p>
+          <div class="demo">
+            <p class="demo__lbl">Hoy · 17 columnas</p>
+            <div class="franja" tabindex="0" role="region" aria-label="Franja de las 17 columnas actuales, desplazable">
+              <span class="util">URL</span><span class="igual">Dispositivo</span><span class="igual">Código HTTP</span>
+              <span class="util">Tiempo respuesta</span><span class="igual">Redirecciones</span><span class="vacia">Cadena redirects</span>
+              <span class="igual">Redir. temporal</span><span class="igual">Rastreable</span><span class="igual">Estado rastreo</span>
+              <span class="igual">Estado runtime</span><span class="util">Err. consola</span><span class="util">Err. JS</span>
+              <span class="util">Recursos fallidos</span><span class="igual">Mixed content</span><span class="igual">Err. CORS</span>
+              <span class="util">Err. CSP</span><span>Acción</span>
+            </div>
+            <div class="leyenda-franja">
+              <span><i style="background:#FFF6F5;border-color:#E9B5B0"></i>Mismo valor en todas las filas, o vacía</span>
+              <span><i style="background:#F2FAF5;border-color:#A9D8BC"></i>Aporta información</span>
+            </div>
+            <p class="demo__lbl" style="margin-top:12px">Propuesta · 6 columnas</p>
+            <div class="franja franja--corta" tabindex="0" role="region" aria-label="Franja de las 6 columnas propuestas, desplazable">
+              <span>URL</span><span>Respuesta</span><span>Problemas</span>
+              <span>Err. consola</span><span>Err. JS</span><span>Recursos + CSP</span>
+            </div>
+            <p style="font-size:12.5px;color:#5A6472;margin:9px 0 0">Las once restantes quedan disponibles en el selector «Columnas».</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="cambio" id="c3">
+      <p class="cambio__n">Cambio 3</p>
+      <h3>La URL completa y siempre visible</h3>
+      <p class="cambio__d">
+        La URL es el identificador de la fila, y hoy se corta a media ruta
+        —«/empresas/fijos/telefonia-fija/telefonia-tronc…»— mientras columnas con un valor repetido
+        reciben ancho completo. Además, al desplazarse a la derecha para llegar a «Ver detalles», la
+        URL desaparece de la vista y se pierde la referencia de qué fila se está leyendo. En la
+        propuesta la columna de URL queda fija al desplazar.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · truncada y no fija</p>
+          <div class="marco" tabindex="0" role="region" aria-label="Detalle de la columna de URL actual">
+            <img src="capturas/m2-crop-tabla1.jpg" alt="La columna URL muestra rutas cortadas con puntos suspensivos.">
+          </div>
+          <p class="pie">Dos de las tres rutas visibles terminan en puntos suspensivos. · <a href="capturas/m2-crop-tabla1.jpg" target="_blank" rel="noopener">ver a tamaño real</a></p>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · fija y completa</p>
+          <div class="demo">
+            <p class="demo__lbl">Desplace la tabla a la derecha: la URL se queda</p>
+            <div class="mk-tw mk-tw--corto" tabindex="0" role="region" aria-label="Ejemplo de columna fija, desplazable">
+              <table class="mkt">
+                <thead><tr><th class="fix">URL</th><th>Respuesta</th><th>Problemas</th><th>Err. consola</th><th>Err. JS</th><th>Recursos</th><th>CSP</th><th>Mixed</th><th>CORS</th></tr></thead>
+                <tbody>
+                  <tr><td class="fix"><span class="mk-url">/empresas/fijos/telefonia-fija/telefonia-troncal-sip/</span><span class="mk-sub">Móvil</span></td>
+                    <td class="mk-n">351 ms</td><td><span class="mk-chip mk-chip--alta">14 alta</span></td>
+                    <td class="mk-n">4</td><td class="mk-n">3</td><td class="mk-n">8</td><td class="mk-n">2</td><td class="mk-n">0</td><td class="mk-n">0</td></tr>
+                  <tr><td class="fix"><span class="mk-url">/personas/olo/centro-ayuda/reset-router/</span><span class="mk-sub">Móvil</span></td>
+                    <td class="mk-n">218 ms</td><td><span class="mk-chip mk-chip--media">13 problemas</span></td>
+                    <td class="mk-n">2</td><td class="mk-n">1</td><td class="mk-n">8</td><td class="mk-n">2</td><td class="mk-n">0</td><td class="mk-n">0</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="font-size:12.5px;color:#5A6472;margin:9px 0 0">La ruta se muestra entera, en dos líneas si hace falta.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="cambio" id="c4">
+      <p class="cambio__n">Cambio 4</p>
+      <h3>«Ver detalles» al alcance</h3>
+      <p class="cambio__d">
+        El panel de detalle es lo más útil de la pantalla: da el componente, el selector CSS, el
+        archivo y la línea exacta del error. Pero su botón está en la columna 17 de 17, a 586 px de
+        desplazamiento horizontal: no se ve al entrar. En la propuesta la fila entera abre el detalle,
+        con un indicador en la primera columna, y al expandirla se ven las seis métricas de runtime
+        sin necesidad de abrir nada.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · columna 17</p>
+          <div class="demo demo--hoy">
+            <p class="demo__lbl">Recorrido hasta el botón</p>
+            <div class="franja" tabindex="0" role="region" aria-label="Recorrido horizontal hasta la columna de acción">
+              <span class="util">URL</span><span class="igual">Dispositivo</span><span class="igual">Código HTTP</span>
+              <span class="util">Tiempo</span><span class="igual">Redirecciones</span><span class="vacia">Cadena redirects</span>
+              <span class="igual">Redir. temporal</span><span class="igual">Rastreable</span><span class="igual">Estado rastreo</span>
+              <span class="igual">Estado runtime</span><span class="util">Consola</span><span class="util">JS</span>
+              <span class="util">Recursos</span><span class="igual">Mixed</span><span class="igual">CORS</span>
+              <span class="util">CSP</span>
+              <span style="background:#C41E14;color:#fff;font-weight:700">Ver detalles ←</span>
+            </div>
+            <p style="font-size:12.5px;color:#A8190F;margin:9px 0 0">
+              586 px de desplazamiento, con 89 × 40 px de botón al final.
+            </p>
+          </div>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · la fila entera</p>
+          <div class="demo">
+            <p class="demo__lbl">Pulse la fila</p>
+            <div class="mk-tw mk-tw--corto" tabindex="0" role="region" aria-label="Ejemplo de fila expandida, tabla desplazable">
+              <table class="mkt">
+                <thead><tr><th class="fix">URL</th><th>Respuesta</th><th>Problemas</th></tr></thead>
+                <tbody>
+                  <tr class="op">
+                    <td class="fix"><span style="display:flex;gap:7px;align-items:center;min-height:44px">
+                      <span class="mk-car" aria-hidden="true">▸</span>
+                      <span><span class="mk-url">/empresas/fijos/telefonia-fija/telefonia-troncal-sip/</span><span class="mk-sub">Móvil</span></span>
+                    </span></td>
+                    <td class="mk-n">351 ms</td>
+                    <td><div class="mk-chips"><span class="mk-chip mk-chip--alta">14 alta</span><span class="mk-chip mk-chip--media">7 media</span></div></td>
+                  </tr>
+                  <tr class="mk-det"><td colspan="3">
+                    <dl class="mk-mini-g">
+                      <div class="mk-mini"><dt>Err. consola</dt><dd class="b">4</dd></div>
+                      <div class="mk-mini"><dt>Err. JS</dt><dd class="b">3</dd></div>
+                      <div class="mk-mini"><dt>Recursos fallidos</dt><dd class="b">8</dd></div>
+                      <div class="mk-mini"><dt>Err. CSP</dt><dd class="b">2</dd></div>
+                      <div class="mk-mini"><dt>Mixed content</dt><dd class="z">0</dd></div>
+                      <div class="mk-mini"><dt>Err. CORS</dt><dd class="z">0</dd></div>
+                    </dl>
+                    <button class="mk-b mk-b--pri" type="button">Ver los 22 hallazgos</button>
+                  </td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="cambio" id="c5">
+      <p class="cambio__n">Cambio 5</p>
+      <h3>Un solo panel de detalle</h3>
+      <p class="cambio__d">
+        Cada tabla abre su propio panel, y son dos diseños distintos. El de «Resultados técnicos»
+        tiene tres secciones —Métricas de esta URL, Problemas encontrados, Datos del registro— con
+        892 elementos y 29 772 caracteres. El de «Hallazgos técnicos» tiene otras tres
+        —Qué hacer, Detalle técnico, Todos los campos— con 216 elementos y 1 204 caracteres, y una
+        cabecera de cuatro tarjetas diferente. Son dos formas de leer la misma auditoría, y hay que
+        aprender las dos.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · panel de «Hallazgos técnicos»</p>
+          <div class="marco marco--alto" tabindex="0" role="region" aria-label="Segundo panel de detalle actual, desplazable">
+            <img src="capturas/m2-crop-panel2.jpg" alt="Panel del segundo tipo: cuatro tarjetas de cabecera, Qué se revisó, Qué significa, Qué hacer y Detalle técnico con ocho campos.">
+          </div>
+          <p class="pie">Cabecera de 4 tarjetas, secciones «Qué se revisó» y «Qué significa», y 8 campos técnicos. · <a href="capturas/m2-crop-panel2.jpg" target="_blank" rel="noopener">ver a tamaño real</a></p>
+        </div>
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · panel de «Resultados técnicos»</p>
+          <div class="marco marco--alto" tabindex="0" role="region" aria-label="Primer panel de detalle actual, desplazable">
+            <img src="capturas/m2-crop-panel1.jpg" alt="Panel del primer tipo: tarjetas de URL, hallazgos y severidades, y la lista de problemas con su volcado de consola.">
+          </div>
+          <p class="pie">Otra cabecera, otras secciones y otro orden para el mismo tipo de información. · <a href="capturas/m2-crop-panel1.jpg" target="_blank" rel="noopener">ver a tamaño real</a></p>
+        </div>
+      </div>
+      <p class="pie" style="margin-top:1rem">
+        La propuesta usa un único panel —el de la maqueta de arriba— que reúne las seis secciones de
+        los dos: resumen de severidades, problemas agrupados por regla (con «qué se revisó», «qué
+        significa» y «qué hacer» dentro de cada regla), métricas de la URL, los 36 campos del registro
+        y los 28 campos del hallazgo. La tabla «Nada se pierde» de más arriba lo detalla elemento
+        por elemento.
+      </p>
+    </div>
+
+    <!-- 6 -->
+    <div class="cambio" id="c6">
+      <p class="cambio__n">Cambio 6</p>
+      <h3>Hallazgos agrupados por regla</h3>
+      <p class="cambio__d">
+        Dentro del panel, la definición de cada regla se imprime una vez por hallazgo: el mismo
+        párrafo aparece cinco veces, otro cuatro y otro dos. Y cada problema figura dos veces —una
+        como captura de consola y otra como texto— con el mismo código de regla, lo que infla el
+        recuento a «22 hallazgos» en una URL. La propuesta imprime la definición una vez por regla y
+        lista debajo las ocurrencias con lo único que cambia: archivo, línea y selector.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · la misma regla, dos bloques idénticos</p>
+          <div class="marco marco--alto" tabindex="0" role="region" aria-label="Panel actual con hallazgos repetidos, desplazable">
+            <img src="capturas/m2-crop-panel1.jpg" alt="Dos bloques consecutivos con el mismo código TECH_JQUERY_UNDEFINED y la misma definición repetida.">
+          </div>
+          <p class="pie">Dos bloques seguidos con el código <code>TECH_JQUERY_UNDEFINED</code> y la definición completa en cada uno.</p>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · una regla, dos ocurrencias</p>
+          <div class="demo">
+            <details class="mk-rule" open>
+              <summary>
+                <span class="mk-chip mk-chip--alta mk-chip--sq">alta</span>
+                <strong>jquery undefined</strong>
+                <span class="mk-code">TECH_JQUERY_UNDEFINED</span>
+                <span class="mk-rule__n">2 ocurrencias</span>
+              </summary>
+              <div class="mk-rule__b">
+                <p class="mk-def"><b>Qué valida la regla · una sola vez</b>Valida que jQuery esté cargado. Criterio: jquery_loaded = TRUE. Si falla, puede afectar la disponibilidad y la experiencia técnica de la página.</p>
+                <div class="mk-occ">
+                  <strong style="font-size:12px">Ocurrencia 1</strong>
+                  <dl class="mk-where">
+                    <dt>Componente</dt><dd>runtime_event</dd>
+                    <dt>Archivo</dt><dd>…/recursos_tema_evo/js/jquery.min.js</dd>
+                    <dt>Línea</dt><dd>1:31559</dd>
+                  </dl>
+                </div>
+                <div class="mk-occ">
+                  <strong style="font-size:12px">Ocurrencia 2</strong>
+                  <p style="margin:4px 0 0;font-size:12px">Se detectó jQuery undefined en runtime · esperado: jquery loaded</p>
+                  <dl class="mk-where"><dt>Componente</dt><dd>runtime</dd></dl>
+                </div>
+                <p class="mk-fix">💡 <strong>Validar carga de jQuery y dependencias.</strong></p>
+              </div>
+            </details>
+            <p style="font-size:12.5px;color:#5A6472;margin:9px 0 0">
+              Una definición, dos ocurrencias, un recuento honesto.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="cambio" id="c7">
+      <p class="cambio__n">Cambio 7</p>
+      <h3>El encabezado dice lo que pasa</h3>
+      <p class="cambio__d">
+        Las cuatro tarjetas de cabecera dicen «URLs procesadas 200», «Status OK 200», «Errores HTTP 0»
+        y «Salud técnica 100 %». Ese 100 % sólo mide códigos de respuesta HTTP, pero se llama salud
+        técnica y ocupa el lugar de la conclusión: la primera fila de la tabla tiene 4 errores de
+        consola, 3 de JavaScript, 8 recursos fallidos y 2 de CSP, y su panel declara 22 hallazgos,
+        14 de severidad alta. La propuesta pone como titular lo que el módulo realmente detecta.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · «Salud técnica 100 %»</p>
+          <div class="marco" tabindex="0" role="region" aria-label="Tarjetas de cabecera actuales, desplazable">
+            <img src="capturas/m2-crop-kpis.jpg" alt="Cuatro tarjetas: URLs procesadas 200, Status OK 200, Errores HTTP 0, Salud técnica 100 %.">
+          </div>
+          <p class="pie">El 100 % convive con 22 hallazgos en la primera URL. · <a href="capturas/m2-crop-kpis.jpg" target="_blank" rel="noopener">ver a tamaño real</a></p>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · «178 de 200 con hallazgos»</p>
+          <div class="demo">
+            <dl class="mk-kpis" style="margin:0">
+              <div class="mk-kpi mk-kpi--alert"><dt>URLs con hallazgos</dt><dd>178 <small>de 200</small><span class="mk-kpi__f">89 % del total medido</span></dd></div>
+              <div class="mk-kpi mk-kpi--alert"><dt>Severidad alta</dt><dd>14 <small>en la peor URL</small><span class="mk-kpi__f">jQuery undefined</span></dd></div>
+              <div class="mk-kpi"><dt>Respuesta media</dt><dd>253 <small>ms</small><span class="mk-kpi__f">umbral 1 000 ms</span></dd></div>
+              <div class="mk-kpi"><dt>Disponibilidad HTTP</dt><dd>100 <small>%</small><span class="mk-kpi__f">200 de 200 responden 200</span></dd></div>
+            </dl>
+            <p style="font-size:12.5px;color:#5A6472;margin:10px 0 0">
+              El dato correcto sigue estando, en su sitio: cuarto y sin llamarse «salud».
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="cambio" id="c8">
+      <p class="cambio__n">Cambio 8</p>
+      <h3>Estado con texto, no sólo color</h3>
+      <p class="cambio__d">
+        La pantalla explica su código de color con una leyenda —«Verde: bueno · Amarillo: medio ·
+        Rojo: alerta»— y deja el estado de cada celda a cargo de un punto de color. Quien no distingue
+        rojo de verde no puede leer la tabla, y el verde utilizado, <code>#409F5B</code>, da 3,31:1 de
+        contraste cuando el mínimo exigido es 4,5:1. En este módulo hay 52 elementos por debajo del
+        mínimo. La propuesta escribe la palabra junto al color y corrige el verde a
+        <code>#14713D</code>, que da 5,35:1.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · el color es la única pista</p>
+          <div class="marco" tabindex="0" role="region" aria-label="Leyenda de color actual">
+            <img src="capturas/m2-crop-leyenda.jpg" alt="Leyenda con un punto verde y el texto Verde: bueno.">
+          </div>
+          <p class="pie">La leyenda está arriba; en las celdas, sólo el punto de color.</p>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · color y palabra</p>
+          <div class="demo">
+            <p class="demo__lbl">Un componente, cuatro estados</p>
+            <div class="mk-chips" style="gap:6px">
+              <span class="mk-chip mk-chip--ok">Correcto</span>
+              <span class="mk-chip mk-chip--media">Revisar</span>
+              <span class="mk-chip mk-chip--alta">Alerta</span>
+              <span class="mk-chip mk-chip--baja">Sin datos</span>
+            </div>
+            <p style="font-size:12.5px;color:#5A6472;margin:11px 0 0">
+              Se entiende en blanco y negro, y cada color pasa el contraste mínimo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="cambio" id="c9">
+      <p class="cambio__n">Cambio 9</p>
+      <h3>El panel se maneja con teclado</h3>
+      <p class="cambio__d">
+        Al abrir el panel, el foco del teclado se queda en el botón que lo lanzó, fuera del panel, así
+        que hay que tabular a ciegas por toda la tabla para llegar a su contenido. El fondo sigue
+        desplazándose detrás y el botón de cerrar mide 36 × 36 px. En la propuesta el panel es un
+        diálogo: el foco entra al abrir, no puede salir mientras está abierto, Escape cierra y el foco
+        vuelve exactamente a la fila desde la que se abrió.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b></p>
+          <div class="demo demo--hoy">
+            <ul style="margin:0;padding-left:1.2rem;font-size:13px;color:#3C4753">
+              <li>El foco permanece fuera del panel al abrirlo.</li>
+              <li>El tabulador recorre la tabla de fondo, no el panel.</li>
+              <li>El fondo se desplaza detrás del panel.</li>
+              <li>Cerrar mide 36 × 36 px y su nombre accesible es «close».</li>
+              <li>Escape sí cierra: eso ya funciona.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · pruébelo arriba</p>
+          <div class="demo">
+            <ul style="margin:0;padding-left:1.2rem;font-size:13px;color:#3C4753">
+              <li>El foco entra al panel y queda dentro.</li>
+              <li>El tabulador da la vuelta sin salirse.</li>
+              <li>El fondo queda bloqueado.</li>
+              <li>Cerrar mide 44 × 44 px con nombre «Cerrar detalle».</li>
+              <li>Escape cierra y el foco vuelve a la fila de origen.</li>
+            </ul>
+            <p style="font-size:12.5px;color:#5A6472;margin:10px 0 0">
+              En la maqueta de arriba: abra un detalle y pulse Tab varias veces.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="cambio" id="c10">
+      <p class="cambio__n">Cambio 10</p>
+      <h3>Los campos completos, con buscador</h3>
+      <p class="cambio__d">
+        Los dos paneles terminan con un volcado completo del registro: 36 campos en el de Resultados
+        —desde <code>run_id</code> hasta <code>is_crawlable</code>, incluyendo <code>content_type</code>,
+        <code>server_header</code> y <code>cache_control</code>— y 28 en el de Hallazgos. Es información
+        valiosa para quien tiene que corregir, y hoy sólo se puede recorrer a mano de arriba abajo. La
+        propuesta conserva los 64 campos y les pone un buscador; además señala los cinco que contienen
+        el mismo valor y rescata dos datos que están en el registro pero en ninguna pantalla:
+        <code>console_warning_count</code> y el nombre legible de la regla, <code>rule_name</code>.
+      </p>
+      <div class="par">
+        <div class="lado lado--hoy">
+          <p class="lado__t"><b>Hoy</b> · 36 campos en una lista</p>
+          <div class="demo demo--hoy">
+            <p class="demo__lbl">Sin buscador, sin orden, sin marcas</p>
+            <table class="mk-campos" style="margin-top:0">
+              <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+              <tbody>
+                <tr><td>run_id</td><td>tc_20260717_165800_6127e9</td></tr>
+                <tr><td>audit_date</td><td>2026-07-17</td></tr>
+                <tr><td>checked_ts</td><td>2026-07-17T17:02:14.886155+00:00</td></tr>
+                <tr><td>page_url</td><td>https://www.claro.com.pe/…/telefonia-troncal-sip/</td></tr>
+                <tr><td>url_hash</td><td>0c8dd34557229c9c83b3091edd398fc1</td></tr>
+                <tr><td colspan="2" style="color:#5A6472;font-style:italic;font-family:var(--body)">…y 31 campos más, desplazando</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:12.5px;color:#A8190F;margin:9px 0 0">
+              Para saber el <code>status_code</code> hay que bajar catorce filas.
+            </p>
+          </div>
+        </div>
+        <div class="lado lado--nuevo">
+          <p class="lado__t"><b>Propuesta</b> · los mismos 36, buscables</p>
+          <div class="demo">
+            <p class="demo__lbl">Escriba «count» y quedan los contadores</p>
+            <input class="mk-filtro" id="demo-f" type="search" placeholder="p. ej. status, ts, count" data-demo="demo-t" style="max-width:260px">
+            <div class="mk-camposbox" style="max-height:210px" tabindex="0" role="region" aria-label="Ejemplo de los 36 campos con buscador, tabla desplazable">
+              <table class="mk-campos" id="demo-t">
+                <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+                <tbody id="demo-b"></tbody>
+              </table>
+            </div>
+            <p style="font-size:12.5px;color:#5A6472;margin:9px 0 0">
+              Los 36 campos siguen ahí; en el panel real, también los 28 del hallazgo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>
+      Cifras y capturas tomadas del entorno productivo el 4 de agosto de 2026, en escritorio de
+      1440 px y en modo de solo lectura. Las maquetas reproducen el lenguaje visual de la aplicación
+      para poder comparar; no son código de producción.
+    </p>
+    <p>
+      Detalle técnico y especificación para desarrollo: <a href="propuesta-m2-tecnico.html">propuesta-m2-tecnico.html</a> ·
+      Informe del módulo: <a href="02-modulo-2-tecnico.html">02-modulo-2-tecnico.html</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+  const URLS = [
+    { url: '/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', ms: 351, consola: 4, js: 3, recursos: 8, mixed: 0, cors: 0, csp: 2, sev: { alta: 14, media: 7, baja: 1 } },
+    { url: '/empresas/soluciones/soluciones-ti/portal-web/',         ms: 233, consola: 4, js: 3, recursos: 8, mixed: 0, cors: 0, csp: 2, sev: null },
+    { url: '/personas/olo/centro-ayuda/reset-router/',               ms: 218, consola: 2, js: 1, recursos: 8, mixed: 0, cors: 0, csp: 2, sev: null },
+    { url: '/empresas/soluciones/servicios-gestionados/clarocontact/', ms: 211, consola: 5, js: 3, recursos: 9, mixed: 0, cors: 0, csp: 3, sev: null },
+  ];
+  // Metadatos reales de las reglas, tal como los devuelve la API:
+  // rule_name, front_label, business_description, recommendation…
+  const REGLAS = [
+    { codigo: 'TECH_JQUERY_UNDEFINED', ruleId: 'TECH_021', nombre: 'jQuery Undefined', sev: 'alta', urls: 2, oc: 2,
+      revisado: 'Panel Runtime: contador de errores consola/JS y drawer con mensaje, archivo, línea, stack/resource y severidad.',
+      def: 'Valida jquery undefined en las URLs auditadas. Criterio de cumplimiento: jquery_loaded = TRUE. Impacto si falla: puede afectar la disponibilidad, velocidad de respuesta y experiencia técnica de la página.',
+      accion: 'Validar carga de jQuery y dependencias.',
+      plantilla: 'Validar carga de jQuery',
+      modulo: 'M2 Technical Crawler',
+      ocs: [
+        { comp: 'runtime_event', compId: null, sel: 'console', xpath: null, seccion: 'browser_runtime_event',
+          arch: 'https://www.claro.com.pe/portal/pe/recursos_tema_evo/js/jquery.min.js', linea: '1:31559', recurso: null,
+          esperado: 'Sin errores runtime',
+          actual: "jQuery.Deferred exception: Cannot read properties of null (reading 'setAttribute')",
+          trace: "jQuery.Deferred exception: Cannot read properties of null (reading 'setAttribute')\nTypeError: Cannot read properties of null (reading 'setAttribute')\n  at myFunction (…/telefonia-troncal-sip/:2695:379)\n  at HTMLDocument (…/telefonia-troncal-sip/:2695:475)\n  at e (…/js/jquery.min.js:2:30005)\n  at t (…/js/jquery.min.js:2:30307)" },
+        { comp: 'runtime', compId: null, sel: null, xpath: null, seccion: 'browser_runtime',
+          arch: null, linea: null, recurso: null,
+          esperado: 'jquery loaded', actual: 'jquery undefined',
+          resumen: 'Se detectó jQuery undefined en runtime', trace: null },
+      ] },
+    { codigo: 'TECH_DEPRECATED_API', ruleId: 'TECH_DEPRECATED_API', nombre: 'Deprecated API', sev: 'media', urls: 2, oc: 2,
+      revisado: 'Panel Runtime: contador de errores consola/JS y drawer con mensaje, archivo, línea, stack/resource y severidad.',
+      def: 'Valida deprecated api en las URLs auditadas. Criterio de cumplimiento: cuando se detecta Deprecated API en consola o auditoría automática. Impacto si falla: puede afectar la disponibilidad, velocidad de respuesta y experiencia técnica de la página.',
+      accion: 'Actualizar APIs/librerías deprecadas para evitar fallas futuras.',
+      plantilla: 'Corregir uso de apis obsoletas y validar en QA técnico',
+      modulo: 'M2 Technical Crawler',
+      ocs: [
+        { comp: 'runtime_event', compId: null, sel: 'console', xpath: null, seccion: 'browser_runtime_event',
+          arch: 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', linea: '2729:0', recurso: null,
+          esperado: 'Sin errores runtime',
+          actual: '[GroupMarkerNotSet(crbug.com/242999)!:A0E01C00C4240000]Automatic fallback to software WebGL has been deprecated.',
+          trace: '[GroupMarkerNotSet(crbug.com/242999)!:A0E01C00C4240000]\nAutomatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag.' },
+        { comp: 'runtime', compId: null, sel: null, xpath: null, seccion: 'browser_runtime',
+          arch: null, linea: null, recurso: null,
+          esperado: '0', actual: '1',
+          resumen: 'Se detectó uso de APIs deprecadas en runtime', trace: null },
+      ] },
+    { codigo: 'TECH_CONSOLE_ERROR', ruleId: 'TECH_009', nombre: 'Console Error', sev: 'media', urls: 4, oc: 15,
+      revisado: 'Panel Runtime: contador de errores de consola.',
+      def: 'Valida errores en consola en las URLs auditadas. Criterio de cumplimiento: console_errors = 0.',
+      accion: 'Revisar errores JS en runtime y corregir scripts.',
+      plantilla: 'Revisar errores JS en runtime', modulo: 'M2 Technical Crawler', ocs: [] },
+    { codigo: 'TECH_FAILED_IMAGE_RESOURCE', ruleId: 'TECH_013', nombre: 'Failed Image Resource', sev: 'baja', urls: 4, oc: 33,
+      revisado: 'Panel Runtime: recursos que no cargan.',
+      def: 'Valida recursos que fallan al cargar. Criterio de cumplimiento: failed_resources = 0.',
+      accion: 'Corregir rutas y disponibilidad de imágenes.',
+      plantilla: 'Corregir rutas y disponibilidad de imágenes', modulo: 'M2 Technical Crawler', ocs: [] },
+  ];
+
+  // Los 36 campos del registro, con los valores reales de la primera fila.
+  const REGISTRO = [
+    ['run_id', 'tc_20260717_165800_6127e9'], ['audit_date', '2026-07-17'],
+    ['checked_ts', '2026-07-17T17:02:14.886155+00:00'],
+    ['page_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/'],
+    ['normalized_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip'],
+    ['url_hash', '0c8dd34557229c9c83b3091edd398fc1'], ['url_type', 'direct'], ['page_group', 'direct'],
+    ['is_priority', 'true'], ['device_priority', 'mobile'],
+    ['request_user_agent', 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Mobile Safari/537.36'],
+    ['final_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/'],
+    ['final_domain', 'www.claro.com.pe'], ['status_code', '200'], ['is_success', 'true'],
+    ['response_time_ms', '350.71'], ['redirect_count', '0'], ['content_type', 'text/html'],
+    ['content_length', '81766'], ['server_header', 'nginx'], ['cache_control', 'no-cache'],
+    ['crawl_status', 'ok'], ['mobile_context', 'mobile_first_priority'], ['device_profile', 'mobile'],
+    ['console_error_count', '4'], ['console_warning_count', '3'], ['page_error_count', '3'],
+    ['failed_resource_count', '8'], ['runtime_status', 'captured'], ['runtime_scan_enabled', 'true'],
+    ['mixed_content_count', '0'], ['cors_error_count', '0'], ['csp_error_count', '2'],
+    ['redirect_chain_statuses', ''], ['has_temporary_redirect', 'false'], ['is_crawlable', 'true'],
+  ];
+
+  // Los 28 campos del hallazgo. Marcados los cinco que repiten el mismo valor.
+  const HALLAZGO = [
+    ['run_id', 'tc_20260717_165800_6127e9', 0], ['audit_date', '2026-07-17', 0],
+    ['created_ts', '2026-07-17T17:02:24.121305+00:00', 0],
+    ['page_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', 0],
+    ['normalized_url', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip', 0],
+    ['finding_code', 'TECH_DEPRECATED_API', 1], ['finding_category', 'runtime', 0], ['severity', 'media', 0],
+    ['finding_detail', '[detalle] console: [GroupMarkerNotSet(crbug.com/242999)!…]', 0],
+    ['recommendation', 'Actualizar APIs/librerías deprecadas para evitar fallas futuras.', 0],
+    ['component_type', 'runtime_event', 0], ['component_selector', 'console', 0],
+    ['html_section', 'browser_runtime_event', 0],
+    ['element_value', '[GroupMarkerNotSet(crbug.com/242999)!…]Automatic fallback…', 0],
+    ['expected_value', 'Sin errores runtime', 0],
+    ['rule_id', 'TECH_DEPRECATED_API', 1],
+    ['console_message', '[GroupMarkerNotSet(crbug.com/242999)!…]Automatic fallback…', 0],
+    ['source_file', 'https://www.claro.com.pe/empresas/fijos/telefonia-fija/telefonia-troncal-sip/', 0],
+    ['line_column', '2729:0', 0],
+    ['original_finding_code', 'TECH_DEPRECATED_API', 1], ['rule_display_id', 'TECH_DEPRECATED_API', 1],
+    ['finding_display_code', 'TECH_DEPRECATED_API', 1],
+    ['rule_name', 'Deprecated API', 0],
+    ['front_label', 'Panel Runtime: contador de errores consola/JS y drawer con mensaje, archivo, línea, stack/resource y severidad.', 0],
+    ['rule_description', 'Cuando se detecta Deprecated API en consola o auditoría automática', 0],
+    ['business_description', 'Valida deprecated api en las URLs auditadas. Criterio de cumplimiento…', 0],
+    ['assigned_module', 'M2 Technical Crawler', 0],
+    ['recommendation_template', 'Corregir uso de apis obsoletas y validar en QA técnico', 0],
+  ];
+
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const tot = (r) => r.consola + r.js + r.recursos + r.mixed + r.cors + r.csp;
+  const chips = (r) => r.sev
+    ? `<span class="mk-chip mk-chip--alta">${r.sev.alta} alta</span><span class="mk-chip mk-chip--media">${r.sev.media} media</span><span class="mk-chip mk-chip--baja">${r.sev.baja} baja</span>`
+    : `<span class="mk-chip mk-chip--media">${tot(r)} problemas</span>`;
+
+  const detalle = (r, conBoton = true) => `
+    <dl class="mk-mini-g">
+      ${[['Err. consola', r.consola], ['Err. JS', r.js], ['Recursos fallidos', r.recursos], ['Err. CSP', r.csp], ['Mixed content', r.mixed], ['Err. CORS', r.cors]]
+        .map(([t, v]) => `<div class="mk-mini"><dt>${t}</dt><dd class="${v === 0 ? 'z' : 'b'}">${v}</dd></div>`).join('')}
+    </dl>
+    ${conBoton ? `<div class="mk-fila-act">
+      <button class="mk-b mk-b--pri" type="button" data-abrir="${esc(r.url)}">Ver los ${r.sev ? 22 : tot(r)} hallazgos</button>
+      <span style="font-size:12px;color:#5A6472">HTTP 200 · sin redirecciones · rastreable</span>
+    </div>` : ''}`;
+
+  $('#bu').innerHTML = URLS.map((r, i) => `
+    <tr data-i="${i}">
+      <td class="fix">
+        <button class="mk-rb" type="button" aria-expanded="false" data-t="${i}">
+          <span class="mk-car" aria-hidden="true">▸</span>
+          <span><span class="mk-url">${esc(r.url)}</span><span class="mk-sub">Móvil</span></span>
+        </button>
+      </td>
+      <td class="mk-n">${r.ms} ms<br><span class="mk-sub">umbral 1 000</span></td>
+      <td><div class="mk-chips">${chips(r)}</div></td>
+      <td data-c="http" hidden>HTTP 200</td><td data-c="redir" hidden class="mk-n">0</td>
+      <td data-c="temp" hidden>No</td><td data-c="rast" hidden>OK</td>
+    </tr>
+    <tr class="mk-det" data-d="${i}" hidden><td colspan="7">${detalle(r)}</td></tr>`).join('');
+
+  $('#bh').innerHTML = REGLAS.map((g) => `
+    <tr>
+      <td class="fix"><span style="font-weight:600">${esc(g.nombre)}</span><br><span class="mk-code">${esc(g.codigo)}</span></td>
+      <td><span class="mk-chip mk-chip--${g.sev} mk-chip--sq">${g.sev}</span></td>
+      <td class="mk-n">${g.urls}</td><td class="mk-n">${g.oc}</td>
+      <td style="white-space:normal">${esc(g.accion)}</td>
+    </tr>`).join('');
+
+  function cols() {
+    document.querySelectorAll('#cp input[data-col]').forEach((cb) => {
+      document.querySelectorAll(`#tu [data-c="${cb.dataset.col}"]`).forEach((c) => { c.hidden = !cb.checked; });
+    });
+    $('#cb').textContent = `Columnas (${3 + [...document.querySelectorAll('#cp input')].filter((c) => c.checked).length} de 17)`;
+  }
+  $('#cb').addEventListener('click', (e) => {
+    const p = $('#cp'), abrir = p.hidden;
+    p.hidden = !abrir;
+    e.currentTarget.setAttribute('aria-expanded', String(abrir));
+  });
+  $('#cp').addEventListener('change', cols);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.mk-cols')) { $('#cp').hidden = true; $('#cb').setAttribute('aria-expanded', 'false'); }
+  });
+
+  $('#bu').addEventListener('click', (e) => {
+    const t = e.target.closest('[data-t]');
+    if (t) {
+      const i = t.dataset.t, fila = document.querySelector(`tr[data-i="${i}"]`), det = document.querySelector(`tr[data-d="${i}"]`);
+      const abrir = det.hidden;
+      det.hidden = !abrir; fila.classList.toggle('op', abrir); t.setAttribute('aria-expanded', String(abrir));
+      return;
+    }
+    const a = e.target.closest('[data-abrir]');
+    if (a) abrir(a.dataset.abrir, a);
+  });
+
+  const vista = (porURL) => {
+    $('#vu').setAttribute('aria-pressed', String(porURL));
+    $('#vh').setAttribute('aria-pressed', String(!porURL));
+    $('#wu').hidden = !porURL; $('#wh').hidden = porURL;
+    $('#cnt').textContent = porURL ? 'Mostrando 1–4 de 200 URLs' : '4 reglas · 52 ocurrencias · agrupa 3 003 filas';
+  };
+  $('#vu').addEventListener('click', () => vista(true));
+  $('#vh').addEventListener('click', () => vista(false));
+
+  const dw = $('#dw'), scrim = $('#scrim');
+  let disp = null;
+
+  // Los 8 campos técnicos del panel actual. Los vacíos se marcan, no se omiten:
+  // que un campo no tenga valor también es información.
+  const camposTecnicos = (o) => {
+    const defs = [
+      ['Tipo componente', o.comp], ['ID componente', o.compId], ['Selector CSS', o.sel], ['XPath', o.xpath],
+      ['Sección HTML', o.seccion], ['Archivo origen', o.arch], ['Línea:columna', o.linea], ['Failed/resource URL', o.recurso],
+    ];
+    return `<dl class="mk-tec">${defs.map(([k, v]) => `
+      <div class="${v ? '' : 'vacia'}"><dt>${k}</dt><dd class="${v ? '' : 'vacio'}">${v ? esc(v) : 'sin dato'}</dd></div>`).join('')}</dl>`;
+  };
+
+  const tablaCampos = (id, filas, etiqueta) => `
+    <div class="mk-camposwrap">
+      <label class="mk-sub" for="${id}">Buscar campo o valor</label>
+      <input class="mk-filtro" id="${id}" type="search" placeholder="p. ej. status, ts, count" data-filtra="${id}-t">
+      <div class="mk-camposbox" tabindex="0" role="region" aria-label="${etiqueta}">
+        <table class="mk-campos" id="${id}-t">
+          <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+          <tbody>${filas.map(([k, v, dup]) => `
+            <tr class="${dup ? 'dup' : ''}"><td>${esc(k)}</td><td>${v === '' ? '<span style="color:#5A6472;font-style:italic">vacío</span>' : esc(v)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  const cuerpo = (r) => {
+    const s = r.sev ?? { alta: 0, media: tot(r), baja: 0 };
+
+    const grupos = REGLAS.filter((g) => g.ocs.length).map((g) => `
+      <details class="mk-rule" ${g.sev === 'alta' ? 'open' : ''}>
+        <summary>
+          <span class="mk-chip mk-chip--${g.sev} mk-chip--sq">${g.sev}</span>
+          <strong>${esc(g.nombre)}</strong>
+          <span class="mk-code">${esc(g.codigo)}</span>
+          <span class="mk-rule__n">${g.ocs.length} ocurrencia${g.ocs.length > 1 ? 's' : ''}</span>
+        </summary>
+        <div class="mk-rule__b">
+          <p class="mk-def"><b>Qué se revisó</b>${esc(g.revisado)}</p>
+          <p class="mk-def"><b>Qué significa · una sola vez por regla</b>${esc(g.def)}</p>
+          <p class="mk-def"><b>Qué hacer</b>${esc(g.accion)}
+            <button class="mk-b" type="button" style="min-height:44px;margin-top:7px">Sugerir con IA</button>
+          </p>
+          ${g.ocs.map((o, i) => `
+            <div class="mk-occ">
+              <strong style="font-size:12px">Ocurrencia ${i + 1} de ${g.ocs.length}</strong>
+              ${o.resumen ? `<p style="margin:4px 0 0;font-size:12px">${esc(o.resumen)}</p>` : ''}
+              <dl class="mk-expesp">
+                <dt>Esperado</dt><dd class="esp">${esc(o.esperado)}</dd>
+                <dt>Detectado</dt><dd class="act">${esc(o.actual)}</dd>
+              </dl>
+              ${camposTecnicos(o)}
+              ${o.trace ? `<pre class="mk-tr" tabindex="0" role="region" aria-label="Volcado de consola, bloque desplazable">${esc(o.trace)}</pre>` : ''}
+            </div>`).join('')}
+          <p class="mk-nota">Regla <code>${esc(g.ruleId)}</code> · módulo asignado ${esc(g.modulo)} · plantilla de recomendación «${esc(g.plantilla)}»</p>
+        </div>
+      </details>`).join('');
+
+    const metricas = [
+      ['Redirecciones', 0], ['Errores consola', r.consola], ['Errores JS', r.js],
+      ['Recursos fallidos', r.recursos], ['Mixed content', r.mixed], ['Errores CORS', r.cors], ['Errores CSP', r.csp],
+    ];
+
+    return `
+      <div class="mk-sum">
+        <span class="mk-chip mk-chip--alta">${s.alta} alta</span>
+        <span class="mk-chip mk-chip--media">${s.media} media</span>
+        <span class="mk-chip mk-chip--baja">${s.baja} baja</span>
+        <span class="mk-chip mk-chip--baja">${r.ms} ms · HTTP 200</span>
+      </div>
+
+      <p class="mk-sec-t">Problemas encontrados · ${r.sev ? 22 : tot(r)}, en ${REGLAS.filter((g) => g.ocs.length).length} reglas</p>
+      ${grupos}
+
+      <p class="mk-sec-t">Estado de la URL</p>
+      <details class="mk-rule" open>
+        <summary><strong>Métricas de esta URL</strong><span class="mk-rule__n">8 valores</span></summary>
+        <div class="mk-rule__b">
+          <dl class="mk-mini-g" style="margin-top:9px">
+            ${metricas.map(([k, v]) => `<div class="mk-mini"><dt>${k}</dt><dd class="${v === 0 ? 'z' : 'b'}">${v}</dd></div>`).join('')}
+            <div class="mk-mini"><dt>Avisos de consola<span class="mk-nuevo">nuevo</span></dt><dd class="b">3</dd></div>
+          </dl>
+          <p class="mk-nota">Recursos fallidos (8) por tipo: otros (XHR / media / etc.): 8</p>
+          <p class="mk-nota">«Avisos de consola» ya existe en el registro como <code>console_warning_count</code> y hoy no se muestra en ninguna parte.</p>
+        </div>
+      </details>
+
+      <p class="mk-sec-t">Datos completos</p>
+      <details class="mk-rule">
+        <summary><strong>Datos del registro</strong><span class="mk-rule__n">36 campos</span></summary>
+        <div class="mk-rule__b">${tablaCampos('cr', REGISTRO, 'Los 36 campos del registro, tabla desplazable')}</div>
+      </details>
+      <details class="mk-rule">
+        <summary><strong>Datos del hallazgo</strong><span class="mk-rule__n">28 campos</span></summary>
+        <div class="mk-rule__b">
+          ${tablaCampos('ch', HALLAZGO, 'Los 28 campos del hallazgo, tabla desplazable')}
+          <p class="mk-nota">En rojo, los cinco campos que contienen el mismo valor: <code>finding_code</code>, <code>rule_id</code>, <code>original_finding_code</code>, <code>rule_display_id</code> y <code>finding_display_code</code>. Se conservan todos; arriba se muestra uno.</p>
+        </div>
+      </details>`;
+  };
+
+  function abrir(url, trigger) {
+    const r = URLS.find((x) => x.url === url) ?? URLS[0];
+    disp = trigger;
+    $('#dwu').textContent = 'https://www.claro.com.pe' + r.url;
+    $('#dwp').textContent = `URL ${URLS.indexOf(r) + 1} de 200`;
+    $('#dwb').innerHTML = cuerpo(r);
+    scrim.hidden = false; dw.hidden = false;
+    $('#mk').style.overflow = 'hidden';
+    $('#dwx').focus();
+    document.addEventListener('keydown', teclas, true);
+  }
+  function cerrar() {
+    dw.hidden = true; scrim.hidden = true;
+    $('#mk').style.removeProperty('overflow');
+    document.removeEventListener('keydown', teclas, true);
+    if (disp) disp.focus();
+  }
+  function teclas(e) {
+    if (dw.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); cerrar(); return; }
+    if (e.key !== 'Tab') return;
+    const f = [...dw.querySelectorAll('a[href],button,summary,input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter((el) => el.offsetParent !== null);
+    if (!f.length) return;
+    const pri = f[0], ult = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === pri) { e.preventDefault(); ult.focus(); }
+    else if (!e.shiftKey && document.activeElement === ult) { e.preventDefault(); pri.focus(); }
+  }
+  $('#dwx').addEventListener('click', cerrar);
+  scrim.addEventListener('click', cerrar);
+
+  // Buscador de las tablas de campos, dentro del panel.
+  $('#dwb').addEventListener('input', (e) => {
+    const inp = e.target.closest('[data-filtra]');
+    if (!inp) return;
+    const q = inp.value.trim().toLowerCase();
+    const tabla = document.getElementById(inp.dataset.filtra);
+    if (!tabla) return;
+    let n = 0;
+    for (const tr of tabla.querySelectorAll('tbody tr')) {
+      const ok = !q || tr.textContent.toLowerCase().includes(q);
+      tr.hidden = !ok;
+      if (ok) n++;
+    }
+    inp.setAttribute('aria-label', `Buscar campo o valor · ${n} coincidencias`);
+  });
+
+  $('#q').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    let n = 0;
+    URLS.forEach((r, i) => {
+      const ok = !q || r.url.toLowerCase().includes(q);
+      document.querySelector(`tr[data-i="${i}"]`).hidden = !ok;
+      if (!ok) {
+        document.querySelector(`tr[data-d="${i}"]`).hidden = true;
+        document.querySelector(`[data-t="${i}"]`).setAttribute('aria-expanded', 'false');
+        document.querySelector(`tr[data-i="${i}"]`).classList.remove('op');
+      } else n++;
+    });
+    $('#cnt').textContent = q ? `${n} de 4 filas coinciden con «${e.target.value}»` : 'Mostrando 1–4 de 200 URLs';
+  });
+
+  cols();
+
+  // Demostración del cambio 10: los 36 campos reales, con buscador.
+  const demoB = document.getElementById('demo-b');
+  if (demoB) {
+    demoB.innerHTML = REGISTRO.map(([k, v]) => `
+      <tr><td>${esc(k)}</td><td>${v === '' ? '<span style="color:#5A6472;font-style:italic">vacío</span>' : esc(v)}</td></tr>`).join('');
+    document.getElementById('demo-f').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      for (const tr of demoB.querySelectorAll('tr')) {
+        tr.hidden = !!q && !tr.textContent.toLowerCase().includes(q);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

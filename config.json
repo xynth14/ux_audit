@@ -1,0 +1,22 @@
+{
+  "login": {
+    "path": "/",
+    "user": "input[type=email], input[name*=user i], input[name*=email i]",
+    "pass": "input[type=password]",
+    "submit": "button[type=submit], input[type=submit]",
+    "successSelector": "body"
+  },
+  "breakpoints": [
+    { "name": "mobile", "width": 390, "height": 844, "mobile": true },
+    { "name": "tablet", "width": 820, "height": 1180, "mobile": false },
+    { "name": "desktop", "width": 1440, "height": 900, "mobile": false }
+  ],
+  "flows": [
+    { "name": "subdominios", "path": "/subdominios.html" },
+    { "name": "salud", "path": "/salud.html" },
+    { "name": "bitacora", "path": "/bitacora.html" },
+    { "name": "usuarios", "path": "/usuarios.html" },
+    { "name": "alertas", "path": "/alertas-config.html" },
+    { "name": "categorias", "path": "/categorias.html" }
+  ]
+}

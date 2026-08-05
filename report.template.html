@@ -1,0 +1,1285 @@
+<title>Auditoría UX/UI — PAIN</title>
+
+<style>
+  /* ============================================================
+     Identidad del informe: "plano de obra".
+     Acento azul plano a propósito — el rojo queda reservado
+     para severidad, no para marca.
+     ============================================================ */
+  :root {
+    --ink: #101820;
+    --ink-soft: #2A323C;
+    --muted: #5A6472;
+    --faint: #7C8695;
+    --paper: #F4F6F8;
+    --surface: #FFFFFF;
+    --surface-2: #EDF1F5;
+    --rule: #CFD7E0;
+    --rule-soft: #E4E9EF;
+    --blueprint: #1B4B7F;
+    --blueprint-soft: #E3EAF2;
+    --critical: #B3261E;
+    --serious: #C2410C;
+    --moderate: #8A5200;
+    --ok: #14713D;
+
+    --display: "Palatino Linotype", "Book Antiqua", Palatino, "Iowan Old Style", Georgia, serif;
+    --body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --mono: "Cascadia Mono", "Cascadia Code", Consolas, "SF Mono", ui-monospace, monospace;
+
+    --t-xs: 0.72rem;
+    --t-sm: 0.8125rem;
+    --t-base: 1rem;
+    --t-md: 1.0625rem;
+    --t-lg: 1.3125rem;
+    --t-xl: 1.6875rem;
+    --t-2xl: 2.125rem;
+    --t-3xl: clamp(2.25rem, 4.6vw, 3.25rem);
+
+    --gut: clamp(1.15rem, 3.5vw, 2.75rem);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #E8ECF0;
+      --ink-soft: #C6CFD9;
+      --muted: #9AA5B2;
+      --faint: #77828F;
+      --paper: #0E1319;
+      --surface: #151B22;
+      --surface-2: #1B222B;
+      --rule: #2C353F;
+      --rule-soft: #212932;
+      --blueprint: #8FBDEC;
+      --blueprint-soft: #16243A;
+      --critical: #F09189;
+      --serious: #F0A878;
+      --moderate: #DFBE6E;
+      --ok: #74CE9B;
+    }
+  }
+  /* El toggle del visor debe ganar en ambas direcciones. */
+  :root[data-theme="dark"] {
+    --ink: #E8ECF0;
+    --ink-soft: #C6CFD9;
+    --muted: #9AA5B2;
+    --faint: #77828F;
+    --paper: #0E1319;
+    --surface: #151B22;
+    --surface-2: #1B222B;
+    --rule: #2C353F;
+    --rule-soft: #212932;
+    --blueprint: #8FBDEC;
+    --blueprint-soft: #16243A;
+    --critical: #F09189;
+    --serious: #F0A878;
+    --moderate: #DFBE6E;
+    --ok: #74CE9B;
+  }
+  :root[data-theme="light"] {
+    --ink: #101820;
+    --ink-soft: #2A323C;
+    --muted: #5A6472;
+    --faint: #7C8695;
+    --paper: #F4F6F8;
+    --surface: #FFFFFF;
+    --surface-2: #EDF1F5;
+    --rule: #CFD7E0;
+    --rule-soft: #E4E9EF;
+    --blueprint: #1B4B7F;
+    --blueprint-soft: #E3EAF2;
+    --critical: #B3261E;
+    --serious: #C2410C;
+    --moderate: #8A5200;
+    --ok: #14713D;
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: var(--t-md);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--blueprint);
+    outline-offset: 2px;
+  }
+
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--gut); }
+
+  /* ---------- Portada ---------- */
+  .cover { border-bottom: 1px solid var(--rule); padding: clamp(2.5rem, 6vw, 4.5rem) 0 0; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blueprint);
+    margin: 0 0 1.1rem;
+  }
+  .cover h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--t-3xl);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0 0 0.5rem;
+  }
+  .cover h1 em { font-style: normal; color: var(--blueprint); }
+  .cover .dek {
+    max-width: 62ch;
+    color: var(--ink-soft);
+    font-size: var(--t-lg);
+    line-height: 1.5;
+    margin: 0 0 2.25rem;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-bottom: 0;
+    margin-bottom: -1px;
+  }
+  .fact { background: var(--paper); padding: 0.9rem 1rem 1rem; }
+  .fact dt {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+  .fact dd {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 1.65rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .fact dd small { font-family: var(--body); font-size: var(--t-sm); color: var(--muted); }
+
+  /* ---------- Estructura de documento ---------- */
+  .doc { display: block; padding: 3rem 0 5rem; }
+  @media (min-width: 1080px) {
+    .doc { display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: clamp(2rem, 4vw, 4rem); align-items: start; }
+    .rail { position: sticky; top: 1.5rem; }
+  }
+
+  .rail { font-size: var(--t-sm); }
+  .rail h2 {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 0.7rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .rail ol { list-style: none; margin: 0 0 1.75rem; padding: 0; display: flex; flex-direction: column; gap: 0.05rem; }
+  .rail a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    display: block;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .rail a:hover { color: var(--blueprint); }
+  .rail .legend { display: flex; flex-direction: column; gap: 0.4rem; }
+  .rail .legend div { display: flex; align-items: baseline; gap: 0.5rem; color: var(--muted); font-size: var(--t-xs); }
+
+  @media (max-width: 1079px) {
+    .rail { margin-bottom: 2.5rem; }
+    .rail ol { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 1.25rem; }
+  }
+
+  section.part { margin-bottom: 4.25rem; scroll-margin-top: 1.5rem; }
+  section.part > h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: var(--t-2xl);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.25rem;
+    text-wrap: balance;
+  }
+  section.part > .sub {
+    color: var(--muted);
+    font-size: var(--t-base);
+    margin: 0 0 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--ink);
+    max-width: 68ch;
+  }
+  .prose p { max-width: 66ch; margin: 0 0 1.1rem; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { font-weight: 600; }
+  /* Un solo tratamiento de código en todo el informe: los UID largos deben
+     poder partirse o fuerzan el ancho de la página. */
+  code, .mono-inline {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--surface-2);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+    overflow-wrap: anywhere;
+  }
+
+  .callout {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--blueprint);
+    background: var(--surface);
+    padding: 1.1rem 1.25rem;
+    margin: 1.75rem 0 0;
+    font-size: var(--t-base);
+  }
+  .callout p { max-width: 64ch; }
+  .callout .lead {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blueprint);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ---------- Hallazgos ---------- */
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid currentColor;
+    padding: 0.16em 0.42em;
+  }
+  .t-critical { color: var(--critical); }
+  .t-serious { color: var(--serious); }
+  .t-moderate { color: var(--moderate); }
+  .t-minor { color: var(--muted); }
+  .swatch { width: 0.7rem; height: 0.7rem; flex: 0 0 auto; border: 1px solid currentColor; background: currentColor; }
+
+  .finds { border-top: 1px solid var(--rule); }
+  .find {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 0 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  @media (max-width: 640px) {
+    .find { grid-template-columns: 1fr; gap: 0.75rem; }
+  }
+  .find__gut { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+  @media (max-width: 640px) { .find__gut { flex-direction: row; align-items: center; } }
+  .find__id {
+    font-family: var(--mono);
+    font-size: var(--t-sm);
+    /* --faint da 3,40:1 sobre el papel: no llega a AA. --muted da 5,54:1. */
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .find h3 {
+    font-size: var(--t-md);
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+  .find p { margin: 0 0 0.6rem; max-width: 70ch; font-size: var(--t-base); color: var(--ink-soft); }
+  .find p:last-child { margin-bottom: 0; }
+  .find .lbl {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 0.5rem;
+  }
+  .find .fix { color: var(--ink); }
+  .wcag {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    color: var(--blueprint);
+    border: 1px solid var(--rule);
+    padding: 0.1em 0.4em;
+    margin-left: 0.4rem;
+    white-space: nowrap;
+  }
+
+  /* ---------- Tablas ---------- */
+  .tbl-scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); }
+  table.data { border-collapse: collapse; width: 100%; font-size: var(--t-sm); min-width: 520px; }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  table.data thead th {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  table.data tbody tr:last-child td { border-bottom: 0; }
+  table.data .num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.data code { font-family: var(--mono); font-size: 0.95em; }
+
+  /* ---------- Láminas antes/después ---------- */
+  .plate { margin: 0 0 3.5rem; }
+  .plate__cap { margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); }
+  .plate__num {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blueprint);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .plate__cap h3 { font-family: var(--display); font-weight: 400; font-size: var(--t-xl); margin: 0 0 0.4rem; letter-spacing: -0.01em; }
+  .plate__cap p { margin: 0; color: var(--muted); font-size: var(--t-base); max-width: 72ch; }
+  /* minmax(0,…) y min-width:0 son obligatorios: sin ellos el ítem de rejilla
+     no puede encoger por debajo de su max-content y la página scrollea de lado. */
+  .plate__grid { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
+  .plate__grid > * { min-width: 0; }
+  @media (min-width: 900px) {
+    .plate__grid.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  }
+  .pane__lbl {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .pane__lbl b { color: var(--ink); font-weight: 600; }
+  /* Contenedor con scroll: enfocable por teclado. Es exactamente el defecto
+     que este informe señala en H4; sería incoherente repetirlo aquí. */
+  .shot { border: 1px solid var(--rule); background: #fff; overflow: auto; max-height: 460px; }
+  .shot:focus-visible { outline: 2px solid var(--blueprint); outline-offset: 2px; }
+  .shot img { display: block; width: 100%; height: auto; }
+  .crop { border: 1px solid var(--rule); background: #fff; overflow: hidden; }
+  .crop img { display: block; width: 200%; max-width: none; height: auto; }
+  .crop--hdr { height: 74px; }
+  .note { font-size: var(--t-sm); color: var(--muted); margin: 0.5rem 0 0; }
+
+  /* ============================================================
+     MAQUETAS. Aisladas del tema del informe: representan la app,
+     que sólo tiene tema claro. Nada aquí usa los tokens de arriba.
+     ============================================================ */
+  .mock {
+    color-scheme: light;
+    background: #FFFFFF;
+    color: #1D2125;
+    border: 1px solid #CFD7E0;
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.5;
+    overflow: hidden;
+  }
+  .mock * { box-sizing: border-box; }
+  .mock--nar { max-width: 420px; }
+  .mock__bar { height: 4px; background: #C41E14; }
+
+  .mk-nav { display: flex; align-items: center; gap: 18px; padding: 0 16px; height: 60px; border-bottom: 1px solid #E4E9EF; }
+  .mk-brand { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; white-space: nowrap; }
+  .mk-brand span { color: #C41E14; }
+  .mk-links { display: flex; gap: 2px; margin-left: 8px; flex: 1; min-width: 0; overflow-x: auto; }
+  .mk-links a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    color: #3C4753;
+    text-decoration: none;
+    font-size: 14px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .mk-links a:hover { color: #C41E14; background: #FAFBFC; }
+  .mk-links a[aria-current="page"] { color: #C41E14; font-weight: 600; border-bottom-color: #C41E14; }
+  .mk-user { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .mk-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #FCE9E7; color: #C41E14;
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 700; flex: 0 0 auto;
+  }
+  .mk-btn {
+    font: inherit; font-size: 14px;
+    min-height: 44px; padding: 0 14px;
+    border: 1px solid #CFD7E0; background: #fff; color: #1D2125;
+    border-radius: 6px; cursor: pointer; white-space: nowrap;
+  }
+  .mk-btn:hover { background: #F4F6F8; }
+  .mk-btn--pri { background: #C41E14; border-color: #C41E14; color: #fff; font-weight: 600; }
+  .mk-btn--pri:hover { background: #A8190F; }
+  .mk-btn--sm { min-height: 36px; padding: 0 10px; font-size: 13px; }
+  .mk-crumb { display: flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px; color: #5A6472; border-bottom: 1px solid #E4E9EF; background: #FAFBFC; }
+  .mk-crumb a { color: #1B4B7F; }
+
+  .mk-body { padding: 18px 16px 20px; }
+  .mk-h1 { font-size: 20px; font-weight: 700; margin: 0 0 2px; letter-spacing: -0.01em; }
+  .mk-lede { margin: 0 0 14px; color: #5A6472; font-size: 13.5px; }
+  .mk-sec {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+    color: #5A6472; margin: 0 0 8px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  }
+  .mk-sec .mk-when { font-weight: 400; letter-spacing: 0; text-transform: none; font-size: 12px; color: #646E7D; font-variant-numeric: tabular-nums; }
+
+  /* Estado unificado: un solo componente, en toda la app. */
+  .mk-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; line-height: 1;
+    padding: 4px 8px; border-radius: 999px; white-space: nowrap;
+  }
+  .mk-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+  .mk-chip--ok { background: #E6F4EA; color: #14713D; }
+  .mk-chip--down { background: #FCE9E7; color: #A8190F; }
+  .mk-chip--slow { background: #FEF7E0; color: #8A5200; }
+  .mk-chip--none { background: #EDF1F5; color: #4E5865; }
+  .mk-chip--sq { border-radius: 4px; }
+
+  .mk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(212px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .mk-mod { border: 1px solid #E4E9EF; border-radius: 8px; padding: 11px 12px; background: #fff; }
+  .mk-mod--alert { border-color: #E9B5B0; background: #FFFBFB; }
+  .mk-mod__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+  .mk-mod__name { font-weight: 600; font-size: 14px; }
+  .mk-meter { height: 4px; background: #EDF1F5; border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+  .mk-meter i { display: block; height: 100%; background: #14713D; border-radius: 2px; }
+  .mk-meter i.warn { background: #8A5200; }
+  .mk-mod__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: #5A6472; }
+  .mk-mod__foot .mk-ms { font-variant-numeric: tabular-nums; }
+  .mk-mod__why { font-size: 12px; color: #A8190F; margin: 6px 0 0; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .mk-mod__why a { color: #1B4B7F; }
+
+  .mk-filters { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mk-filter {
+    font: inherit; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 7px;
+    min-height: 44px; padding: 0 12px;
+    border: 1px solid #CFD7E0; background: #fff; border-radius: 6px; color: #1D2125;
+  }
+  .mk-filter:hover { background: #F4F6F8; }
+  .mk-filter[aria-pressed="true"] { border-color: #1D2125; background: #1D2125; color: #fff; }
+  .mk-filter b { font-variant-numeric: tabular-nums; font-size: 15px; }
+
+  .mk-tbl-wrap { border: 1px solid #E4E9EF; border-radius: 8px; overflow-x: auto; }
+  .mk-tbl { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 460px; }
+  .mk-tbl th, .mk-tbl td { text-align: left; padding: 9px 11px; border-bottom: 1px solid #EDF1F5; white-space: nowrap; }
+  .mk-tbl thead th { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: #5A6472; background: #FAFBFC; }
+  .mk-tbl tbody tr:last-child td { border-bottom: 0; }
+  .mk-tbl tbody tr:hover { background: #FAFBFC; }
+  .mk-tbl .mk-date { font-variant-numeric: tabular-nums; }
+  .mk-tbl .mk-rel { color: #646E7D; font-size: 12px; }
+
+  /* Formulario de alertas */
+  .mk-form { border: 1px solid #E4E9EF; border-radius: 8px; overflow: hidden; }
+  .mk-row { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 4px 16px; padding: 12px 14px; border-bottom: 1px solid #EDF1F5; align-items: start; }
+  .mk-row:last-child { border-bottom: 0; }
+  .mk-row:hover { background: #FAFBFC; }
+  @media (max-width: 620px) { .mk-row { grid-template-columns: 1fr; } }
+  .mk-row label { font-weight: 600; font-size: 14px; display: block; padding-top: 10px; }
+  .mk-row .mk-hint { font-size: 12px; color: #646E7D; font-weight: 400; }
+  .mk-field { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 44px; border: 1px solid #CFD7E0; border-radius: 6px; padding: 5px 8px; background: #fff; }
+  .mk-field:focus-within { border-color: #1B4B7F; box-shadow: 0 0 0 2px #E3EAF2; }
+  .mk-pill { display: inline-flex; align-items: center; gap: 6px; background: #EDF1F5; border-radius: 4px; padding: 4px 6px; font-size: 12.5px; }
+  .mk-pill button { font: inherit; border: 0; background: none; cursor: pointer; color: #5A6472; line-height: 1; padding: 2px; }
+  .mk-pill button:hover { color: #A8190F; }
+  .mk-field input { flex: 1; min-width: 120px; border: 0; outline: 0; font: inherit; font-size: 13.5px; padding: 6px 2px; background: none; color: inherit; }
+  .mk-save {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 12px 14px; border-top: 1px solid #CFD7E0; background: #FAFBFC;
+  }
+  .mk-save .mk-dirty { font-size: 13px; color: #8A5200; display: flex; align-items: center; gap: 7px; }
+  .mk-save .mk-dirty::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #8A5200; }
+
+  /* Fila de bitácora */
+  .mk-log { border: 1px solid #E4E9EF; border-radius: 8px; overflow: hidden; }
+  .mk-log__day { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472; background: #FAFBFC; padding: 7px 12px; border-bottom: 1px solid #EDF1F5; }
+  .mk-ev { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; padding: 10px 12px; border-bottom: 1px solid #EDF1F5; font-size: 13.5px; align-items: baseline; }
+  .mk-ev:last-child { border-bottom: 0; }
+  .mk-ev__t { font-variant-numeric: tabular-nums; color: #646E7D; font-size: 12.5px; }
+  .mk-ev__txt { margin: 0; }
+  .mk-ev__txt a { color: #1B4B7F; }
+  .mk-ev__meta { font-size: 12px; color: #646E7D; margin: 2px 0 0; }
+  .mk-ev--roll { background: #FAFBFC; }
+
+  /* Tarjeta de subdominio */
+  .mk-card { display: block; border: 1px solid #E4E9EF; border-radius: 8px; padding: 14px; text-decoration: none; color: inherit; background: #fff; }
+  .mk-card:hover { border-color: #C41E14; background: #FFFBFB; }
+  .mk-card:hover .mk-card__go { color: #C41E14; transform: translateX(2px); }
+  .mk-card__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .mk-card__name { font-weight: 700; font-size: 15px; }
+  .mk-card__go { color: #8A94A3; transition: transform 0.15s ease, color 0.15s ease; }
+  .mk-card__url { color: #1B4B7F; font-size: 13px; margin: 2px 0 8px; word-break: break-all; }
+  .mk-card__meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #5A6472; border-top: 1px solid #EDF1F5; padding-top: 9px; margin-top: 9px; }
+  .mk-card__row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mock * { transition: none !important; }
+  }
+
+  /* ---------- Sistema mínimo ---------- */
+  .tok { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .tok > div { background: var(--surface); padding: 0.9rem 1rem; }
+  .tok__sw { height: 34px; border: 1px solid rgba(0, 0, 0, 0.14); margin-bottom: 0.55rem; }
+  .tok__name { font-family: var(--mono); font-size: var(--t-xs); font-weight: 700; }
+  .tok__val { font-family: var(--mono); font-size: var(--t-xs); color: var(--muted); }
+  .tok__ratio { font-size: var(--t-xs); color: var(--ok); font-weight: 600; margin-top: 0.2rem; }
+  .tok__ratio.bad { color: var(--critical); }
+
+  /* ---------- Cierre ---------- */
+  .foot { border-top: 2px solid var(--ink); padding: 2rem 0 4rem; font-size: var(--t-sm); color: var(--muted); }
+  .foot h2 { font-family: var(--mono); font-size: var(--t-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); margin: 0 0 0.8rem; }
+  .foot p { max-width: 76ch; margin: 0 0 0.7rem; }
+  .foot code { font-family: var(--mono); background: var(--surface-2); padding: 0.1em 0.35em; }
+  .foot ul { margin: 0 0 1rem; padding-left: 1.1rem; max-width: 76ch; }
+  .foot li { margin-bottom: 0.35rem; }
+</style>
+
+<header class="cover">
+  <div class="wrap">
+    <p class="eyebrow">Auditoría UX/UI · 4 de agosto de 2026</p>
+    <h1>PAIN — Plataforma de <em>Auditoría INteligente</em></h1>
+    <p class="dek">
+      Revisión heurística y de accesibilidad de las seis secciones de la plataforma, ejecutada
+      sobre el entorno productivo en modo de solo lectura, en tres tamaños de pantalla.
+    </p>
+    <dl class="facts">
+      <div class="fact"><dt>Secciones</dt><dd>6</dd></div>
+      <div class="fact"><dt>Pasadas</dt><dd>18 <small>6 × 3 anchos</small></dd></div>
+      <div class="fact"><dt>Incidencias</dt><dd>267 <small>acumuladas</small></dd></div>
+      <div class="fact"><dt>Reglas WCAG</dt><dd>5 <small>incumplidas</small></dd></div>
+      <div class="fact"><dt>Hallazgos</dt><dd>14</dd></div>
+      <div class="fact"><dt>Bloqueantes</dt><dd style="color:var(--critical)">2</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="wrap doc">
+  <nav class="rail" aria-label="Índice del informe">
+    <h2>Contenido</h2>
+    <ol>
+      <li><a href="#resumen">Resumen</a></li>
+      <li><a href="#metodo">Método y alcance</a></li>
+      <li><a href="#hallazgos">Hallazgos</a></li>
+      <li><a href="#rediseno">Propuestas de rediseño</a></li>
+      <li><a href="#sistema">Sistema mínimo</a></li>
+      <li><a href="#plan">Orden de trabajo</a></li>
+    </ol>
+    <h2>Severidad</h2>
+    <div class="legend">
+      <div><span class="swatch t-critical"></span> Crítico · bloquea la tarea</div>
+      <div><span class="swatch t-serious"></span> Grave · excluye usuarios</div>
+      <div><span class="swatch t-moderate"></span> Moderado · fricción</div>
+      <div><span class="swatch t-minor"></span> Menor · pulido</div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ============ RESUMEN ============ -->
+    <section class="part" id="resumen">
+      <h2>Resumen</h2>
+      <p class="sub">La plataforma funciona. Lo que falla es la orientación, la fiabilidad de lo que muestra y el coste de configurarla.</p>
+      <div class="prose">
+        <p>
+          PAIN hace bien lo difícil: los datos están ahí, la jerarquía tipográfica es correcta, el uso
+          de la marca es sobrio y ninguna pantalla se rompe horizontalmente en móvil. La deuda no está
+          en el aspecto, está en tres decisiones de estructura.
+        </p>
+        <p>
+          <strong>Primera: la navegación global desaparece en cuanto entras a trabajar.</strong> El menú
+          con las cinco secciones sólo existe en <em>Subdominios</em>. Dentro de cualquier sección el
+          encabezado se reduce a un enlace «← Subdominios», así que moverse de <em>Alertas</em> a
+          <em>Usuarios</em> obliga a volver al hub y recargar. Es la fricción más barata de eliminar y
+          la que más veces al día se paga.
+        </p>
+        <p>
+          <strong>Segunda: el panel de estado no es fiable, y eso es grave en una herramienta de
+          monitoreo.</strong> En una carga los nueve módulos aparecen OK entre 133 y 165 ms. Treinta
+          segundos después, en la siguiente carga, SEO y Tagging aparecen «Caído» y el resto responde
+          entre 5 417 y 7 930 ms. Ninguna de las dos pantallas dice a qué hora se midió, qué falló ni
+          qué hacer. Un semáforo que cambia de color sin explicar por qué entrena al equipo a ignorarlo.
+        </p>
+        <p>
+          <strong>Tercera: configurar alertas cuesta nueve guardados.</strong> Cada módulo es un
+          formulario independiente con su propio botón, los campos truncan el texto que contienen
+          mientras sobra media pantalla vacía a la derecha, y en móvil son nueve bloques idénticos
+          apilados sin navegación para salir.
+        </p>
+        <p>
+          A eso se suma una capa de accesibilidad pendiente —70 nodos por debajo del contraste mínimo,
+          tablas con scroll inalcanzable por teclado, ningún <code>&lt;main&gt;</code> en ninguna
+          página— y varias fugas de vocabulario interno a la interfaz: identificadores de Firebase,
+          nombres de campo como <code>url_type</code> y claves de evento como
+          <code>exported_report</code> mostrados tal cual al usuario final.
+        </p>
+      </div>
+      <div class="callout">
+        <span class="lead">Lo que no se auditó</span>
+        <p>
+          Seguridad, backend y lógica de negocio quedan fuera. Aun así conviene señalar un dato que
+          apareció en pantalla: los cinco usuarios registrados tienen rol <code>superadmin</code>, con
+          lo que la columna «Rol» hoy no distingue nada y el sistema de permisos no está en uso.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MÉTODO ============ -->
+    <section class="part" id="metodo">
+      <h2>Método y alcance</h2>
+      <p class="sub">Instrumentación real sobre el entorno productivo, sin escribir ni un dato.</p>
+      <div class="prose">
+        <p>
+          Se recorrieron las seis secciones con un navegador automatizado autenticado, en tres anchos
+          —390 px (móvil), 820 px (tableta) y 1440 px (escritorio)—, capturando cada pantalla completa
+          y ejecutando <strong>axe-core</strong> contra WCAG 2.1 niveles A y AA, más medición de
+          latencia, desbordamiento horizontal, tamaño de áreas táctiles, jerarquía de encabezados y
+          errores de consola.
+        </p>
+        <p>
+          Al tratarse de producción, todas las peticiones de escritura se bloquearon a nivel de red:
+          el navegador pudo autenticarse y leer, pero cualquier <code>POST</code>, <code>PUT</code>,
+          <code>PATCH</code> o <code>DELETE</code> ajeno al login se abortó antes de salir. No se creó,
+          modificó ni eliminó ningún registro.
+        </p>
+      </div>
+      <div class="tbl-scroll" style="margin-top:1.75rem">
+        <table class="data">
+          <thead>
+            <tr><th>Sección</th><th class="num">Ancho</th><th class="num">Carga</th><th class="num">Táctiles &lt;44 px</th><th>Incidencias axe</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Subdominios</td><td class="num">390</td><td class="num">30 629 ms</td><td class="num">8 / 15</td><td>4 (1 grave)</td></tr>
+            <tr><td>Estado</td><td class="num">390</td><td class="num">10 713 ms</td><td class="num">1 / 2</td><td>4 (2 graves)</td></tr>
+            <tr><td>Bitácora</td><td class="num">390</td><td class="num">2 225 ms</td><td class="num">1 / 2</td><td>3 (1 grave)</td></tr>
+            <tr><td>Usuarios</td><td class="num">390</td><td class="num">3 001 ms</td><td class="num">17 / 24</td><td>3 (1 grave)</td></tr>
+            <tr><td>Alertas</td><td class="num">390</td><td class="num">2 210 ms</td><td class="num">21 / 22</td><td>3 (1 grave)</td></tr>
+            <tr><td>Categorías</td><td class="num">390</td><td class="num">2 319 ms</td><td class="num">3 / 13</td><td>2 (0 graves)</td></tr>
+            <tr><td>Alertas</td><td class="num">1440</td><td class="num">1 649 ms</td><td class="num">22 / 22</td><td>3 (1 grave)</td></tr>
+            <tr><td>Usuarios</td><td class="num">1440</td><td class="num">2 150 ms</td><td class="num">18 / 24</td><td>3 (1 grave)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Extracto de las 18 pasadas. El detalle íntegro queda en <code>out/findings.json</code>.</p>
+    </section>
+
+    <!-- ============ HALLAZGOS ============ -->
+    <section class="part" id="hallazgos">
+      <h2>Hallazgos</h2>
+      <p class="sub">Ordenados por severidad. Cada uno cita la evidencia que lo sostiene y la corrección concreta.</p>
+
+      <div class="finds">
+        <article class="find">
+          <div class="find__gut"><span class="tag t-critical">Crítico</span><span class="find__id">H1</span></div>
+          <div>
+            <h3>La navegación global desaparece en todas las páginas interiores</h3>
+            <p><span class="lbl">Evidencia</span> El menú con las cinco secciones (Estado, Bitácora, Usuarios, Alertas, Categorías) sólo se renderiza en <em>Subdominios</em>. En las otras cinco secciones, verificado en los tres anchos, el encabezado contiene únicamente «← Subdominios». Además, en el hub la sección actual no está marcada como activa.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Un mismo encabezado en todas las páginas, con el enlace de la sección actual marcado mediante <code>aria-current="page"</code> y distinción visual que no dependa sólo del color. Véase la lámina 1.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-critical">Crítico</span><span class="find__id">H2</span></div>
+          <div>
+            <h3>El panel de estado informa resultados contradictorios y no accionables</h3>
+            <p><span class="lbl">Evidencia</span> Carga de escritorio: 9 módulos «OK», 133–165 ms. Carga de móvil unos 30 s más tarde, misma página: SEO y Tagging «Caído», y los siete restantes «OK» pero entre 5 417 y 7 930 ms, unas 40 veces peor. La pantalla no indica la hora de la medición, ni la causa del fallo, ni un umbral que justifique el color, ni ofrece reintentar o abrir la bitácora.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Mostrar marca de tiempo de la medición y antigüedad; ordenar los módulos con problemas primero; expresar la latencia contra un umbral explícito; y en estado «Caído» dar causa, hora de inicio y acción directa. Véase la lámina 2.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-serious">Grave</span><span class="find__id">H3</span></div>
+          <div>
+            <h3>Contraste insuficiente en 70 nodos de cuatro secciones <span class="wcag">WCAG 1.4.3 AA</span></h3>
+            <p><span class="lbl">Evidencia</span> El gris de metadatos <code>#8A93A3</code> sobre blanco a 11,5 px da <strong>3,10:1</strong> frente al 4,5:1 exigido. Los distintivos de estado tampoco pasan: <code>#1E8E3E</code> sobre <code>#E6F4EA</code> da <strong>3,70:1</strong>. Afecta a Subdominios, Estado, Usuarios y Alertas.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Sustituciones ya verificadas: <code>#5A6472</code> sobre blanco → 6,00:1; <code>#14713D</code> sobre <code>#E6F4EA</code> → 5,35:1; <code>#8A5200</code> sobre <code>#FEF7E0</code> → 5,96:1. El rojo de marca <code>#E2231A</code> sobre blanco ya cumple (4,68:1) y no necesita cambio.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-serious">Grave</span><span class="find__id">H4</span></div>
+          <div>
+            <h3>Tablas con scroll horizontal inalcanzable por teclado <span class="wcag">WCAG 2.1.1 A</span></h3>
+            <p><span class="lbl">Evidencia</span> Regla <code>scrollable-region-focusable</code> incumplida en Estado y Bitácora. En móvil la columna «Estado» queda cortada y los distintivos aparecen recortados a media palabra; sin foco posible en el contenedor, quien navega con teclado o lector de pantalla no puede llegar al resto de la tabla.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Dar <code>tabindex="0"</code>, <code>role="region"</code> y <code>aria-label</code> al contenedor con scroll; en móvil, además, convertir cada fila en tarjeta para eliminar el desplazamiento lateral.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-serious">Grave</span><span class="find__id">H5</span></div>
+          <div>
+            <h3>Configurar alertas exige nueve guardados independientes</h3>
+            <p><span class="lbl">Evidencia</span> Nueve formularios, nueve botones «Guardar». Los campos truncan su propio contenido de ejemplo mientras queda aproximadamente un tercio del ancho vacío a la derecha. Los 22 elementos interactivos de la página miden menos de 44 × 44 px. En móvil son nueve bloques idénticos apilados.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Un único formulario con un guardado, destinatarios como fichas eliminables, campos que ocupen el ancho disponible y contador de cambios pendientes. Véase la lámina 3.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-serious">Grave</span><span class="find__id">H6</span></div>
+          <div>
+            <h3>Identificadores internos expuestos como contenido</h3>
+            <p><span class="lbl">Evidencia</span> En Subdominios: «Creado por: <code>nAyNBK…ie7FN52</code>» —el identificador se abrevia en este informe—, un UID de Firebase donde debería ir un nombre. En Bitácora, la columna «Sobre» muestra <code>RUN F03A3CF637</code>, <code>USER NAYNBKNWPH</code>, <code>COLLECTION 8EAAED44F4</code>. En Categorías se explican los campos con sus nombres de código, <code>url_type</code> y <code>page_group</code>.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Resolver toda referencia a su nombre legible y enlazarla al registro correspondiente. Si el identificador técnico hace falta para soporte, relegarlo a un atributo <code>title</code> o a un detalle desplegable.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-moderate">Moderado</span><span class="find__id">H7</span></div>
+          <div>
+            <h3>Ninguna página declara regiones semánticas <span class="wcag">WCAG 1.3.1 A</span></h3>
+            <p><span class="lbl">Evidencia</span> <code>landmark-one-main</code> incumplida en las 18 pasadas: ningún documento tiene <code>&lt;main&gt;</code>. La regla <code>region</code> acumula 174 nodos de contenido fuera de cualquier región. En Subdominios el orden de encabezados salta de <code>h1</code> a <code>h3</code>.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Envolver en <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code> y <code>&lt;section&gt;</code>, corregir el salto de nivel y añadir un enlace «Saltar al contenido».</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-moderate">Moderado</span><span class="find__id">H8</span></div>
+          <div>
+            <h3>Los mismos módulos se llaman distinto en cada pantalla</h3>
+            <p><span class="lbl">Evidencia</span> Estado los nombra Técnico, SEO, Tagging, Links, Content, Performance, Imágenes, <code>change-history</code>, <code>alert-engine</code>. Alertas los nombra Técnico (crawler), SEO, Tagging / GA4, Enlaces rotos, Contenido, Performance, Imágenes, Seguridad, General (otros). Conviven español, inglés y identificadores de código; y no está claro qué par de nombres designa el mismo módulo.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Un diccionario único de nombres visibles, en español, resuelto desde el identificador técnico en un solo punto del código. Ese diccionario es también el que deben usar los correos de alerta.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-moderate">Moderado</span><span class="find__id">H9</span></div>
+          <div>
+            <h3>Cuatro maneras distintas de representar un estado</h3>
+            <p><span class="lbl">Evidencia</span> Punto de color con texto en los módulos de Estado; distintivo rojo en mayúsculas para el rol en Usuarios; texto verde plano para «Activo» en la misma tabla; distintivo en minúsculas y en inglés («success», «partial») en Corridas recientes. Cuatro lenguajes visuales para la misma idea, dos de ellos en la misma pantalla.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Un único componente de estado con cuatro variantes semánticas —correcto, atención, error, inactivo— reutilizado en toda la aplicación.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-moderate">Moderado</span><span class="find__id">H10</span></div>
+          <div>
+            <h3>Áreas táctiles por debajo del mínimo recomendado</h3>
+            <p><span class="lbl">Evidencia</span> Alertas: 22 de 22 elementos interactivos miden menos de 44 × 44 px. Usuarios: 18 de 24. Subdominios: 9 de 15, incluido el botón de edición de la tarjeta. La medida se repite igual en móvil, donde más importa.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Alto mínimo de 44 px en botones, enlaces de navegación y campos; en las tablas de acciones, agrupar en un menú en lugar de apretar tres botones por fila.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-moderate">Moderado</span><span class="find__id">H11</span></div>
+          <div>
+            <h3>Un aviso informativo pintado con el color de error</h3>
+            <p><span class="lbl">Evidencia</span> En Categorías, la nota que explica cómo se guardan los campos usa fondo rojo claro y texto rojo, el mismo lenguaje cromático que un error, para contenido que es puramente informativo.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Reservar el rojo para el error real; los avisos informativos, en neutro o azul. El rojo de marca y el rojo de error también deben distinguirse entre sí.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-moderate">Moderado</span><span class="find__id">H12</span></div>
+          <div>
+            <h3>Listados sin filtros, búsqueda ni paginación</h3>
+            <p><span class="lbl">Evidencia</span> Bitácora vuelca más de 45 filas de una vez, incluidos eventos duplicados consecutivos: tres <code>exported_report</code> en dos minutos y otros tres en once segundos. Corridas recientes muestra 12 filas sin filtrar por estado, pese a que los contadores «7 completadas / 5 parciales» invitan justo a eso. Usuarios no tiene búsqueda ni orden.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Filtros por fecha, usuario y tipo de acción; agrupar por día; colapsar ráfagas repetidas en una línea («exportó el informe 3 veces»); y convertir los contadores en filtros activos.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-minor">Menor</span><span class="find__id">H13</span></div>
+          <div>
+            <h3>Primera carga de 30 segundos sin ninguna señal en pantalla</h3>
+            <p><span class="lbl">Evidencia</span> La primera navegación tras el despliegue tardó 30 629 ms; las siguientes, entre 1 649 y 3 001 ms. El patrón corresponde a un arranque en frío del contenedor. Durante esa espera la interfaz no comunica nada.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Mantener una instancia mínima activa para eliminar el arranque en frío, y mientras tanto mostrar un esqueleto de carga honesto en lugar de una pantalla quieta.</p>
+          </div>
+        </article>
+
+        <article class="find">
+          <div class="find__gut"><span class="tag t-minor">Menor</span><span class="find__id">H14</span></div>
+          <div>
+            <h3>Fechas con precisión innecesaria y formato ambiguo</h3>
+            <p><span class="lbl">Evidencia</span> «17/7/2026, 11:58:00 a. m.» repetido en cada fila de dos tablas: los segundos no aportan, el formato numérico es ambiguo para lectores acostumbrados a mes/día y el bloque es difícil de escanear en columna. En Subdominios, «3/7/2026» aparece suelto y sin etiqueta.</p>
+            <p class="fix"><span class="lbl">Corrección</span> Mes abreviado y sin segundos («17 jul, 11:58»), tiempo relativo para lo reciente («hace 12 min») con la fecha exacta en <code>title</code>, y agrupación por día en la bitácora.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ REDISEÑO ============ -->
+    <section class="part" id="rediseno">
+      <h2>Propuestas de rediseño</h2>
+      <p class="sub">Tres láminas. A la izquierda la captura real de hoy; a la derecha una maqueta viva —puede pasar el ratón, tabular y escribir en ella—.</p>
+
+      <!-- LÁMINA 1 -->
+      <figure class="plate">
+        <figcaption class="plate__cap">
+          <span class="plate__num">Lámina 1 · resuelve H1, H7, H10</span>
+          <h3>Navegación persistente</h3>
+          <p>Hoy el menú existe en el hub y se evapora al entrar. La propuesta lo mantiene idéntico en todas las secciones, marca dónde estás y deja un rastro de vuelta explícito.</p>
+        </figcaption>
+        <div class="plate__grid two">
+          <div>
+            <div class="pane__lbl"><b>Antes</b> · encabezado en Subdominios</div>
+            <div class="crop crop--hdr"><img src="{{IMG:subdominios-desktop}}" alt="Encabezado del hub: logo, campana, cinco secciones, nombre de usuario y cerrar sesión."></div>
+            <div class="pane__lbl" style="margin-top:1rem"><b>Antes</b> · encabezado en Usuarios</div>
+            <div class="crop crop--hdr"><img src="{{IMG:usuarios-desktop}}" alt="Encabezado de una página interior: sólo el enlace volver a Subdominios y cerrar sesión."></div>
+            <p class="note">Mismo producto, dos páginas. El menú de cinco secciones sólo sobrevive en la primera.</p>
+          </div>
+          <div>
+            <div class="pane__lbl"><b>Después</b> · maqueta interactiva</div>
+            <div class="mock">
+              <div class="mock__bar"></div>
+              <div class="mk-nav">
+                <span class="mk-brand">PA<span>IN</span></span>
+                <div class="mk-links">
+                  <a href="#rediseno">Subdominios</a>
+                  <a href="#rediseno" aria-current="page">Estado</a>
+                  <a href="#rediseno">Bitácora</a>
+                  <a href="#rediseno">Usuarios</a>
+                  <a href="#rediseno">Alertas</a>
+                  <a href="#rediseno">Categorías</a>
+                </div>
+                <div class="mk-user">
+                  <button class="mk-btn mk-btn--sm" type="button" aria-label="Notificaciones, 2 sin leer">🔔 2</button>
+                  <span class="mk-avatar" aria-hidden="true">KC</span>
+                  <button class="mk-btn mk-btn--sm" type="button">Salir</button>
+                </div>
+              </div>
+              <div class="mk-crumb"><a href="#rediseno">Portal Claro</a> › <span>Estado de la plataforma</span></div>
+              <div class="mk-body" style="padding-bottom:14px">
+                <p class="mk-h1">Estado de la plataforma</p>
+                <p class="mk-lede" style="margin:0">La sección activa queda marcada con color, peso y filete inferior, no sólo con color.</p>
+              </div>
+            </div>
+            <p class="note">Seis destinos siempre alcanzables, altura táctil de 44 px, <code>aria-current</code> en el activo y la ruta jerárquica que hoy falta. En móvil la fila de secciones se desplaza lateralmente en lugar de esconderse tras un menú.</p>
+          </div>
+        </div>
+      </figure>
+
+      <!-- LÁMINA 2 -->
+      <figure class="plate">
+        <figcaption class="plate__cap">
+          <span class="plate__num">Lámina 2 · resuelve H2, H3, H4, H9, H12, H14</span>
+          <h3>Estado de la plataforma, accionable</h3>
+          <p>La versión actual muestra nueve rectángulos iguales y tres números grandes. La propuesta responde a las tres preguntas que trae quien abre esta pantalla: ¿hay algo roto, desde cuándo y qué hago?</p>
+        </figcaption>
+        <div class="plate__grid two">
+          <div>
+            <div class="pane__lbl"><b>Antes</b> · escritorio, 1440 px</div>
+            <div class="shot" tabindex="0" role="region" aria-label="Captura desplazable: panel de estado actual en escritorio"><img src="{{IMG:salud-desktop}}" alt="Panel de estado actual: nueve tarjetas de módulo todas en OK y tabla de corridas recientes."></div>
+            <div class="pane__lbl" style="margin-top:1rem"><b>Antes</b> · móvil, 390 px, 30 s después</div>
+            <div class="shot" style="max-height:320px" tabindex="0" role="region" aria-label="Captura desplazable: panel de estado en móvil con dos módulos caídos"><img src="{{IMG:salud-mobile}}" alt="Mismo panel en móvil: SEO y Tagging aparecen caídos y las latencias suben a miles de milisegundos."></div>
+            <p class="note">La misma pantalla, medio minuto más tarde: dos módulos caídos, latencias 40 veces peores y la columna «Estado» de la tabla recortada.</p>
+          </div>
+          <div>
+            <div class="pane__lbl"><b>Después</b> · maqueta interactiva</div>
+            <div class="mock">
+              <div class="mock__bar"></div>
+              <div class="mk-body">
+                <p class="mk-h1">Estado de la plataforma</p>
+                <p class="mk-lede">2 de 9 módulos caídos. Se mide cada 30 s.</p>
+
+                <p class="mk-sec">
+                  Módulos
+                  <span class="mk-when">medido 12:39:16 · hace 8 s</span>
+                  <button class="mk-btn mk-btn--sm" type="button" style="margin-left:auto">Volver a medir</button>
+                </p>
+                <div class="mk-grid">
+                  <div class="mk-mod mk-mod--alert">
+                    <div class="mk-mod__top">
+                      <span class="mk-mod__name">SEO</span>
+                      <span class="mk-chip mk-chip--down">Caído</span>
+                    </div>
+                    <p class="mk-mod__why">Sin respuesta tras 10 s · desde 12:31 <a href="#rediseno">Ver en bitácora</a></p>
+                  </div>
+                  <div class="mk-mod mk-mod--alert">
+                    <div class="mk-mod__top">
+                      <span class="mk-mod__name">Tagging / GA4</span>
+                      <span class="mk-chip mk-chip--down">Caído</span>
+                    </div>
+                    <p class="mk-mod__why">Sin respuesta tras 10 s · desde 12:31 <a href="#rediseno">Ver en bitácora</a></p>
+                  </div>
+                  <div class="mk-mod">
+                    <div class="mk-mod__top">
+                      <span class="mk-mod__name">Enlaces rotos</span>
+                      <span class="mk-chip mk-chip--slow">Lento</span>
+                    </div>
+                    <div class="mk-meter" role="img" aria-label="7930 milisegundos, por encima del umbral de 2000">
+                      <i class="warn" style="width:96%"></i>
+                    </div>
+                    <div class="mk-mod__foot"><span class="mk-ms">7 930 ms</span><span>umbral 2 000 ms</span></div>
+                  </div>
+                  <div class="mk-mod">
+                    <div class="mk-mod__top">
+                      <span class="mk-mod__name">Técnico</span>
+                      <span class="mk-chip mk-chip--ok">Correcto</span>
+                    </div>
+                    <div class="mk-meter" role="img" aria-label="147 milisegundos, dentro del umbral de 2000">
+                      <i style="width:8%"></i>
+                    </div>
+                    <div class="mk-mod__foot"><span class="mk-ms">147 ms</span><span>umbral 2 000 ms</span></div>
+                  </div>
+                </div>
+
+                <p class="mk-sec">Corridas recientes <span class="mk-when">filtra la tabla</span></p>
+                <div class="mk-filters">
+                  <button class="mk-filter" type="button" aria-pressed="false"><b>0</b> En ejecución</button>
+                  <button class="mk-filter" type="button" aria-pressed="false"><b>7</b> Completadas</button>
+                  <button class="mk-filter" type="button" aria-pressed="true"><b>5</b> Parciales</button>
+                </div>
+                <div class="mk-tbl-wrap" tabindex="0" role="region" aria-label="Corridas recientes, desplazable">
+                  <table class="mk-tbl">
+                    <thead><tr><th>Cuándo</th><th>Colección</th><th>Estado</th><th>Módulos</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="mk-date">17 jul, 08:49</span><br><span class="mk-rel">hace 18 días</span></td>
+                        <td>MVP 200 Urls</td>
+                        <td><span class="mk-chip mk-chip--slow mk-chip--sq">Parcial</span></td>
+                        <td>7 de 9</td>
+                      </tr>
+                      <tr>
+                        <td><span class="mk-date">17 jul, 03:15</span><br><span class="mk-rel">hace 18 días</span></td>
+                        <td>URL de prueba</td>
+                        <td><span class="mk-chip mk-chip--slow mk-chip--sq">Parcial</span></td>
+                        <td>7 de 9</td>
+                      </tr>
+                      <tr>
+                        <td><span class="mk-date">17 jul, 02:56</span><br><span class="mk-rel">hace 18 días</span></td>
+                        <td>URL de prueba</td>
+                        <td><span class="mk-chip mk-chip--slow mk-chip--sq">Parcial</span></td>
+                        <td>8 de 9</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <p class="note">Los módulos con problema van primero; la latencia se lee contra un umbral declarado; «Parcial» dice cuántos módulos faltaron; los contadores son filtros; la tabla es enfocable por teclado. Un solo componente de estado, en español, para toda la app.</p>
+          </div>
+        </div>
+      </figure>
+
+      <!-- LÁMINA 3 -->
+      <figure class="plate">
+        <figcaption class="plate__cap">
+          <span class="plate__num">Lámina 3 · resuelve H5, H8, H10</span>
+          <h3>Alertas: un formulario, un guardado</h3>
+          <p>Nueve formularios se convierten en uno. Los destinatarios pasan a ser fichas eliminables, los nombres de módulo coinciden con los de Estado y el guardado dice cuánto hay pendiente.</p>
+        </figcaption>
+        <div class="plate__grid two">
+          <div>
+            <div class="pane__lbl"><b>Antes</b> · escritorio, 1440 px</div>
+            <div class="shot" tabindex="0" role="region" aria-label="Captura desplazable: pantalla de alertas actual en escritorio"><img src="{{IMG:alertas-desktop}}" alt="Pantalla de alertas actual: nueve filas, cada una con su campo estrecho y su propio botón Guardar."></div>
+            <div class="pane__lbl" style="margin-top:1rem"><b>Antes</b> · móvil, 390 px</div>
+            <div class="shot" style="max-height:300px" tabindex="0" role="region" aria-label="Captura desplazable: pantalla de alertas en móvil"><img src="{{IMG:alertas-mobile}}" alt="La misma pantalla en móvil: nueve bloques idénticos apilados, cada uno con su botón Guardar."></div>
+            <p class="note">El encabezado móvil también se rompe: «← Subdominios» y el nombre de usuario se solapan y «Cerrar sesión» parte en dos líneas.</p>
+          </div>
+          <div>
+            <div class="pane__lbl"><b>Después</b> · maqueta interactiva</div>
+            <div class="mock">
+              <div class="mock__bar"></div>
+              <div class="mk-body">
+                <p class="mk-h1">Alertas por correo</p>
+                <p class="mk-lede">Quién recibe el aviso de cada módulo. El resumen sale los lunes a las 8:00.</p>
+                <div class="mk-form">
+                  <div class="mk-row">
+                    <label for="mk-a1">Técnico <span class="mk-hint">rastreo del sitio</span></label>
+                    <div class="mk-field">
+                      <span class="mk-pill">nombre.apellido@claro.com.pe <button type="button" aria-label="Quitar destinatario">×</button></span>
+                      <span class="mk-pill">equipo.proyectos@proveedor.pe <button type="button" aria-label="Quitar destinatario">×</button></span>
+                      <input id="mk-a1" type="text" placeholder="Añadir correo y pulsar Enter">
+                    </div>
+                  </div>
+                  <div class="mk-row">
+                    <label for="mk-a2">SEO</label>
+                    <div class="mk-field">
+                      <span class="mk-pill">nombre.apellido@claro.com.pe <button type="button" aria-label="Quitar destinatario">×</button></span>
+                      <input id="mk-a2" type="text" placeholder="Añadir correo y pulsar Enter">
+                    </div>
+                  </div>
+                  <div class="mk-row">
+                    <label for="mk-a3">Tagging / GA4</label>
+                    <div class="mk-field">
+                      <input id="mk-a3" type="text" placeholder="Añadir correo y pulsar Enter">
+                    </div>
+                  </div>
+                  <div class="mk-row">
+                    <label for="mk-a4">Enlaces rotos <span class="mk-hint">sin destinatarios</span></label>
+                    <div class="mk-field">
+                      <input id="mk-a4" type="text" placeholder="Añadir correo y pulsar Enter">
+                    </div>
+                  </div>
+                  <div class="mk-save">
+                    <span class="mk-dirty">2 cambios sin guardar</span>
+                    <span style="display:flex;gap:8px">
+                      <button class="mk-btn" type="button">Descartar</button>
+                      <button class="mk-btn mk-btn--pri" type="button">Guardar cambios</button>
+                    </span>
+                  </div>
+                </div>
+                <p class="mk-sec" style="margin-top:18px">Comprobar el envío</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                  <span class="mk-chip mk-chip--ok">SMTP configurado</span>
+                  <button class="mk-btn mk-btn--sm" type="button">Enviarme una prueba</button>
+                </div>
+              </div>
+            </div>
+            <p class="note">Etiquetas asociadas a su campo con <code>for</code>/<code>id</code>, campos que ocupan el ancho disponible, 44 px de alto mínimo y un único punto de guardado con estado explícito. «Sin configurar» se dice una vez, junto a la etiqueta, en lugar de nueve veces en gris.</p>
+          </div>
+        </div>
+      </figure>
+
+      <!-- Correcciones de detalle -->
+      <figure class="plate">
+        <figcaption class="plate__cap">
+          <span class="plate__num">Detalles · resuelve H6, H12, H14</span>
+          <h3>Dos correcciones de vocabulario</h3>
+          <p>Las mismas filas de hoy, contadas en el idioma de quien las lee.</p>
+        </figcaption>
+        <div class="plate__grid two">
+          <div>
+            <div class="pane__lbl"><b>Bitácora</b> · después</div>
+            <div class="mock">
+              <div class="mk-log">
+                <div class="mk-log__day">Hoy · 4 de agosto</div>
+                <div class="mk-ev">
+                  <span class="mk-ev__t">12:39</span>
+                  <div>
+                    <p class="mk-ev__txt"><b>Analista 1</b> exportó el informe de <a href="#rediseno">MVP 200 Urls</a></p>
+                    <p class="mk-ev__meta">2 veces en 13 segundos · <span title="RUN F03A3CF637">ver identificador</span></p>
+                  </div>
+                </div>
+                <div class="mk-ev mk-ev--roll">
+                  <span class="mk-ev__t">11:58</span>
+                  <div>
+                    <p class="mk-ev__txt"><b>Analista 1</b> ejecutó la auditoría de <a href="#rediseno">MVP 200 Urls</a></p>
+                    <p class="mk-ev__meta">9 módulos · resultado parcial</p>
+                  </div>
+                </div>
+                <div class="mk-ev">
+                  <span class="mk-ev__t">10:07</span>
+                  <div>
+                    <p class="mk-ev__txt"><b>Analista 2</b> restableció la contraseña de <a href="#rediseno">Analista 3</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="note">Frases con sujeto, verbo y objeto enlazado, en lugar de <code>exported_report</code> + <code>RUN F03A3CF637</code>. Las ráfagas repetidas se colapsan en una línea y el día agrupa.</p>
+          </div>
+          <div>
+            <div class="pane__lbl"><b>Subdominios</b> · después</div>
+            <div class="mock mock--nar">
+              <div style="padding:14px">
+                <a class="mk-card" href="#rediseno">
+                  <div class="mk-card__top">
+                    <span class="mk-card__name">Portal Claro</span>
+                    <span class="mk-card__go" aria-hidden="true">→</span>
+                  </div>
+                  <p class="mk-card__url">https://claro.com.pe</p>
+                  <span class="mk-chip mk-chip--slow">2 módulos caídos</span>
+                  <div class="mk-card__meta">
+                    <span>Creado por Analista 1</span>
+                    <span>3 jul 2026</span>
+                  </div>
+                </a>
+                <div class="mk-card__row">
+                  <button class="mk-btn mk-btn--sm" type="button">Editar</button>
+                  <button class="mk-btn mk-btn--sm" type="button">Ver auditorías</button>
+                </div>
+              </div>
+            </div>
+            <p class="note">La tarjeta entera es el enlace —hoy sólo lo es el lápiz de 32 px—, el UID de Firebase se resuelve a un nombre, la fecha lleva mes legible y la tarjeta adelanta el estado que hoy obliga a entrar para descubrir.</p>
+          </div>
+        </div>
+      </figure>
+    </section>
+
+    <!-- ============ SISTEMA ============ -->
+    <section class="part" id="sistema">
+      <h2>Sistema mínimo</h2>
+      <p class="sub">No hace falta un sistema de diseño completo. Hacen falta estas decisiones, escritas una vez.</p>
+      <div class="prose">
+        <p>
+          Los valores de abajo son los que usan las maquetas de arriba. Cada ratio está calculado, no
+          estimado; los que sustituyen a un color actual indican el valor que reemplazan.
+        </p>
+      </div>
+      <div class="tok" style="margin-top:1.5rem">
+        <div>
+          <div class="tok__sw" style="background:#5A6472"></div>
+          <div class="tok__name">texto-secundario</div>
+          <div class="tok__val">#5A6472 sobre #FFF</div>
+          <div class="tok__ratio">6,00:1 · sustituye #8A93A3 (3,10:1)</div>
+        </div>
+        <div>
+          <div class="tok__sw" style="background:#14713D"></div>
+          <div class="tok__name">estado-correcto</div>
+          <div class="tok__val">#14713D sobre #E6F4EA</div>
+          <div class="tok__ratio">5,35:1 · sustituye #1E8E3E (3,70:1)</div>
+        </div>
+        <div>
+          <div class="tok__sw" style="background:#8A5200"></div>
+          <div class="tok__name">estado-atención</div>
+          <div class="tok__val">#8A5200 sobre #FEF7E0</div>
+          <div class="tok__ratio">5,96:1 · sustituye #B26A00 (3,95:1)</div>
+        </div>
+        <div>
+          <div class="tok__sw" style="background:#A8190F"></div>
+          <div class="tok__name">estado-error</div>
+          <div class="tok__val">#A8190F sobre #FCE9E7</div>
+          <div class="tok__ratio">6,39:1 · nuevo</div>
+        </div>
+        <div>
+          <div class="tok__sw" style="background:#E2231A"></div>
+          <div class="tok__name">marca-claro</div>
+          <div class="tok__val">#E2231A con texto #FFF</div>
+          <div class="tok__ratio">4,68:1 · ya cumple, no cambiar</div>
+        </div>
+        <div>
+          <div class="tok__sw" style="background:#1B4B7F"></div>
+          <div class="tok__name">enlace-dato</div>
+          <div class="tok__val">#1B4B7F sobre #FFF</div>
+          <div class="tok__ratio">8,90:1 · distingue enlace de marca</div>
+        </div>
+      </div>
+      <div class="tbl-scroll" style="margin-top:1.75rem">
+        <table class="data">
+          <thead><tr><th>Decisión</th><th>Regla</th><th>Por qué</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Escala tipográfica</td>
+              <td class="num">12 · 13,5 · 15 · 20 · 26 px</td>
+              <td>Hoy conviven seis tamaños por página, incluidos 11 y 11,5 px que además fallan contraste. Cinco pasos bastan y el mínimo sube a 12 px.</td>
+            </tr>
+            <tr>
+              <td>Área táctil</td>
+              <td class="num">44 × 44 px mínimo</td>
+              <td>Resuelve H10 en las tres secciones afectadas; es también el tamaño que evita errores en tableta, el formato en que se usa la herramienta en reuniones.</td>
+            </tr>
+            <tr>
+              <td>Estado</td>
+              <td>Un componente, 4 variantes</td>
+              <td>Correcto, atención, error, inactivo. Siempre color <em>y</em> texto, nunca color solo, para no depender de la visión cromática.</td>
+            </tr>
+            <tr>
+              <td>Fechas</td>
+              <td>«17 jul, 11:58»</td>
+              <td>Mes abreviado elimina la ambigüedad día/mes; sin segundos; relativo para lo reciente y fecha exacta en <code>title</code>.</td>
+            </tr>
+            <tr>
+              <td>Nombres de módulo</td>
+              <td>Un diccionario único</td>
+              <td>Un solo punto que traduce identificador técnico a nombre visible, usado por pantallas y correos por igual.</td>
+            </tr>
+            <tr>
+              <td>Regiones</td>
+              <td><code>header</code> · <code>nav</code> · <code>main</code></td>
+              <td>Cierra las 192 incidencias de <code>region</code> y <code>landmark-one-main</code> con una plantilla común.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ PLAN ============ -->
+    <section class="part" id="plan">
+      <h2>Orden de trabajo</h2>
+      <p class="sub">Por relación entre impacto y coste, no por número de hallazgo.</p>
+      <div class="tbl-scroll">
+        <table class="data">
+          <thead><tr><th>Orden</th><th>Trabajo</th><th>Cierra</th><th>Esfuerzo</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td><strong>Encabezado común con navegación persistente</strong> y plantilla semántica <code>header/nav/main</code> aplicada a las seis páginas</td>
+              <td>H1, H7, y parte de H10</td>
+              <td class="num">1–2 días</td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td><strong>Tokens de color y componente de estado</strong>: seis valores nuevos, un componente reutilizado en las cuatro pantallas que hoy improvisan</td>
+              <td>H3, H9, H11</td>
+              <td class="num">1 día</td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td><strong>Panel de estado accionable</strong>: marca de tiempo, umbrales, orden por severidad, causa del fallo y contadores como filtros</td>
+              <td>H2, H12 parcial</td>
+              <td class="num">2–3 días</td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td><strong>Alertas en un solo formulario</strong> con fichas de destinatario y guardado único</td>
+              <td>H5, H8, H10</td>
+              <td class="num">2 días</td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td><strong>Resolver identificadores a nombres</strong> en Subdominios y Bitácora, y redactar los eventos como frases</td>
+              <td>H6, H14</td>
+              <td class="num">1–2 días</td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td><strong>Filtros, agrupación y paginación</strong> en Bitácora y Usuarios; tablas enfocables por teclado</td>
+              <td>H4, H12</td>
+              <td class="num">2 días</td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td><strong>Instancia mínima activa</strong> y esqueleto de carga</td>
+              <td>H13</td>
+              <td class="num">medio día</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <span class="lead">Si sólo hay tiempo para una cosa</span>
+        <p>
+          El punto 1. Es el más barato de los siete, se nota en cada sesión de uso y arrastra consigo
+          la mitad de las incidencias de accesibilidad estructural.
+        </p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <h2>Alcance, límites y reproducción</h2>
+    <p>
+      <strong>Datos personales redactados.</strong> Este informe es de acceso público, así que los
+      nombres de usuario y las direcciones de correo aparecen difuminados en las capturas —el
+      desenfoque está aplicado sobre los píxeles, no por CSS— y sustituidos por genéricos en las
+      maquetas. El identificador de Firebase se muestra abreviado. Ninguna otra cifra ni conclusión
+      del informe se ha modificado.
+    </p>
+    <p>
+      Auditoría ejecutada el 4 de agosto de 2026 sobre el entorno productivo, autenticada y en modo de
+      solo lectura: ninguna petición de escritura salió del navegador. Se cubrieron las seis secciones
+      alcanzables desde el menú, en 390, 820 y 1440 px.
+    </p>
+    <ul>
+      <li>Los estados de módulo corresponden a dos mediciones puntuales separadas por unos 30 segundos; no son una serie temporal. La contradicción entre ambas es en sí misma el hallazgo H2, no una conclusión sobre la disponibilidad real de SEO y Tagging.</li>
+      <li>No se auditaron flujos que requieran escritura: crear subdominio, lanzar auditoría, crear usuario, guardar reglas de categorías ni enviar correo de prueba. Quedan pendientes para una pasada en entorno de pruebas.</li>
+      <li>No se evaluó seguridad, rendimiento de servidor ni lógica de negocio. La observación sobre los cinco roles <code>superadmin</code> es lo que se vio en pantalla, no un análisis de permisos.</li>
+      <li>Las maquetas son propuestas de interfaz construidas para este informe: reproducen el lenguaje visual de la aplicación, no son código de producción.</li>
+    </ul>
+    <p>
+      La auditoría es repetible: <code>node audit.mjs</code> vuelve a recorrer las secciones definidas
+      en <code>config.json</code> y regenera capturas y <code>out/findings.json</code>. Las credenciales
+      se leen de <code>.env</code>, que no forma parte de este informe.
+    </p>
+  </div>
+</footer>
